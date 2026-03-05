@@ -10,11 +10,20 @@ export interface QuizQuestion {
 
 export type ChapterId = number | 'home';
 
+export type ChapterLevel =
+  | 'Débutant'
+  | 'Intermédiaire'
+  | 'Avancé'
+  | 'Expert'
+  | 'Expert+'
+  | 'Maître'
+  | 'Bonus TS';
+
 export interface Chapter {
   id: ChapterId;
   title: string;
   icon: string;
-  level: string | null;
+  level: ChapterLevel | null;
   stars?: string;
   component: ComponentType;
   quiz?: QuizQuestion[];

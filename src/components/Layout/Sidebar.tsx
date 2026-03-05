@@ -1,6 +1,8 @@
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useRef, useEffect } from 'react';
+import { Link, useLocation } from 'react-router-dom';
 import { CHAPTERS, GROUPS } from '../../chapters';
 import { useProgress } from '../../context/ProgressContext';
+import { getChapterId } from '../../utils/routing';
 import type { Chapter } from '../../types';
 
 interface SidebarProps {
@@ -8,29 +10,31 @@ interface SidebarProps {
   onClose: () => void;
 }
 
-function getChapterId(pathname: string): number | 'home' {
-  if (pathname === '/') return 'home';
-  const match = pathname.match(/\/chapter\/(\d+)/);
-  return match ? parseInt(match[1], 10) : 'home';
-}
-
 export default function Sidebar({ isOpen, onClose }: SidebarProps) {
-  const navigate = useNavigate();
   const location = useLocation();
-  const { isCompleted, completedChapters } = useProgress();
+  const { isCompleted, completedChapters, resetProgress } = useProgress();
+  const activeRef = useRef<HTMLAnchorElement>(null);
 
   const currentId = getChapterId(location.pathname);
   const totalChapters = CHAPTERS.filter(ch => ch.id !== 'home').length;
   const completedCount = CHAPTERS.filter(ch => ch.id !== 'home' && completedChapters.has(ch.id)).length;
   const progress = totalChapters > 0 ? (completedCount / totalChapters) * 100 : 0;
 
-  const goTo = (ch: Chapter) => {
-    navigate(ch.id === 'home' ? '/' : `/chapter/${ch.id}`);
-    onClose();
+  // Scroll l'élément actif dans la zone visible
+  useEffect(() => {
+    activeRef.current?.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+  }, [currentId]);
+
+  const chapterUrl = (ch: Chapter) => ch.id === 'home' ? '/' : `/chapter/${ch.id}`;
+
+  const handleReset = () => {
+    if (window.confirm('Réinitialiser toute la progression ? (XP, chapitres et quizz)')) {
+      resetProgress();
+    }
   };
 
   return (
-    <aside className={`sidebar${isOpen ? ' open' : ''}`}>
+    <aside className={`sidebar${isOpen ? ' open' : ''}`} aria-label="Navigation du cours">
       <div className="sidebar-header">
         <div className="logo">JS<span>.</span>cours</div>
         <div className="progress-bar-wrap">
@@ -54,16 +58,25 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
                 if (ch.level === 'Bonus TS') cls += ' ts-item';
                 if (ch.level === 'Maître') cls += ' master-item';
                 return (
-                  <div key={ch.id} className={cls} onClick={() => goTo(ch)}>
+                  <Link
+                    key={ch.id}
+                    to={chapterUrl(ch)}
+                    className={cls}
+                    onClick={onClose}
+                    ref={active ? activeRef : undefined}
+                  >
                     <div className="nav-dot" />
                     {ch.icon} {ch.title}
-                  </div>
+                  </Link>
                 );
               })}
             </div>
           );
         })}
       </nav>
+      <button className="reset-btn" onClick={handleReset}>
+        Réinitialiser la progression
+      </button>
     </aside>
   );
 }

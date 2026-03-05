@@ -13,6 +13,7 @@ interface ProgressContextValue extends ProgressState {
   recordQuizAnswer: (chapterId: ChapterId, quizIdx: number, answer: number) => void;
   isCompleted: (id: ChapterId) => boolean;
   hasAnsweredQuiz: (chapterId: ChapterId, quizIdx: number) => boolean;
+  resetProgress: () => void;
 }
 
 const ProgressContext = createContext<ProgressContextValue | null>(null);
@@ -61,6 +62,10 @@ export function ProgressProvider({ children }: { children: ReactNode }) {
   const hasAnsweredQuiz = (chapterId: ChapterId, quizIdx: number) =>
     `${chapterId}-${quizIdx}` in state.answeredQuizzes;
 
+  const resetProgress = () => {
+    setState({ xp: 0, completedChapters: new Set(), answeredQuizzes: {} });
+  };
+
   return (
     <ProgressContext.Provider value={{
       ...state,
@@ -69,6 +74,7 @@ export function ProgressProvider({ children }: { children: ReactNode }) {
       recordQuizAnswer,
       isCompleted,
       hasAnsweredQuiz,
+      resetProgress,
     }}>
       {children}
     </ProgressContext.Provider>

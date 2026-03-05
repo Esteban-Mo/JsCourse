@@ -172,8 +172,10 @@ function Ch01Variables() {
 
       <div className="table-container">
         <table>
-          <tbody>
+          <thead>
             <tr><th>Type</th><th>Exemple</th><th>Description</th></tr>
+          </thead>
+          <tbody>
             <tr><td><code>string</code></td><td><code>"Bonjour"</code></td><td>Du texte, délimité par <code>""</code>, <code>''</code> ou <code>{"`"}</code></td></tr>
             <tr><td><code>number</code></td><td><code>42, 3.14, NaN, Infinity</code></td><td>Entier ET décimal — JS n'a qu'un seul type numérique</td></tr>
             <tr><td><code>boolean</code></td><td><code>true, false</code></td><td>Vrai ou faux — résultat d'une comparaison</td></tr>

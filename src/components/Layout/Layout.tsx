@@ -3,15 +3,10 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import Sidebar from './Sidebar';
 import TopBar from './TopBar';
 import { CHAPTERS } from '../../chapters';
+import { getChapterId } from '../../utils/routing';
 
 interface LayoutProps {
   children: ReactNode;
-}
-
-function getChapterId(pathname: string): number | 'home' {
-  if (pathname === '/') return 'home';
-  const match = pathname.match(/\/chapter\/(\d+)/);
-  return match ? parseInt(match[1], 10) : 'home';
 }
 
 export default function Layout({ children }: LayoutProps) {
@@ -25,8 +20,16 @@ export default function Layout({ children }: LayoutProps) {
   const prevChapter = idx > 0 ? CHAPTERS[idx - 1] : null;
   const nextChapter = idx >= 0 && idx < CHAPTERS.length - 1 ? CHAPTERS[idx + 1] : null;
 
+  // Navigation clavier (← →) avec garde sur les champs de saisie
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
+      const target = e.target as HTMLElement;
+      if (
+        target.tagName === 'INPUT' ||
+        target.tagName === 'TEXTAREA' ||
+        target.isContentEditable
+      ) return;
+
       if (e.key === 'ArrowRight' && nextChapter) {
         navigate(nextChapter.id === 'home' ? '/' : `/chapter/${nextChapter.id}`);
       } else if (e.key === 'ArrowLeft' && prevChapter) {
@@ -37,9 +40,17 @@ export default function Layout({ children }: LayoutProps) {
     return () => window.removeEventListener('keydown', handler);
   }, [navigate, prevChapter, nextChapter]);
 
+  // Scroll en haut à chaque changement de page
   useEffect(() => {
     window.scrollTo(0, 0);
   }, [location.pathname]);
+
+  // Mise à jour du titre de l'onglet
+  useEffect(() => {
+    document.title = currentChapter
+      ? `${currentChapter.title} — JS.cours`
+      : 'JS.cours — De Zéro à Maître';
+  }, [currentChapter]);
 
   const topLabel = currentChapter?.title ?? 'JS.cours';
 
@@ -48,6 +59,7 @@ export default function Layout({ children }: LayoutProps) {
       <div
         className={`overlay${sidebarOpen ? ' open' : ''}`}
         onClick={() => setSidebarOpen(false)}
+        aria-hidden="true"
       />
       <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
       <div className="main">
