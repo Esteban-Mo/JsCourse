@@ -1,0 +1,346 @@
+import { CodeBlock, InfoBox, Challenge } from '../components/content';
+import type { Chapter } from '../types';
+
+const codeEventLoopDiagram = `┌─────────────────────────────────────────────────────────┐
+│                    THREAD JAVASCRIPT                    │
+│                                                         │
+│  ┌─────────────┐    ┌──────────────┐  ┌─────────────┐  │
+│  │  Call Stack │    │  Web APIs    │  │  Queues     │  │
+│  │  (exécution)│    │  (async I/O) │  │             │  │
+│  │             │    │              │  │ Microtasks  │  │
+│  │  fn3()      │    │  setTimeout  │  │  Promise    │  │
+│  │  fn2()      │    │  fetch       │  │  queueMicro │  │
+│  │  fn1()      │    │  addEventListener              │  │
+│  │  [global]   │    │              │  │ Macrotasks  │  │
+│  └─────────────┘    └──────────────┘  │  setTimeout │  │
+│                           │           │  setInterval│  │
+│                           └──────────▶│  I/O events │  │
+│                                       └─────────────┘  │
+│                                                         │
+│  Priorité : Stack → Microtasks → Macrotasks (1 à la fois)
+└─────────────────────────────────────────────────────────┘`;
+
+const codeEventLoop = `// Démonstration de l'ordre d'exécution
+console.log("1 — Synchrone (Call Stack)");
+
+setTimeout(() => console.log("5 — Macrotask (setTimeout 0)"), 0);
+
+Promise.resolve()
+  .then(() => console.log("3 — Microtask (Promise.then)"))
+  .then(() => console.log("4 — Microtask (Promise.then chaîné)"));
+
+queueMicrotask(() => console.log("3b — Microtask (queueMicrotask)"));
+
+console.log("2 — Synchrone (Call Stack)");
+
+// Sortie dans l'ordre :
+// 1 — Synchrone (Call Stack)
+// 2 — Synchrone (Call Stack)
+// 3 — Microtask (Promise.then)
+// 3b — Microtask (queueMicrotask)
+// 4 — Microtask (Promise.then chaîné)
+// 5 — Macrotask (setTimeout 0)`;
+
+const codeHiddenClasses = `// ❌ Instabilité de shape : V8 crée de nouvelles hidden classes
+function PointInstable(x, y) {
+  this.x = x;
+  if (y) this.y = y; // ajout conditionnel = nouvelle shape !
+}
+// new PointInstable(1, 2) → Shape {x, y}
+// new PointInstable(1)    → Shape {x} ← différente !
+// V8 ne peut pas optimiser car les shapes divergent
+
+// ✅ Shape stable : une seule hidden class pour tous les objets
+function PointStable(x, y) {
+  this.x = x;
+  this.y = y ?? 0; // toujours défini → même shape
+}
+// Toutes les instances → Shape {x, y} ← V8 optimise !
+
+// ❌ Ajouter des propriétés après construction = nouvelle shape
+const obj = {};
+obj.x = 1; // Shape → {x}
+obj.y = 2; // Shape → {x, y} ← transition !
+obj.z = 3; // Shape → {x, y, z} ← transition !
+
+// ✅ Définir toutes les propriétés dès la création
+const obj2 = { x: 1, y: 2, z: 3 }; // une seule shape dès le départ`;
+
+const codeMesurer = `// Mesurer les performances avec performance.now()
+function mesurer(label, fn) {
+  const debut = performance.now();
+  fn();
+  const fin = performance.now();
+  console.log(\`\${label}: \${(fin - debut).toFixed(3)}ms\`);
+}
+
+// Points instables vs stables : x10 plus lent !
+mesurer("Instable", () => {
+  for (let i = 0; i < 1_000_000; i++) new PointInstable(i, i % 2 ? i : undefined);
+});
+mesurer("Stable  ", () => {
+  for (let i = 0; i < 1_000_000; i++) new PointStable(i, i);
+});`;
+
+const codeFuites1 = `// ❌ FUITE 1 : Event listener jamais supprimé
+function setupBug() {
+  const donneesMassives = new Array(1_000_000).fill({ data: "..." });
+
+  document.addEventListener("click", () => {
+    console.log(donneesMassives[0]); // closure sur donneesMassives
+    // donneesMassives reste en mémoire TANT QUE le listener existe !
+  });
+  // setupBug() termine, mais la closure garde donneesMassives en vie
+}
+
+// ✅ Solution : référencer le handler pour le supprimer
+function setupOk() {
+  const handler = (e) => console.log("clic", e.target);
+  document.addEventListener("click", handler);
+
+  // Retourner ou stocker la fonction de nettoyage
+  return () => document.removeEventListener("click", handler);
+}
+const cleanup = setupOk();
+// Plus tard... cleanup() pour libérer la mémoire`;
+
+const codeFuites2 = `// ❌ FUITE 2 : Cache infini (Map qui grandit sans limite)
+const cache = new Map(); // grandit à l'infini !
+function calculerEtCacher(objet) {
+  if (!cache.has(objet)) cache.set(objet, calculerLourd(objet));
+  return cache.get(objet);
+}
+
+// ✅ Solution : WeakMap libère automatiquement quand l'objet est GC
+const cacheWeak = new WeakMap();
+function calculerEtCacherWeak(objet) {
+  if (!cacheWeak.has(objet)) cacheWeak.set(objet, calculerLourd(objet));
+  return cacheWeak.get(objet);
+}
+// Quand 'objet' n'a plus de références, WeakMap libère automatiquement
+
+// ❌ FUITE 3 : Noeud DOM détaché mais référencé
+let refDetachee;
+function attacherElement() {
+  const div = document.createElement("div");
+  refDetachee = div; // ← garde une référence externe
+  document.body.appendChild(div);
+  document.body.removeChild(div); // ← retiré du DOM
+  // div n'est plus dans le DOM MAIS refDetachee le garde en vie !
+}
+// Solution : refDetachee = null quand on n'en a plus besoin`;
+
+const codeDebounce = `// DEBOUNCE : attend que l'utilisateur arrête d'agir
+// Analogie : minuterie qui se réinitialise à chaque frappe
+// Si silence > délai → exécute. Idéal pour : recherche en temps réel
+function debounce(fn, delaiMs) {
+  let timer = null;
+  return function(...args) {
+    clearTimeout(timer);
+    timer = setTimeout(() => fn.apply(this, args), delaiMs);
+  };
+}
+
+// Usage : chercher seulement 300ms après la dernière frappe
+const rechercherDebounced = debounce((terme) => {
+  console.log(\`Recherche: "\${terme}"\`);
+  // appel API...
+}, 300);
+
+// Typing "hello" → 5 événements mais UN SEUL appel API
+input.addEventListener("input", e => rechercherDebounced(e.target.value));`;
+
+const codeThrottle = `// THROTTLE : exécute au maximum une fois par intervalle
+// Analogie : une soupape qui laisse passer une requête max par seconde
+// Idéal pour : scroll tracking, resize, jeux
+function throttle(fn, intervalleMs) {
+  let dernierAppel = 0;
+  return function(...args) {
+    const maintenant = Date.now();
+    if (maintenant - dernierAppel >= intervalleMs) {
+      dernierAppel = maintenant;
+      fn.apply(this, args);
+    }
+  };
+}
+
+// Usage : position de scroll max 10 fois par seconde
+const onScrollThrottled = throttle(() => {
+  console.log(\`scrollY: \${window.scrollY}\`);
+}, 100);
+
+window.addEventListener("scroll", onScrollThrottled);
+
+// Comparaison :
+// Debounce : attend la fin de l'activité, puis exécute UNE fois
+// Throttle  : exécute régulièrement pendant l'activité`;
+
+const codeWeakRef = `// WeakRef : référence qui n'empêche PAS le Garbage Collector
+let objetLourd = { data: new Array(1_000_000).fill(0) };
+const ref = new WeakRef(objetLourd);
+
+// Utiliser l'objet via deref()
+const donnees = ref.deref();
+if (donnees) {
+  console.log(donnees.data.length); // 1_000_000
+}
+
+// Si on libère la seule référence forte :
+objetLourd = null;
+// Le GC PEUT maintenant collecter l'objet
+// ref.deref() retournera undefined après la collecte
+
+// FinalizationRegistry : être notifié quand un objet est GC
+const registry = new FinalizationRegistry((cle) => {
+  console.log(\`Objet \${cle} collecté par le GC\`);
+  cache.delete(cle); // nettoyer le cache
+});
+
+function creerEtEnregistrer(cle, objet) {
+  registry.register(objet, cle);
+  return new WeakRef(objet);
+}`;
+
+const codeChallenge = `async function traiterParBatch(items, traiteur, taillesBatch = 100) {
+  const resultats = [];
+
+  for (let i = 0; i < items.length; i += taillesBatch) {
+    const batch = items.slice(i, i + taillesBatch);
+
+    // Traiter le batch
+    const batchResultats = batch.map(traiteur);
+    resultats.push(...batchResultats);
+
+    // Céder la main à l'Event Loop (permet le rendu UI)
+    await new Promise(resolve => setTimeout(resolve, 0));
+
+    const pct = Math.min(((i + taillesBatch) / items.length * 100), 100);
+    console.log(\`Progression: \${pct.toFixed(0)}%\`);
+  }
+
+  return resultats;
+}
+
+// Usage : traiter 100 000 items sans freezer l'UI
+const donnees = Array.from({ length: 100_000 }, (_, i) => i);
+const resultats = await traiterParBatch(
+  donnees,
+  n => n * n, // traitement par élément
+  1000        // taille du batch
+);`;
+
+function Ch13Performance() {
+  return (
+    <>
+      <div className="chapter-tag">Chapitre 13 · Expert+</div>
+      <h1>Performance<br />&amp; <span className="highlight">Moteur V8</span></h1>
+
+      <div className="chapter-intro-card">
+        <div className="level-badge level-expert">🚀</div>
+        <div className="chapter-meta">
+          <div className="difficulty-stars">★★★★★</div>
+          <h3>Event Loop, V8/JIT, fuites mémoire, debounce/throttle, WeakRef</h3>
+          <p>Durée estimée : 45 min · 3 quizz inclus</p>
+        </div>
+      </div>
+
+      <p>Comprendre comment JavaScript s'exécute sous le capot vous permet d'écrire du code non seulement correct, mais aussi rapide et économe en mémoire. Ce chapitre démystifie l'Event Loop, le compilateur JIT de V8, et les patterns essentiels de performance.</p>
+
+      <h2>L'Event Loop — Visualisation complète</h2>
+
+      <p>JavaScript est mono-thread mais non-bloquant grâce à un mécanisme précis. Voici l'ordre exact d'exécution :</p>
+
+      <CodeBlock language="text">{codeEventLoopDiagram}</CodeBlock>
+
+      <CodeBlock language="javascript">{codeEventLoop}</CodeBlock>
+
+      <InfoBox type="tip">
+        La règle clé : après chaque tâche synchrone et après chaque macrotask, <strong>toute la file des microtasks</strong> est vidée avant de passer à la macrotask suivante. C'est pourquoi des microtasks récursives peuvent bloquer le rendu du navigateur !
+      </InfoBox>
+
+      <h2>V8 et les Hidden Classes — Comment JIT compile votre code</h2>
+
+      <p>V8 (le moteur JS de Chrome/Node) utilise la compilation <strong>Just-In-Time (JIT)</strong> : il observe votre code pendant qu'il s'exécute et génère du code machine optimisé. Sa stratégie clé repose sur les <em>hidden classes</em> : les objets qui partagent la même structure partagent la même hidden class → accès aux propriétés ultra-rapide.</p>
+
+      <CodeBlock language="javascript">{codeHiddenClasses}</CodeBlock>
+
+      <CodeBlock language="javascript">{codeMesurer}</CodeBlock>
+
+      <h2>Fuites mémoire — Les trois coupables habituels</h2>
+
+      <p>Le Garbage Collector (GC) libère automatiquement la mémoire des objets sans références. Mais certains patterns empêchent le GC de faire son travail.</p>
+
+      <CodeBlock language="javascript">{codeFuites1}</CodeBlock>
+
+      <CodeBlock language="javascript">{codeFuites2}</CodeBlock>
+
+      <h2>Debounce et Throttle — Contrôler la fréquence d'exécution</h2>
+
+      <p>Certains événements (scroll, resize, keyup) se déclenchent des dizaines de fois par seconde. Exécuter une fonction coûteuse à chaque événement peut freezer l'interface.</p>
+
+      <CodeBlock language="javascript">{codeDebounce}</CodeBlock>
+
+      <CodeBlock language="javascript">{codeThrottle}</CodeBlock>
+
+      <h2>WeakRef et FinalizationRegistry — Mémoire avancée</h2>
+
+      <CodeBlock language="javascript">{codeWeakRef}</CodeBlock>
+
+      <InfoBox type="warning">
+        <code>WeakRef</code> et <code>FinalizationRegistry</code> sont des outils avancés. N'en dépendez pas pour la logique métier — le moment de collecte GC est imprévisible. Utilisez-les seulement pour des optimisations mémoire (caches, etc.).
+      </InfoBox>
+
+      <Challenge title="Défi : Scheduler de tâches">
+        <p>Implémentez un scheduler qui exécute des tâches par batch pour éviter de bloquer le thread principal. Utilisez <code>setTimeout(fn, 0)</code> pour céder la main à l'Event Loop entre chaque batch.</p>
+        <CodeBlock language="javascript">{codeChallenge}</CodeBlock>
+      </Challenge>
+    </>
+  );
+}
+
+export const chapter: Chapter = {
+  id: 13,
+  title: 'Performance & V8',
+  icon: '🚀',
+  level: 'Expert',
+  stars: '★★★★★',
+  component: Ch13Performance,
+  quiz: [
+    {
+      question: "Dans l'Event Loop, quelle est la priorité d'exécution correcte ?",
+      sub: "Ordre de l'Event Loop JS",
+      options: [
+        "Macrotasks → Synchrone → Microtasks",
+        "Synchrone (Call Stack) → Macrotasks → Microtasks",
+        "Synchrone (Call Stack) → Microtasks → Macrotasks (une à la fois)",
+        "Microtasks → Synchrone → Macrotasks"
+      ],
+      correct: 2,
+      explanation: "✅ Exact ! L'ordre est : (1) Code synchrone dans le Call Stack, (2) Toute la file des Microtasks (Promises, queueMicrotask), (3) UNE Macrotask (setTimeout, I/O), puis retour aux Microtasks. Les Microtasks ont toujours priorité sur les Macrotasks."
+    },
+    {
+      question: "Quelle est la différence entre debounce et throttle ?",
+      sub: "Optimisation des événements fréquents",
+      options: [
+        "Debounce est pour les clics, throttle pour le scroll",
+        "Debounce exécute après une pause d'activité (attente de silence), throttle exécute régulièrement pendant l'activité (limite de fréquence)",
+        "Throttle est plus performant que debounce dans tous les cas",
+        "Ce sont deux noms pour la même technique"
+      ],
+      correct: 1,
+      explanation: "✅ Parfait ! Debounce = attendre que l'utilisateur s'arrête (recherche live : exécuter seulement après 300ms de silence). Throttle = exécuter au maximum N fois par seconde (scroll tracker : max 10 fois/s). Chacun a son cas d'usage."
+    },
+    {
+      question: "Pourquoi les 'hidden classes' de V8 sont-elles importantes pour les performances ?",
+      sub: "Optimisations JIT de V8",
+      options: [
+        "Elles réduisent la consommation mémoire des objets",
+        "Elles permettent à V8 de générer du code machine optimisé pour les accès aux propriétés — des objets avec la même structure partagent la même hidden class",
+        "Elles activent la parallélisation du code JS",
+        "Elles permettent au GC de collecter la mémoire plus rapidement"
+      ],
+      correct: 1,
+      explanation: "✅ Exact ! V8 crée des 'hidden classes' (shapes) pour tracker la structure des objets. Quand tous vos objets ont la même structure (mêmes propriétés dans le même ordre), ils partagent une hidden class et V8 peut compiler du code machine ultra-optimisé. Des structures instables (propriétés conditionnelles) cassent cette optimisation."
+    }
+  ]
+};
