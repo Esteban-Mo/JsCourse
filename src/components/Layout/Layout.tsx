@@ -48,11 +48,11 @@ export default function Layout({ children }: LayoutProps) {
   // Mise à jour du titre de l'onglet
   useEffect(() => {
     document.title = currentChapter
-      ? `${currentChapter.title} — JS.cours`
-      : 'JS.cours — De Zéro à Maître';
+      ? `${currentChapter.title} — JS.procours`
+      : 'JS.procours — De Zéro à Maître';
   }, [currentChapter]);
 
-  const topLabel = currentChapter?.title ?? 'JS.cours';
+  const topLabel = currentChapter?.title ?? 'JS.procours';
 
   return (
     <>
