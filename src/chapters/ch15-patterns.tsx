@@ -370,6 +370,66 @@ export const chapter: Chapter = {
       ],
       correct: 1,
       explanation: "✅ Exact ! Une monade est un wrapper avec map() et chain() (flatMap). La Maybe monade encapsule une valeur potentiellement null et court-circuite les transformations si elle est vide. Les Promises sont des monades async ! Comprendre ce pattern explique pourquoi .then() et .catch() fonctionnent comme ils le font."
+    },
+    {
+      question: "Quelle est la caractéristique essentielle d'une fonction pure en programmation fonctionnelle ?",
+      sub: "Fonctions pures",
+      options: [
+        "Elle doit être écrite en une seule ligne",
+        "Elle ne doit pas utiliser de boucles, uniquement de la récursion",
+        "Données les mêmes entrées, elle retourne toujours la même sortie et ne produit aucun effet de bord (pas de mutation externe, pas d'I/O, pas de random)",
+        "Elle doit accepter une autre fonction comme argument"
+      ],
+      correct: 2,
+      explanation: "✅ Exact ! Une fonction pure est déterministe (même entrée → même sortie) et sans effets de bord. Elle ne modifie pas de variables externes, ne fait pas d'appels réseau, ne touche pas au DOM, n'utilise pas Math.random(). Cette propriété la rend triviale à tester, composer, mémoïser et paralléliser."
+    },
+    {
+      question: "Pourquoi la mémoïsation améliore-t-elle les performances du Fibonacci récursif ?",
+      sub: "Mémoïsation",
+      options: [
+        "Elle transforme la récursion en itération, évitant les appels de stack",
+        "Elle met en cache les résultats déjà calculés, évitant les recalculs exponentiels — la complexité passe de O(2^n) à O(n)",
+        "Elle parallélise les calculs des sous-problèmes indépendants",
+        "Elle remplace la récursion par une formule mathématique directe"
+      ],
+      correct: 1,
+      explanation: "✅ Parfait ! Sans mémoïsation, fib(40) recalcule fib(38) deux fois, fib(37) quatre fois, fib(36) huit fois... la complexité est O(2^n). Avec mémoïsation, chaque valeur fib(n) est calculée une seule fois et mise en cache. Les appels suivants retournent immédiatement le résultat mis en cache — la complexité devient O(n)."
+    },
+    {
+      question: "Quelle est la règle de l'immutabilité pour les mises à jour d'objets imbriqués ?",
+      sub: "Immutabilité",
+      options: [
+        "Il faut utiliser Object.freeze() sur tous les objets imbriqués",
+        "Il suffit de copier le niveau supérieur avec le spread operator {...obj}",
+        "Il faut créer de nouvelles copies à chaque niveau de l'arborescence jusqu'à la propriété modifiée (structural sharing)",
+        "Il faut sérialiser l'objet en JSON puis le parser pour obtenir une copie profonde"
+      ],
+      correct: 2,
+      explanation: "✅ Exact ! Pour mettre à jour config.ui.sidebar.open de façon immutable, il faut copier chaque niveau : { ...config, ui: { ...config.ui, sidebar: { ...config.ui.sidebar, open: false } } }. C'est le 'structural sharing' — seuls les nœuds modifiés sont dupliqués, les autres sous-arbres sont partagés par référence. Immer.js automatise ce pattern avec une syntaxe mutatrice."
+    },
+    {
+      question: "Quel avantage principal offrent les transducers par rapport aux chaînes .filter().map().filter() ?",
+      sub: "Transducers",
+      options: [
+        "Les transducers permettent de traiter des données asynchrones",
+        "Les transducers composent les transformations en un seul passage sur les données au lieu de créer des tableaux intermédiaires à chaque étape",
+        "Les transducers s'exécutent en parallèle sur plusieurs threads",
+        "Les transducers permettent d'utiliser des générateurs infinis avec filter et map"
+      ],
+      correct: 1,
+      explanation: "✅ Correct ! Une chaîne .filter().map().filter() sur 10 000 éléments crée 3 tableaux intermédiaires et fait 3 passages sur les données. Un transducer compose toutes ces transformations en un seul reducer qui s'applique en UN passage, sans tableaux intermédiaires. La complexité est O(n) au lieu de O(n×k) et la consommation mémoire est réduite."
+    },
+    {
+      question: "Quelle méthode de la monade Maybe empêche l'imbrication Maybe(Maybe(valeur)) ?",
+      sub: "Monade Maybe",
+      options: [
+        "map(), car elle détecte automatiquement les valeurs imbriquées",
+        "getOrElse(), car elle extrait toujours la valeur brute",
+        "chain() (aussi appelée flatMap), car elle attend une fonction qui retourne déjà un Maybe et évite ainsi l'imbrication",
+        "of(), car elle normalise toujours la valeur en un seul niveau"
+      ],
+      correct: 2,
+      explanation: "✅ Exact ! map(fn) encapsule le résultat de fn dans un Maybe — si fn retourne déjà un Maybe, on obtient Maybe(Maybe(v)). chain(fn) (flatMap) attend que fn retourne un Maybe et retourne directement ce Maybe sans l'envelopper à nouveau. C'est la différence fondamentale entre map et flatMap dans toutes les monades, y compris les Promises (.then() se comporte comme flatMap)."
     }
   ]
 };

@@ -343,6 +343,66 @@ export const chapter: Chapter = {
       ],
       correct: 1,
       explanation: "✅ Parfait ! Le guard clause consiste à retourner tôt pour les cas d'erreur, ce qui évite la 'pyramide de la mort' (if imbriqués) et laisse le chemin normal (happy path) lisible et non imbriqué."
+    },
+    {
+      question: "Que retourne : false && console.log('exécuté') ?",
+      sub: "Court-circuit avec && dans les conditions",
+      options: [
+        "console.log s'exécute et affiche 'exécuté'",
+        "false — console.log n'est jamais appelé grâce au court-circuit",
+        "undefined",
+        "Une TypeError"
+      ],
+      correct: 1,
+      explanation: "✅ Exact ! && évalue de gauche à droite et s'arrête dès qu'il trouve une valeur falsy. false étant falsy, la partie droite (console.log) n'est jamais évaluée. C'est le court-circuit : inutile d'aller plus loin si le résultat est déjà déterminé."
+    },
+    {
+      question: "Comment vérifier proprement si une variable est un tableau ?",
+      sub: "Vérification de type avec Array.isArray()",
+      options: [
+        "typeof [] === 'array'",
+        "[] instanceof Array (toujours fiable)",
+        "Array.isArray([])",
+        "typeof [] === 'object'"
+      ],
+      correct: 2,
+      explanation: "✅ Exact ! Array.isArray() est la méthode recommandée. typeof [] retourne 'object' (pas 'array'). instanceof peut échouer entre différents contextes (iframes). Array.isArray() fonctionne dans tous les cas."
+    },
+    {
+      question: "Que signifie !!valeur en JavaScript ?",
+      sub: "Double négation — conversion en booléen",
+      options: [
+        "Cela lève une SyntaxError",
+        "Cela compare valeur à elle-même",
+        "Cela convertit valeur en son équivalent booléen (true ou false)",
+        "Cela inverse la valeur deux fois, ce qui ne change rien"
+      ],
+      correct: 2,
+      explanation: "✅ Correct ! !!valeur est une conversion explicite en booléen. Le premier ! convertit en booléen inversé, le second ! réinverse. !!0 = false, !!'hello' = true, !!null = false. C'est équivalent à Boolean(valeur) mais plus court."
+    },
+    {
+      question: "Avec l'optional chaining, que retourne user?.adresse?.ville si user est null ?",
+      sub: "Optional chaining dans les conditions",
+      options: [
+        "Une TypeError : Cannot read properties of null",
+        "null",
+        "undefined",
+        "false"
+      ],
+      correct: 2,
+      explanation: "✅ Exact ! L'optional chaining ?. court-circuite dès qu'il rencontre null ou undefined et retourne undefined (pas null, pas une erreur). user?.adresse?.ville avec user = null retourne donc undefined sans lever d'exception."
+    },
+    {
+      question: "Quel est le problème principal avec les ternaires imbriqués ?",
+      sub: "Lisibilité du code conditionnel",
+      options: [
+        "Ils sont plus lents que les if/else",
+        "Ils ne fonctionnent pas dans tous les navigateurs",
+        "Ils sont illisibles et difficiles à maintenir — un if/else est préférable au-delà de 2 cas",
+        "Ils ne peuvent pas retourner de valeurs complexes"
+      ],
+      correct: 2,
+      explanation: "✅ Parfait ! a ? b ? c : d : e est légal mais extrêmement difficile à lire et à déboguer. Le ternaire est idéal pour un choix binaire simple ; dès qu'il y a plus de deux cas, un if/else ou un object lookup est bien plus lisible."
     }
   ]
 };

@@ -55,11 +55,19 @@ export default function QuizBlock({ question, chapterId, quizIdx }: QuizBlockPro
           );
         })}
       </div>
-      {selected !== null && (
-        <div className={`quiz-feedback show ${selected === question.correct ? 'correct-fb' : 'wrong-fb'}`}>
-          {question.explanation}
-        </div>
-      )}
+      {selected !== null && (() => {
+        const isCorrect = selected === question.correct;
+        // Strip le préfixe "✅ Mot(s) ! " pour le remplacer dynamiquement si mauvaise réponse
+        const explanationBody = question.explanation.replace(/^✅[^!]*!\s*/u, '');
+        const feedbackText = isCorrect
+          ? question.explanation
+          : `❌ Mauvaise réponse. ${explanationBody}`;
+        return (
+          <div className={`quiz-feedback show ${isCorrect ? 'correct-fb' : 'wrong-fb'}`}>
+            {feedbackText}
+          </div>
+        );
+      })()}
     </div>
   );
 }

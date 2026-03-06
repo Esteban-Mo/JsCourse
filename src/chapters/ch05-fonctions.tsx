@@ -334,6 +334,66 @@ export const chapter: Chapter = {
       ],
       correct: 2,
       explanation: "✅ Exact ! Une fonction pure satisfait deux critères : déterminisme (même input → même output) et absence d'effets de bord (ne modifie pas de variables externes, ne fait pas d'I/O). Cela la rend testable, prévisible et composable."
+    },
+    {
+      question: "Que vaut this dans une arrow function définie à l'intérieur d'une méthode d'objet ?",
+      sub: "Liaison lexicale de this dans les arrow functions",
+      options: [
+        "L'objet sur lequel la méthode est appelée",
+        "undefined en mode strict",
+        "Le contexte lexical englobant au moment de la définition de l'arrow function",
+        "window dans tous les cas"
+      ],
+      correct: 2,
+      explanation: "✅ Exact ! Une arrow function n'a pas son propre this — elle hérite du this du scope lexical où elle est définie. Si elle est définie à l'intérieur d'une méthode, this sera le this de cette méthode (l'objet), ce qui est souvent utile dans les callbacks comme setTimeout."
+    },
+    {
+      question: "Quel est le résultat de function f(a, b = a * 2) { return b; } appelé avec f(3) ?",
+      sub: "Paramètres par défaut avec expressions",
+      options: [
+        "undefined",
+        "3",
+        "6",
+        "Une erreur est lancée"
+      ],
+      correct: 2,
+      explanation: "✅ Exact ! Les paramètres par défaut peuvent référencer d'autres paramètres définis avant eux. Ici b = a * 2 = 3 * 2 = 6. Les paramètres sont évalués de gauche à droite, donc a est déjà défini quand b est évalué."
+    },
+    {
+      question: "Quelle est la différence principale entre le paramètre rest (...args) et l'objet arguments ?",
+      sub: "Rest parameters vs arguments",
+      options: [
+        "Il n'y a aucune différence",
+        "rest est un vrai Array, arguments est un objet pseudo-tableau sans méthodes Array comme map ou filter",
+        "arguments est disponible uniquement en mode strict",
+        "rest est limité à 3 arguments maximum"
+      ],
+      correct: 1,
+      explanation: "✅ Correct ! ...args est un vrai tableau avec toutes les méthodes Array (map, filter, reduce…). L'objet arguments est un objet itérable mais pas un Array — il faut le convertir avec Array.from(arguments) pour utiliser les méthodes tableau. De plus, arguments n'est pas disponible dans les arrow functions."
+    },
+    {
+      question: "Que retourne (function(x) { return x * 2; })(5) ?",
+      sub: "Pattern IIFE (Immediately Invoked Function Expression)",
+      options: [
+        "Une fonction",
+        "undefined",
+        "10",
+        "Une erreur de syntaxe"
+      ],
+      correct: 2,
+      explanation: "✅ Exact ! C'est un IIFE (Immediately Invoked Function Expression) — une fonction définie et immédiatement appelée. La première paire de parenthèses englobe la définition de la fonction, la deuxième paire l'invoque avec l'argument 5. Résultat : 5 * 2 = 10. Utile pour créer un scope isolé."
+    },
+    {
+      question: "Quelle est la valeur de function f(a, b, c) {}.length ?",
+      sub: "Propriété length des fonctions",
+      options: [
+        "0",
+        "3",
+        "undefined",
+        "Dépend du nombre d'appels"
+      ],
+      correct: 1,
+      explanation: "✅ Exact ! La propriété .length d'une fonction retourne le nombre de paramètres déclarés (sans compter les paramètres rest ni les paramètres avec valeur par défaut). Ici f a 3 paramètres classiques, donc f.length === 3. C'est utile dans certains patterns de programmation fonctionnelle (currying automatique)."
     }
   ]
 };

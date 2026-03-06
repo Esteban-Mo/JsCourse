@@ -252,6 +252,66 @@ export const chapter: Chapter = {
       ],
       correct: 1,
       explanation: "✅ Exact ! La délégation pose un seul listener sur le parent. Quand un enfant reçoit un événement, il 'remonte' (bubbling) jusqu'au parent. On utilise event.target ou closest() pour identifier l'élément d'origine. C'est plus performant et ça fonctionne avec les éléments ajoutés dynamiquement."
+    },
+    {
+      question: "Quelle est la différence entre event.target et event.currentTarget ?",
+      sub: "Propagation d'événements et cibles",
+      options: [
+        "Ils sont identiques et interchangeables",
+        "event.target est l'élément d'origine du clic, event.currentTarget est l'élément sur lequel le listener est attaché",
+        "event.currentTarget est l'élément d'origine, event.target est le parent",
+        "event.target est disponible uniquement avec addEventListener"
+      ],
+      correct: 1,
+      explanation: "✅ Exact ! event.target est l'élément réel sur lequel l'événement a été déclenché (ex : le bouton cliqué). event.currentTarget est toujours l'élément sur lequel le listener addEventListener est attaché. Dans la délégation d'événements, currentTarget est le parent (le listener), target est l'enfant cliqué."
+    },
+    {
+      question: "Quelle est la différence entre event.stopPropagation() et event.preventDefault() ?",
+      sub: "Contrôle des événements",
+      options: [
+        "Ils font la même chose",
+        "stopPropagation annule le comportement par défaut du navigateur, preventDefault arrête la remontée",
+        "stopPropagation arrête la remontée de l'événement dans le DOM, preventDefault annule l'action native du navigateur",
+        "stopPropagation supprime le listener, preventDefault le garde"
+      ],
+      correct: 2,
+      explanation: "✅ Exact ! stopPropagation() empêche l'événement de remonter (bubbling) vers les éléments parents — il n'atteint plus les listeners des ancêtres. preventDefault() annule l'action native du navigateur associée à l'événement (ex: empêcher la navigation d'un lien, le rechargement d'un formulaire) mais l'événement continue de se propager."
+    },
+    {
+      question: "Pour retirer un écouteur d'événement avec removeEventListener, quelle condition est indispensable ?",
+      sub: "Suppression d'un listener",
+      options: [
+        "Il faut utiliser le même type d'événement uniquement",
+        "Il faut passer une référence à la même fonction exacte utilisée lors de addEventListener",
+        "Il faut appeler removeEventListener avant addEventListener",
+        "removeEventListener fonctionne avec n'importe quelle fonction anonyme"
+      ],
+      correct: 1,
+      explanation: "✅ Exact ! removeEventListener nécessite une référence identique à la fonction passée à addEventListener. Une fonction anonyme inline ne peut pas être retirée car chaque expression de fonction crée un nouvel objet. Il faut stocker la fonction dans une variable et passer cette variable aux deux appels."
+    },
+    {
+      question: "Quelle est la différence entre l'événement DOMContentLoaded et l'événement load ?",
+      sub: "Événements de chargement de la page",
+      options: [
+        "Ils sont déclenchés simultanément",
+        "DOMContentLoaded se déclenche quand le HTML est parsé et le DOM prêt, load attend que toutes les ressources (images, CSS, scripts) soient chargées",
+        "load est déclenché avant DOMContentLoaded",
+        "DOMContentLoaded est uniquement disponible sur window"
+      ],
+      correct: 1,
+      explanation: "✅ Exact ! DOMContentLoaded se déclenche dès que le HTML est entièrement parsé et le DOM construit, sans attendre les images et feuilles de style — c'est le bon moment pour initialiser des interactions JS. load se déclenche quand TOUT est chargé (images, CSS, iframes…), ce qui peut prendre bien plus longtemps."
+    },
+    {
+      question: "Comment lire et écrire une valeur dans un attribut data-* d'un élément HTML ?",
+      sub: "API dataset et attributs data",
+      options: [
+        "element.getAttribute('data-id') en lecture, element.setAttribute('data-id', val) en écriture uniquement",
+        "element.data.id en lecture et écriture",
+        "element.dataset.id en lecture, element.dataset.id = val en écriture",
+        "document.data('id') en lecture, document.setData('id', val) en écriture"
+      ],
+      correct: 2,
+      explanation: "✅ Exact ! La propriété dataset expose tous les attributs data-* sous forme d'objet. data-user-id est accessible via element.dataset.userId (le tiret est converti en camelCase). On peut lire et écrire : element.dataset.id = '42' crée ou modifie l'attribut data-id dans le HTML."
     }
   ]
 };

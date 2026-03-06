@@ -239,6 +239,78 @@ export const chapter: Chapter = {
       ],
       correct: 1,
       explanation: "✅ Parfait ! infer permet de capturer un type 'caché' dans un type complexe. Dans T extends Promise<infer U>, U capture le type résolu de la Promise — même si on ne le connaît pas à l'avance."
+    },
+    {
+      question: "Que produit le type conditionnel `ToArray<string | number>` si `type ToArray<T> = T extends any ? T[] : never` ?",
+      sub: "Distributivité des types conditionnels",
+      options: [
+        "(string | number)[]",
+        "string[] | number[]",
+        "never",
+        "any[]"
+      ],
+      correct: 1,
+      explanation: "✅ Exact ! Les types conditionnels sont distributifs sur les unions. ToArray<string | number> se distribue sur chaque membre : (string extends any ? string[] : never) | (number extends any ? number[] : never) = string[] | number[]."
+    },
+    {
+      question: "Comment créer un Template Literal Type qui génère 'onClick' | 'onFocus' à partir de 'click' | 'focus' ?",
+      sub: "Template Literal Types",
+      options: [
+        "type E = `on${string}`",
+        "type E<T extends string> = `on${Capitalize<T>}`",
+        "type E = 'on' + T",
+        "type E<T> = Prefix<'on', T>"
+      ],
+      correct: 1,
+      explanation: "✅ Parfait ! La syntaxe `on${Capitalize<T>}` combine les template literal types et l'utilitaire Capitalize. Avec T = 'click' | 'focus', TypeScript distribue automatiquement et génère 'onClick' | 'onFocus'."
+    },
+    {
+      question: "Dans un mapped type, à quoi sert la clause `as` dans `[K in keyof T as T[K] extends string ? K : never]` ?",
+      sub: "Mapped Types avancés",
+      options: [
+        "À renommer les clés du type résultant (key remapping)",
+        "À convertir les valeurs en string",
+        "À rendre les propriétés optionnelles",
+        "À accéder au type de T[K]"
+      ],
+      correct: 0,
+      explanation: "✅ Exact ! La clause `as` permet le key remapping : elle transforme ou filtre les clés du mapped type. Retourner `never` pour une clé la supprime du résultat — c'est ainsi que OnlyStrings<T> ne garde que les propriétés dont la valeur est string."
+    },
+    {
+      question: "Quelle est la différence entre `Extract<T, U>` et `Exclude<T, U>` ?",
+      sub: "Utility Types Extract et Exclude",
+      options: [
+        "Extract garde les membres de T assignables à U ; Exclude les supprime",
+        "Exclude garde les membres de T assignables à U ; Extract les supprime",
+        "Les deux font la même chose mais sur des objets différents",
+        "Extract s'utilise sur des objets, Exclude sur des unions"
+      ],
+      correct: 0,
+      explanation: "✅ Parfait ! Extract<T, U> = T extends U ? T : never — il garde ce qui est commun. Exclude<T, U> = T extends U ? never : T — il retire les membres assignables à U. Exemple : Extract<'a'|'b'|'c', 'a'|'c'> = 'a'|'c' ; Exclude<'a'|'b'|'c', 'a'|'c'> = 'b'."
+    },
+    {
+      question: "Comment utiliser `never` pour s'assurer qu'un switch couvre tous les cas d'un discriminated union ?",
+      sub: "Vérification exhaustive avec never",
+      options: [
+        "En ajoutant un `default: return never` dans le switch",
+        "En passant la valeur restante à une fonction `assertNever(x: never): never` dans le default",
+        "En annotant le switch avec `exhaustive`",
+        "never ne peut pas être utilisé dans un switch"
+      ],
+      correct: 1,
+      explanation: "✅ Exact ! Si tous les cas sont couverts, TypeScript infère que la variable a le type never dans le default. Passer cette valeur à assertNever(x: never) compile correctement. Si un cas est oublié, TS signale une erreur car le type non-never ne correspond pas au paramètre never."
+    },
+    {
+      question: "Que retourne `ReturnType<typeof fetchUser>` si fetchUser est déclarée comme `function fetchUser(id: number): Promise<User>` ?",
+      sub: "Utility Types ReturnType et Parameters",
+      options: [
+        "User",
+        "Promise<User>",
+        "number",
+        "[number]"
+      ],
+      correct: 1,
+      explanation: "✅ Exact ! ReturnType<T> extrait le type de retour d'une fonction. fetchUser retourne Promise<User>, donc ReturnType<typeof fetchUser> = Promise<User>. Pour obtenir User directement, il faudrait combiner avec Awaited<ReturnType<typeof fetchUser>>."
     }
   ]
 };

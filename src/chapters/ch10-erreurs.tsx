@@ -278,6 +278,66 @@ export const chapter: Chapter = {
       ],
       correct: 1,
       explanation: "✅ Exact ! Un catch ne doit gérer que les erreurs qu'il comprend. Si l'erreur capturée est d'un type inattendu, re-la-lancer (throw err) permet à une couche supérieure — ou au runtime — de la traiter. Avaler silencieusement toutes les erreurs masque des bugs critiques."
+    },
+    {
+      question: "Quelle erreur native JavaScript est levée quand on accède à une propriété sur null ou undefined ?",
+      sub: "Types d'erreurs natifs",
+      options: [
+        "ReferenceError",
+        "SyntaxError",
+        "TypeError",
+        "RangeError"
+      ],
+      correct: 2,
+      explanation: "✅ Exact ! null.propriete ou undefined.methode() lèvent une TypeError car on effectue une opération sur un type incompatible (null et undefined n'ont pas de propriétés). ReferenceError concerne les variables non déclarées, RangeError les valeurs hors plage, SyntaxError le code malformé."
+    },
+    {
+      question: "Que contient la propriété 'cause' d'une Error créée avec new Error('msg', { cause: originalErr }) ?",
+      sub: "Error.cause (ES2022)",
+      options: [
+        "Le message d'erreur formaté avec la cause",
+        "L'erreur originale qui a provoqué cette erreur — utile pour tracer la chaîne d'erreurs",
+        "Le nom de la fonction qui a lancé l'erreur",
+        "Cette syntaxe est invalide en JavaScript"
+      ],
+      correct: 1,
+      explanation: "✅ Exact ! La propriété cause (introduite en ES2022) permet de chaîner les erreurs. Quand on attrape une erreur bas niveau et qu'on la wrapping dans une erreur de plus haut niveau, on peut conserver l'original via { cause: originalErr }. Ainsi err.cause pointe vers l'erreur d'origine, ce qui facilite le débogage."
+    },
+    {
+      question: "Si un bloc finally contient un return, que se passe-t-il avec le return du bloc try ?",
+      sub: "finally avec return",
+      options: [
+        "Les deux valeurs sont retournées dans un tableau",
+        "Le return du try est retourné normalement, finally est ignoré",
+        "Le return du finally écrase et remplace le return du try",
+        "Une erreur est levée car deux return sont incompatibles"
+      ],
+      correct: 2,
+      explanation: "✅ Correct ! Un return dans finally écrase tout return précédent du bloc try ou catch. C'est un comportement subtil à connaître : si finally retourne une valeur, c'est elle qui est utilisée, peu importe ce que try ou catch avaient retourné. C'est pourquoi on évite généralement de mettre un return dans finally."
+    },
+    {
+      question: "Quelle méthode hérite automatiquement une classe personnalisée qui étend Error ?",
+      sub: "Héritage de la classe Error",
+      options: [
+        "Aucune — il faut tout redéfinir manuellement",
+        "Seulement .toString()",
+        "Les propriétés name, message et stack, ainsi que la compatibilité avec instanceof",
+        "Uniquement la propriété message"
+      ],
+      correct: 2,
+      explanation: "✅ Parfait ! Étendre Error avec 'class MonError extends Error' donne accès à .message (via super(message)), .stack (trace d'appels générée automatiquement) et .name (à redéfinir dans le constructeur). instanceof MonError et instanceof Error fonctionnent tous les deux. C'est la bonne pratique pour créer des erreurs métier typées."
+    },
+    {
+      question: "Que se passe-t-il dans Node.js si une Promise rejetée n'a pas de gestionnaire .catch() ?",
+      sub: "UnhandledPromiseRejection",
+      options: [
+        "Rien — les Promises rejetées non gérées sont ignorées silencieusement",
+        "Un avertissement est affiché et le processus peut crasher selon la version de Node.js",
+        "La Promise est automatiquement résolue avec undefined",
+        "Une SyntaxError est levée au moment de la déclaration"
+      ],
+      correct: 1,
+      explanation: "✅ Exact ! Dans Node.js moderne, une UnhandledPromiseRejection provoque un avertissement et, depuis Node.js 15+, termine le processus avec un code d'erreur non nul. Dans les navigateurs, un événement 'unhandledrejection' est déclenché. C'est pourquoi toute Promise doit avoir un .catch() ou être dans un try/catch avec await."
     }
   ]
 };

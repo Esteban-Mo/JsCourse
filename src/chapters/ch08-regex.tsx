@@ -263,6 +263,66 @@ export const chapter: Chapter = {
       ],
       correct: 1,
       explanation: "✅ Exact ! () capture le contenu et le rend accessible dans match()/exec() comme groupe numéroté (ou nommé avec ?<nom>). (?:) groupe des parties du pattern pour les quantificateurs ou alternatives, sans capturer. Utilise (?:) quand tu n'as pas besoin de la valeur — légèrement plus performant."
+    },
+    {
+      question: "Quelle est la différence entre les quantificateurs greedy et lazy ? Que retourne '<b>un</b> et <b>deux</b>'.match(/<b>.*<\\/b>/) ?",
+      sub: "Quantificateurs greedy vs lazy",
+      options: [
+        "['<b>un</b>'] — le moteur s'arrête au premier </b> rencontré",
+        "['<b>un</b> et <b>deux</b>'] — le moteur capture le maximum possible",
+        "['<b>un</b>', '<b>deux</b>'] — deux matches distincts",
+        "null — le pattern ne matche pas"
+      ],
+      correct: 1,
+      explanation: "✅ Exact ! Par défaut les quantificateurs sont greedy (gourmands) : .* capture le maximum possible avant de reculer. Il va donc de <b> jusqu'au dernier </b>, englobant tout le texte intermédiaire. Pour capturer seulement '<b>un</b>', il faut rendre le quantificateur lazy avec .*? : /<b>.*?<\\/b>/."
+    },
+    {
+      question: "Que fait l'assertion lookahead (?=...) dans une regex ?",
+      sub: "Assertions lookahead",
+      options: [
+        "Elle capture le texte entre parenthèses comme un groupe numéroté",
+        "Elle vérifie que le motif est précédé d'une certaine séquence (lookbehind)",
+        "Elle vérifie que ce qui suit la position courante correspond au motif, sans consommer de caractères",
+        "Elle rend le groupe non-capturant"
+      ],
+      correct: 2,
+      explanation: "✅ Exact ! Un lookahead positif (?=...) est une assertion de position : il vérifie que le texte suivant correspond au motif donné, mais ne 'consomme' pas ces caractères (ils ne font pas partie du match). Par exemple /\\d+(?=€)/ matche les chiffres suivis d'un €, mais le € n'est pas inclus dans le résultat."
+    },
+    {
+      question: "Quelle est la différence entre String.prototype.match() avec le flag /g et RegExp.prototype.exec() ?",
+      sub: "match() vs exec()",
+      options: [
+        "Aucune différence, ils retournent toujours les mêmes résultats",
+        "match(/g) retourne un tableau simple de toutes les correspondances sans les groupes capturés, exec() itère match par match en préservant les groupes et l'index",
+        "exec() est déprécié et ne doit plus être utilisé",
+        "match() fonctionne uniquement sur les strings, exec() uniquement sur les RegExp"
+      ],
+      correct: 1,
+      explanation: "✅ Exact ! str.match(/pattern/g) retourne un tableau de toutes les correspondances mais perd les groupes capturés et l'index. regex.exec(str) retourne un objet complet (match, groupes, index) pour une correspondance à la fois — on l'appelle en boucle pour itérer. Pour avoir groupes + toutes les correspondances, préfère str.matchAll(/pattern/g)."
+    },
+    {
+      question: "Que permet la syntaxe de groupe nommé (?<nom>...) dans une regex ?",
+      sub: "Groupes nommés en ES2018",
+      options: [
+        "Donner un alias à toute la regex pour la réutiliser",
+        "Accéder à la valeur capturée par son nom via result.groups.nom plutôt que par son index numérique",
+        "Rendre le groupe optionnel",
+        "Empêcher le groupe d'être capturé dans les résultats"
+      ],
+      correct: 1,
+      explanation: "✅ Exact ! Les groupes nommés (?<nom>...) introduits en ES2018 permettent d'accéder aux valeurs capturées par leur nom dans result.groups.nom. C'est bien supérieur aux groupes numérotés ($1, $2) car si tu modifies le pattern et ajoutes un groupe, les noms restent stables alors que les numéros décalent."
+    },
+    {
+      question: "Que matche \\b dans une regex, et pourquoi /\\bJS\\b/ ne matche PAS 'JSON' ?",
+      sub: "Ancre de limite de mot \\b",
+      options: [
+        "\\b matche un espace blanc — 'JSON' n'a pas d'espace après 'JS'",
+        "\\b matche une frontière entre un caractère de mot (\\w) et un non-mot — 'JSON' a 'O' (\\w) après 'JS', donc pas de frontière",
+        "\\b matche le début de la chaîne uniquement",
+        "\\b matche le caractère de retour arrière (backspace)"
+      ],
+      correct: 1,
+      explanation: "✅ Exact ! \\b est une ancre de frontière de mot : elle matche la position entre un caractère \\w (lettre, chiffre, _) et un caractère \\W (non-mot) ou le début/fin de chaîne. Dans 'JSON', après 'JS' vient 'O' qui est \\w, donc il n'y a pas de frontière de mot — /\\bJS\\b/ ne matche pas. Il matcherait 'JS est cool' ou 'apprends JS' car 'S' est suivi d'un espace."
     }
   ]
 };

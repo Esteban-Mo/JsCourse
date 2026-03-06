@@ -354,6 +354,66 @@ export const chapter: Chapter = {
       ],
       correct: 2,
       explanation: "✅ Exact ! Avec WeakMap, quand l'instance (la clé) n'a plus de référence forte, le GC libère automatiquement les données associées. Les champs # (ES2022) sont souvent préférables pour leur simplicité et leurs performances, mais WeakMap reste utile pour les cas où la gestion mémoire automatique est critique."
+    },
+    {
+      question: "Quelle est la différence entre Object.freeze() et Object.seal() ?",
+      sub: "Descripteurs de propriété",
+      options: [
+        "freeze() est récursif, seal() ne s'applique qu'au premier niveau",
+        "freeze() empêche toute modification (lecture seule) ET l'ajout/suppression de propriétés ; seal() empêche l'ajout/suppression mais permet la modification des valeurs existantes",
+        "seal() est plus strict que freeze() car il empêche aussi la lecture",
+        "Il n'y a aucune différence pratique entre les deux"
+      ],
+      correct: 1,
+      explanation: "✅ Exact ! Object.freeze(obj) rend toutes les propriétés non-modifiables, non-configurables et non-extensibles — l'objet est en lecture seule. Object.seal(obj) empêche l'ajout et la suppression de propriétés (non-extensible, non-configurable), mais les valeurs des propriétés existantes restent modifiables. Les deux sont superficiels (shallow) — les objets imbriqués ne sont pas gelés/scellés."
+    },
+    {
+      question: "Que fait Symbol.toPrimitive et quand est-il appelé ?",
+      sub: "Symboles bien connus",
+      options: [
+        "Il convertit un Symbol en chaîne de caractères via toString()",
+        "Il est appelé lors des conversions de type implicites et reçoit un hint ('number', 'string', 'default') pour personnaliser la conversion d'un objet vers une primitive",
+        "Il empêche la conversion automatique d'un objet en primitive",
+        "Il définit l'ordre de tri d'un objet dans Array.sort()"
+      ],
+      correct: 1,
+      explanation: "✅ Parfait ! Quand JavaScript doit convertir un objet en valeur primitive (lors d'une addition, comparaison, interpolation de template...), il appelle [Symbol.toPrimitive](hint) si elle existe. Le hint indique le contexte : 'number' (opération mathématique), 'string' (interpolation ${obj}), 'default' (opérateur == ou +). Cela remplace les anciennes méthodes valueOf() et toString()."
+    },
+    {
+      question: "Quelle est la différence clé entre Proxy et Object.defineProperty pour l'interception des propriétés ?",
+      sub: "Proxy vs defineProperty",
+      options: [
+        "Object.defineProperty est plus récent et plus puissant que Proxy",
+        "Proxy intercepte dynamiquement n'importe quelle propriété (y compris les nouvelles), Object.defineProperty ne peut intercepter qu'une propriété connue à l'avance et définie explicitement",
+        "Object.defineProperty fonctionne sur les tableaux, Proxy non",
+        "Proxy ne peut intercepter que la lecture, Object.defineProperty peut intercepter l'écriture"
+      ],
+      correct: 1,
+      explanation: "✅ Exact ! Object.defineProperty(obj, 'prop', { get, set }) crée des accesseurs sur une propriété précise et connue à l'avance — Vue 2 l'utilisait et devait donc connaître toutes les propriétés réactives à la création. Proxy enveloppe l'objet entier et intercepte toutes les opérations sur toutes les propriétés, même celles ajoutées après la création du proxy — c'est pourquoi Vue 3 a migré vers Proxy."
+    },
+    {
+      question: "Que retourne Reflect.apply(fn, thisArg, args) et pourquoi est-il utile ?",
+      sub: "Reflect API",
+      options: [
+        "Il retourne un Proxy autour du résultat de fn",
+        "Il applique la fonction fn avec thisArg comme contexte et args comme tableau d'arguments, équivalent à fn.apply(thisArg, args) mais fonctionnel et cohérent avec les traps Proxy",
+        "Il retourne une Promise du résultat de fn",
+        "Il inspecte la signature de fn sans l'appeler"
+      ],
+      correct: 1,
+      explanation: "✅ Correct ! Reflect.apply(fn, thisArg, args) est l'équivalent fonctionnel de Function.prototype.apply.call(fn, thisArg, args). Il est particulièrement utile dans le trap apply d'un Proxy pour déléguer l'appel à la fonction cible avec le bon contexte, de façon propre et sans risque de redéfinition de apply."
+    },
+    {
+      question: "Quel descripteur de propriété faut-il modifier pour qu'une propriété n'apparaisse pas dans for...in ni Object.keys() ?",
+      sub: "Descripteurs de propriété",
+      options: [
+        "writable: false",
+        "configurable: false",
+        "enumerable: false",
+        "visible: false"
+      ],
+      correct: 2,
+      explanation: "✅ Exact ! Le descripteur enumerable contrôle si une propriété apparaît dans les énumérations : for...in, Object.keys(), Object.values(), Object.entries(), et le spread {...obj}. Une propriété avec enumerable: false est 'invisible' à ces opérations mais reste accessible directement par son nom. C'est ainsi que les méthodes de prototype (Array.prototype.map, etc.) sont définies — elles sont non-énumérables."
     }
   ]
 };

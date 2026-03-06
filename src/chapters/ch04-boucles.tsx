@@ -317,6 +317,66 @@ export const chapter: Chapter = {
       ],
       correct: 2,
       explanation: "✅ Exact ! forEach ne peut pas être stoppé avec break — cela lève une SyntaxError. Pour sortir tôt d'une itération de tableau, utilisez for...of avec break, ou des méthodes comme find() ou some() qui s'arrêtent dès qu'une condition est remplie."
+    },
+    {
+      question: "for...of itère sur quoi, et for...in itère sur quoi ?",
+      sub: "for...of vs for...in",
+      options: [
+        "for...of itère les clés, for...in itère les valeurs",
+        "for...of itère les valeurs, for...in itère les clés énumérables",
+        "Les deux itèrent les valeurs, mais for...in est plus lent",
+        "for...of fonctionne sur les objets, for...in sur les tableaux"
+      ],
+      correct: 1,
+      explanation: "✅ Exact ! for...of itère les valeurs d'un itérable (tableau, string, Set...). for...in itère les clés (propriétés énumérables) d'un objet. C'est pourquoi for...in est adapté aux objets et for...of aux tableaux."
+    },
+    {
+      question: "Quelle est la garantie offerte par do...while par rapport à while ?",
+      sub: "do...while — exécution garantie",
+      options: [
+        "do...while est plus performant que while",
+        "do...while s'exécute au moins une fois, même si la condition est fausse dès le départ",
+        "do...while ne peut pas produire de boucle infinie",
+        "do...while vérifie la condition avant ET après chaque itération"
+      ],
+      correct: 1,
+      explanation: "✅ Parfait ! do...while évalue sa condition APRÈS le bloc. Le bloc est donc exécuté au minimum une fois, peu importe la condition initiale. C'est idéal pour les saisies utilisateur : on demande d'abord, on valide ensuite."
+    },
+    {
+      question: "Comment itérer les clés d'un objet avec une boucle for...of ?",
+      sub: "Itérer les propriétés d'un objet",
+      options: [
+        "for (const cle of monObjet) { } — for...of fonctionne directement sur les objets",
+        "for (const cle in monObjet) { } — for...in est conçu pour les objets",
+        "for (const cle of Object.keys(monObjet)) { } — Object.keys() retourne un tableau itérable",
+        "Les objets ne sont pas itérables, aucune boucle ne fonctionne"
+      ],
+      correct: 2,
+      explanation: "✅ Exact ! Les objets simples ne sont pas directement itérables avec for...of. Object.keys(obj) retourne un tableau des clés, que for...of peut parcourir. Alternatives : Object.values() pour les valeurs, Object.entries() pour les paires [clé, valeur]."
+    },
+    {
+      question: "À quoi sert une boucle étiquetée (labeled loop) avec break ?",
+      sub: "Break étiqueté",
+      options: [
+        "À nommer la boucle pour la documentation",
+        "À sortir d'une boucle externe depuis une boucle interne imbriquée",
+        "À améliorer les performances des boucles imbriquées",
+        "À utiliser break sans condition"
+      ],
+      correct: 1,
+      explanation: "✅ Exact ! break seul sort de la boucle la plus proche. break monLabel sort de la boucle portant ce label, même si elle est externe. C'est utile dans les boucles imbriquées quand on veut interrompre le traitement entier à la première correspondance trouvée."
+    },
+    {
+      question: "Quel est le risque principal d'une boucle while mal écrite ?",
+      sub: "Boucle infinie",
+      options: [
+        "Elle lève automatiquement une RangeError après 1000 itérations",
+        "Elle peut créer une boucle infinie si la condition ne devient jamais fausse, figeant le programme",
+        "Elle est toujours moins performante qu'une boucle for",
+        "Elle ne peut pas utiliser break"
+      ],
+      correct: 1,
+      explanation: "✅ Exact ! Une boucle while dont la condition reste toujours true tourne indéfiniment et bloque le thread JavaScript. JavaScript est mono-thread : une boucle infinie gèle complètement l'onglet du navigateur. Toujours s'assurer qu'une variable de la condition évolue à chaque itération."
     }
   ]
 };

@@ -382,6 +382,66 @@ export const chapter: Chapter = {
       ],
       correct: 1,
       explanation: "✅ Exact ! .find() retourne la valeur du premier élément qui satisfait la condition et s'arrête (court-circuit). .filter() parcourt tout le tableau et retourne un nouveau tableau avec TOUS les éléments satisfaisant la condition."
+    },
+    {
+      question: "Que vaut const [a, b = 10] = [5] après cette déstructuration ?",
+      sub: "Déstructuration de tableau avec valeur par défaut",
+      options: [
+        "a = 5, b = undefined",
+        "a = 5, b = 10",
+        "a = undefined, b = 10",
+        "Une erreur est lancée car le tableau n'a qu'un élément"
+      ],
+      correct: 1,
+      explanation: "✅ Exact ! Lors de la déstructuration de tableau, une valeur par défaut (= 10) est utilisée uniquement si l'élément correspondant est undefined. Ici le tableau [5] a un premier élément (5) mais pas de deuxième, donc b prend la valeur par défaut 10."
+    },
+    {
+      question: "Quelle est la différence entre Object.assign({}, a, b) et { ...a, ...b } ?",
+      sub: "Object.assign vs spread pour fusionner des objets",
+      options: [
+        "Aucune différence, ils sont totalement équivalents",
+        "Object.assign() mute le premier argument, le spread crée toujours un nouvel objet sans mutation",
+        "Le spread est plus lent que Object.assign()",
+        "Object.assign() copie en profondeur, le spread ne copie qu'un niveau"
+      ],
+      correct: 1,
+      explanation: "✅ Correct ! Object.assign(cible, ...) modifie et retourne l'objet cible — si la cible est un objet existant, il est muté. Avec { ...a, ...b }, un nouvel objet est toujours créé. Les deux font une copie superficielle (un seul niveau), mais Object.assign peut être dangereux si on oublie le {} vide comme premier argument."
+    },
+    {
+      question: "Que fait Array.from({ length: 3 }, (_, i) => i * 2) ?",
+      sub: "Array.from() avec une fonction de mapping",
+      options: [
+        "Retourne un tableau vide",
+        "Lance une erreur car { length: 3 } n'est pas un tableau",
+        "Retourne [0, 2, 4]",
+        "Retourne [0, 1, 2]"
+      ],
+      correct: 2,
+      explanation: "✅ Exact ! Array.from() accepte tout objet array-like (avec une propriété length) et un deuxième argument optionnel de mapping. { length: 3 } crée un tableau de 3 éléments undefined, puis le callback (_, i) => i * 2 transforme chaque index : 0*2=0, 1*2=2, 2*2=4. Très utile pour générer des tableaux sans boucle."
+    },
+    {
+      question: "Quelle syntaxe utilise les 'propriétés raccourcies' (shorthand) en JavaScript ?",
+      sub: "Syntaxe raccourcie des propriétés d'objet",
+      options: [
+        "const nom = 'Alice'; const obj = { nom: nom };",
+        "const nom = 'Alice'; const obj = { nom };",
+        "const nom = 'Alice'; const obj = { 'nom' };",
+        "const nom = 'Alice'; const obj = Object.create({ nom });"
+      ],
+      correct: 1,
+      explanation: "✅ Exact ! Depuis ES6, si la variable et la propriété ont le même nom, on peut écrire { nom } au lieu de { nom: nom }. C'est la syntaxe de propriété raccourcie (shorthand property). Elle fonctionne aussi pour les méthodes : { saluer() {} } au lieu de { saluer: function() {} }."
+    },
+    {
+      question: "Quelle est la principale limitation de JSON.stringify() / JSON.parse() pour la sérialisation d'objets ?",
+      sub: "Limitations de JSON.stringify et JSON.parse",
+      options: [
+        "JSON ne supporte pas les tableaux imbriqués",
+        "JSON.stringify() perd les fonctions, undefined, Symbol, et les références circulaires provoquent une erreur",
+        "JSON.parse() ne peut pas reconstruire les objets avec des méthodes",
+        "Les deux réponses B et C sont correctes"
+      ],
+      correct: 3,
+      explanation: "✅ Exact ! JSON a plusieurs limitations importantes : les fonctions et undefined sont silencieusement omises (ou converties en null dans un tableau), les Symbol sont ignorés, et les références circulaires lancent une TypeError. JSON.parse() reconstruit un objet plain sans prototype ni méthodes — une instance de classe devient un objet littéral ordinaire."
     }
   ]
 };

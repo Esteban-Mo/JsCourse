@@ -21,7 +21,7 @@ interface ChapterViewProps {
 export default function ChapterView({ chapterId }: ChapterViewProps) {
   const idx = CHAPTERS.findIndex(ch => ch.id === chapterId);
   const chapter = idx >= 0 ? CHAPTERS[idx] : null;
-  const { markCompleted, answeredQuizzes } = useProgress();
+  const { markCompleted, answeredQuizzes, selectedQuestions } = useProgress();
 
   const prev = idx > 0 ? CHAPTERS[idx - 1] : null;
   const next = idx < CHAPTERS.length - 1 ? CHAPTERS[idx + 1] : null;
@@ -32,13 +32,15 @@ export default function ChapterView({ chapterId }: ChapterViewProps) {
   const [tocItems, setTocItems] = useState<TocItem[]>([]);
   const [activeTocId, setActiveTocId] = useState<string | null>(null);
 
-  // Vrai si tous les quizz du chapitre sont réussis (ou s'il n'y en a pas)
+  // Vrai si toutes les questions sélectionnées sont réussies (ou s'il n'y en a pas)
+  const selection = selectedQuestions[String(chapterId)] ?? [];
   const allQuizzesPassed =
     !chapter?.quiz ||
     chapter.quiz.length === 0 ||
-    chapter.quiz.every((q, i) => {
+    selection.length === 0 ||
+    selection.every(i => {
       const key = `${chapterId}-${i}`;
-      return key in answeredQuizzes && answeredQuizzes[key] === q.correct;
+      return key in answeredQuizzes && answeredQuizzes[key] === chapter!.quiz![i].correct;
     });
 
   // Réinitialise la ref quand on change de chapitre (évite les faux confettis)
@@ -50,7 +52,7 @@ export default function ChapterView({ chapterId }: ChapterViewProps) {
 
   // Confetti : se déclenche uniquement lors du passage false → true
   useEffect(() => {
-    if (allQuizzesPassed && !prevPassedRef.current && chapter?.quiz?.length) {
+    if (allQuizzesPassed && !prevPassedRef.current && chapter?.quiz?.length && selection.length > 0) {
       confetti({
         particleCount: 120,
         spread: 80,
@@ -61,13 +63,18 @@ export default function ChapterView({ chapterId }: ChapterViewProps) {
     prevPassedRef.current = allQuizzesPassed;
   }, [allQuizzesPassed, chapter?.quiz?.length]);
 
-  // Valide le dernier chapitre quand tous les quizz sont réussis
+  // Valide automatiquement le chapitre dès que tous les quizz sélectionnés sont réussis
   useEffect(() => {
-    if (isLast && typeof chapterId === 'number' && allQuizzesPassed) {
+    if (
+      typeof chapterId === 'number' &&
+      chapter?.quiz?.length &&
+      selection.length > 0 &&
+      allQuizzesPassed
+    ) {
       markCompleted(chapterId);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isLast, chapterId, allQuizzesPassed]);
+  }, [allQuizzesPassed, chapterId, selection.length]);
 
   // Calcul du temps de lecture + extraction du sommaire depuis le DOM
   useEffect(() => {

@@ -262,6 +262,61 @@ export const chapter: Chapter = {
       options: ["3", '"12"', '"3"', "NaN"],
       correct: 1,
       explanation: "✅ C'est '12' (string) ! Quand + rencontre un string et un number, il convertit le number en string et les concatène. Pour additionner, utilise Number('2') d'abord : 1 + Number('2') = 3."
+    },
+    {
+      question: "Que retourne typeof function(){} en JavaScript ?",
+      sub: "L'opérateur typeof",
+      options: ['"object"', '"function"', '"callable"', '"undefined"'],
+      correct: 1,
+      explanation: "✅ Exact ! typeof retourne \"function\" pour les fonctions, même si techniquement les fonctions sont des objets en JavaScript. C'est l'une des rares exceptions où typeof ne retourne pas \"object\" pour un type non-primitif."
+    },
+    {
+      question: "Quelle est la différence entre number et bigint en JavaScript ?",
+      sub: "Types numériques",
+      options: [
+        "bigint est un alias de number, il n'y a aucune différence",
+        "number peut représenter des décimaux, bigint uniquement des entiers arbitrairement grands",
+        "bigint est plus rapide que number pour les calculs",
+        "number est limité à 100 chiffres, bigint est illimité"
+      ],
+      correct: 1,
+      explanation: "✅ Exact ! number couvre les entiers ET les décimaux, mais est limité à 2^53-1 pour les entiers exacts. bigint (suffixe n : 9007199254740992n) représente des entiers arbitrairement grands, sans limite de taille, mais sans décimaux."
+    },
+    {
+      question: "Que se passe-t-il si on exécute : const obj = { a: 1 }; obj.a = 2; ?",
+      sub: "const avec les objets",
+      options: [
+        "Une TypeError est levée car obj est déclaré avec const",
+        "obj.a vaut maintenant 2 — const n'empêche pas la mutation des propriétés",
+        "obj.a reste 1 — les propriétés sont figées automatiquement",
+        "Le code ne compile pas"
+      ],
+      correct: 1,
+      explanation: "✅ Correct ! const empêche la réassignation de la variable (obj = {} lancerait une TypeError), mais les propriétés de l'objet restent modifiables. Pour figer un objet, utilise Object.freeze(obj)."
+    },
+    {
+      question: "Deux Symbols créés avec la même description sont-ils égaux ?",
+      sub: "Unicité des Symbols",
+      options: [
+        "Oui, Symbol('id') === Symbol('id') vaut true",
+        "Non, chaque Symbol() est unique — Symbol('id') === Symbol('id') vaut false",
+        "Cela dépend de si la description est une string ou un number",
+        "Oui, mais seulement avec l'égalité lâche =="
+      ],
+      correct: 1,
+      explanation: "✅ Parfait ! Chaque appel à Symbol() crée une valeur unique et immuable, même si la description est identique. Symbol('id') === Symbol('id') retourne false. C'est précisément l'intérêt des Symbols : garantir des identifiants uniques."
+    },
+    {
+      question: "Que vaut : `Résultat : ${2 + 3 * 4}` ?",
+      sub: "Expressions dans les template literals",
+      options: [
+        '"Résultat : 20"',
+        '"Résultat : 14"',
+        '"Résultat : 2+3*4"',
+        "Une SyntaxError"
+      ],
+      correct: 1,
+      explanation: "✅ Exact ! À l'intérieur de ${}, n'importe quelle expression JavaScript est évaluée — y compris avec les règles de précédence. 3 * 4 = 12, puis 2 + 12 = 14. Le template literal produit donc la string \"Résultat : 14\"."
     }
   ]
 };

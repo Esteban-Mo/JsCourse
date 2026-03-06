@@ -241,6 +241,51 @@ export const chapter: Chapter = {
       options: ["14", "4", "20", "7"],
       correct: 0,
       explanation: "✅ Exact ! x commence à 10. x -= 3 donne 7. Puis x *= 2 donne 14. Les opérateurs composés appliquent l'opération et réassignent en une seule étape."
+    },
+    {
+      question: "Que vaut l'expression : 3 + 4 * 2 ?",
+      sub: "Précédence des opérateurs",
+      options: ["14", "10", "11", "24"],
+      correct: 0,
+      explanation: "✅ Exact ! La multiplication a une précédence plus haute que l'addition, comme en mathématiques. 4 * 2 = 8 est évalué en premier, puis 3 + 8 = 11. Attention : 3 + 4 * 2 vaut 11, pas 14 !"
+    },
+    {
+      question: "Quelle est la valeur de : false || 0 || '' || 'bonjour' ?",
+      sub: "Court-circuit avec ||",
+      options: ['"bonjour"', "false", "0", '""'],
+      correct: 0,
+      explanation: "✅ Exact ! || retourne la première valeur truthy trouvée. false, 0 et '' sont tous falsy, donc l'évaluation continue. 'bonjour' est truthy — c'est lui qui est retourné. Si toutes les valeurs étaient falsy, la dernière serait retournée."
+    },
+    {
+      question: "Quelle est la différence entre 0 ?? 'défaut' et 0 || 'défaut' ?",
+      sub: "Nullish coalescing ?? vs OU logique ||",
+      options: [
+        "Les deux retournent 'défaut' car 0 est falsy",
+        "?? retourne 0 car 0 n'est pas null/undefined ; || retourne 'défaut' car 0 est falsy",
+        "Les deux retournent 0",
+        "?? retourne 'défaut' ; || retourne 0"
+      ],
+      correct: 1,
+      explanation: "✅ Parfait ! ?? ne se déclenche que pour null et undefined. 0 n'est ni l'un ni l'autre, donc 0 ?? 'défaut' retourne 0. En revanche, || se déclenche pour toute valeur falsy, donc 0 || 'défaut' retourne 'défaut'."
+    },
+    {
+      question: "Que retourne : true && 'hello' && 42 ?",
+      sub: "Évaluation en court-circuit avec &&",
+      options: ["true", '"hello"', "42", "false"],
+      correct: 2,
+      explanation: "✅ Exact ! && retourne la première valeur falsy trouvée, ou la dernière valeur si toutes sont truthy. true est truthy → on continue. 'hello' est truthy → on continue. 42 est la dernière valeur, on la retourne. Résultat : 42."
+    },
+    {
+      question: "Que fait l'opérateur ||= dans : let a = null; a ||= 'défaut'; ?",
+      sub: "Opérateurs d'assignation logiques",
+      options: [
+        "Cela lève une SyntaxError, ||= n'existe pas",
+        "a vaut toujours null car on ne peut pas assigner à null",
+        "a vaut 'défaut' car null est falsy — ||= assigne uniquement si la valeur actuelle est falsy",
+        "a vaut true"
+      ],
+      correct: 2,
+      explanation: "✅ Exact ! ||= (ES2021) est un raccourci pour a = a || 'défaut'. Si a est falsy (ici null), a prend la valeur 'défaut'. Si a avait été truthy (ex: 'existant'), l'assignation n'aurait pas eu lieu."
     }
   ]
 };

@@ -385,6 +385,66 @@ export const chapter: Chapter = {
       ],
       correct: 2,
       explanation: "✅ Exact ! La syntaxe { source: destination } en déstructuration signifie : prends la propriété 'source' de l'objet et mets-la dans une variable locale nommée 'destination'. Ici, on extrait obj.nom dans une variable prenom."
+    },
+    {
+      question: "Que retourne Symbol('id') === Symbol('id') ?",
+      sub: "Unicité des Symbols",
+      options: [
+        "true — ils ont la même description",
+        "false — chaque Symbol est toujours unique",
+        "Une erreur TypeError",
+        "true uniquement si créés dans le même scope"
+      ],
+      correct: 1,
+      explanation: "✅ Exact ! Chaque appel à Symbol() crée une valeur primitive unique, même si la description est identique. Pour partager un Symbol entre modules, il faut utiliser Symbol.for('id') qui utilise un registre global — là, Symbol.for('id') === Symbol.for('id') retourne true."
+    },
+    {
+      question: "Que se passe-t-il si on utilise ??= sur une variable déjà définie avec une valeur ?",
+      sub: "Assignation nullish ??=",
+      options: [
+        "La variable est réassignée avec la nouvelle valeur",
+        "Une erreur est levée",
+        "L'assignation est ignorée — ??= n'assigne que si la valeur est null ou undefined",
+        "La valeur est fusionnée avec la nouvelle"
+      ],
+      correct: 2,
+      explanation: "✅ Correct ! L'opérateur ??= n'effectue l'assignation que si la variable vaut null ou undefined. Si elle contient déjà une valeur (même 0, false ou ''), l'assignation est ignorée. C'est idéal pour initialiser des valeurs par défaut sans écraser des valeurs existantes valides."
+    },
+    {
+      question: "Quelle est la différence principale entre un Set et un tableau (Array) ?",
+      sub: "Set vs Array",
+      options: [
+        "Un Set est plus rapide pour les accès par index",
+        "Un Set garantit l'unicité des valeurs et n'accepte pas les doublons",
+        "Un Set peut contenir des types mixtes, contrairement aux tableaux",
+        "Un Set conserve l'ordre d'insertion uniquement pour les strings"
+      ],
+      correct: 1,
+      explanation: "✅ Exact ! La propriété fondamentale de Set est l'unicité : ajouter une valeur déjà présente ne fait rien. C'est ce qui le rend parfait pour dédupliquer ([...new Set(arr)]) et pour tester la présence d'un élément en O(1) avec .has(). Les tableaux permettent les doublons et accèdent par index numérique."
+    },
+    {
+      question: "Qu'est-ce que l'optional chaining (?.) retourne quand la valeur à gauche est null ou undefined ?",
+      sub: "Optional chaining",
+      options: [
+        "null",
+        "false",
+        "undefined",
+        "Une TypeError est levée"
+      ],
+      correct: 2,
+      explanation: "✅ Correct ! user?.settings?.theme retourne undefined (et non null ni une erreur) si user ou settings est null/undefined. L'évaluation est court-circuitée et l'expression entière vaut undefined. On combine souvent ?. avec ?? pour fournir une valeur par défaut : user?.settings?.theme ?? 'dark'."
+    },
+    {
+      question: "Dans les modules ES, quelle est la différence entre 'export default' et un 'export nommé' ?",
+      sub: "Modules ES — exports",
+      options: [
+        "export default est exécuté au chargement, les exports nommés non",
+        "Un fichier peut avoir plusieurs export default, mais un seul export nommé",
+        "export default s'importe sans accolades et peut être renommé librement ; un export nommé s'importe avec accolades et le nom original",
+        "Il n'y a aucune différence pratique, c'est juste une convention"
+      ],
+      correct: 2,
+      explanation: "✅ Parfait ! Un module ne peut avoir qu'un seul export default (la valeur principale), importé sans accolades : import monNom from './module'. Les exports nommés peuvent être multiples et s'importent avec accolades et le nom exact : import { carre, PI } from './math'. Le mot-clé 'as' permet de renommer dans les deux cas."
     }
   ]
 };

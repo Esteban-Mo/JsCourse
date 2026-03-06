@@ -209,6 +209,66 @@ export const chapter: Chapter = {
       ],
       correct: 2,
       explanation: "✅ Parfait ! Le constructeur privé rend impossible new MonSingleton() depuis l'extérieur. L'unique façon d'obtenir l'objet est MonSingleton.getInstance(), qui vérifie si une instance existe déjà et la réutilise — garantissant l'unicité."
+    },
+    {
+      question: "Quelle option doit être activée dans tsconfig.json pour utiliser les décorateurs TypeScript legacy ?",
+      sub: "Configuration des décorateurs",
+      options: [
+        "\"decorators\": true",
+        "\"experimentalDecorators\": true",
+        "\"enableDecorators\": true",
+        "\"useDecorators\": true"
+      ],
+      correct: 1,
+      explanation: "✅ Exact ! L'option `\"experimentalDecorators\": true` dans compilerOptions est indispensable pour utiliser les décorateurs TypeScript (syntaxe legacy). Sans elle, le compilateur signale une erreur. Les décorateurs TC39 Stage 3 (standard) ne nécessitent plus cette option dans les versions récentes de TS."
+    },
+    {
+      question: "Qu'est-ce qu'un décorateur factory, et en quoi diffère-t-il d'un décorateur simple ?",
+      sub: "Décorateur factory",
+      options: [
+        "Un décorateur factory crée des classes, un décorateur simple modifie des méthodes",
+        "Un décorateur factory est une fonction qui retourne le décorateur — permettant de lui passer des paramètres",
+        "Un décorateur factory s'applique à plusieurs éléments à la fois",
+        "Les deux sont identiques, factory est juste un alias"
+      ],
+      correct: 1,
+      explanation: "✅ Parfait ! Un décorateur simple est une fonction directement applicable : @MonDecorateur. Un décorateur factory est une fonction qui retourne une fonction de décorateur : @Log('DEBUG'). La factory est appelée en premier avec les arguments, et retourne le vrai décorateur. C'est ce que fait `function Log(prefixe: string) { return function(constructeur) {...}; }`."
+    },
+    {
+      question: "Dans quel ordre s'exécutent les décorateurs appliqués à une classe TypeScript par rapport à ceux appliqués à ses méthodes ?",
+      sub: "Ordre d'exécution global des décorateurs",
+      options: [
+        "Le décorateur de classe s'exécute en premier, avant ceux des méthodes",
+        "Les décorateurs de méthodes s'exécutent en premier, puis le décorateur de classe",
+        "L'ordre dépend de l'ordre de déclaration dans le fichier",
+        "Tous s'exécutent simultanément"
+      ],
+      correct: 1,
+      explanation: "✅ Exact ! TypeScript évalue les décorateurs de l'intérieur vers l'extérieur : d'abord les décorateurs de propriétés et méthodes (dans l'ordre de bas en haut), puis le décorateur de classe en dernier. Cela permet au décorateur de classe d'avoir accès à la classe déjà modifiée par les décorateurs de méthodes."
+    },
+    {
+      question: "Dans le pattern Repository, pourquoi le service métier reçoit-il une `IUserRepository` plutôt qu'une implémentation concrète ?",
+      sub: "Pattern Repository et injection de dépendances",
+      options: [
+        "Pour des raisons de performance",
+        "Pour permettre d'injecter différentes implémentations (DB réelle, mock en test) sans modifier le service",
+        "Parce que TypeScript interdit les dépendances concrètes dans un constructeur",
+        "Pour éviter les imports circulaires"
+      ],
+      correct: 1,
+      explanation: "✅ Parfait ! En dépendant d'une interface plutôt que d'une implémentation concrète (principe D de SOLID), le service peut recevoir InMemoryUserRepository en tests unitaires et PostgresUserRepository en production — sans changer une ligne de code métier. C'est l'essence de l'injection de dépendances."
+    },
+    {
+      question: "Que reçoit en paramètre un décorateur de méthode TypeScript (legacy) ?",
+      sub: "Signature d'un décorateur de méthode",
+      options: [
+        "Uniquement le nom de la méthode",
+        "Le prototype de la classe, le nom de la méthode, et le PropertyDescriptor",
+        "La classe entière et le nom de la méthode",
+        "Seulement le PropertyDescriptor"
+      ],
+      correct: 1,
+      explanation: "✅ Exact ! Un décorateur de méthode legacy reçoit trois arguments : (1) target — le prototype de la classe (ou la classe elle-même pour les méthodes statiques), (2) propertyKey — le nom de la méthode sous forme de string, (3) descriptor — le PropertyDescriptor qui contient la référence à la méthode originale via descriptor.value."
     }
   ]
 };

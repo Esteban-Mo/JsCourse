@@ -6,6 +6,7 @@ interface ProgressState {
   completedChapters: Set<ChapterId>;
   answeredQuizzes: Record<string, number>;
   shuffleSeed: number;
+  selectedQuestions: Record<string, number[]>;
 }
 
 interface ProgressContextValue extends ProgressState {
@@ -16,12 +17,22 @@ interface ProgressContextValue extends ProgressState {
   hasAnsweredQuiz: (chapterId: ChapterId, quizIdx: number) => boolean;
   resetProgress: () => void;
   resetChapterQuizzes: (chapterId: ChapterId, xpToRemove: number) => void;
+  initQuestionSelection: (chapterId: ChapterId, totalCount: number, pickCount?: number) => void;
 }
 
 const ProgressContext = createContext<ProgressContextValue | null>(null);
 
 function newSeed(): number {
   return Math.floor(Math.random() * 2 ** 31);
+}
+
+function pickRandom(total: number, count: number): number[] {
+  const indices = Array.from({ length: total }, (_, i) => i);
+  for (let i = indices.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [indices[i], indices[j]] = [indices[j], indices[i]];
+  }
+  return indices.slice(0, Math.min(count, total)).sort((a, b) => a - b);
 }
 
 function loadState(): ProgressState {
@@ -31,9 +42,10 @@ function loadState(): ProgressState {
     const quizzes = JSON.parse(localStorage.getItem('jscours_quizzes') ?? '{}') as Record<string, number>;
     const storedSeed = parseInt(localStorage.getItem('jscours_seed') ?? '0', 10);
     const shuffleSeed = storedSeed || newSeed();
-    return { xp, completedChapters: new Set(completed), answeredQuizzes: quizzes, shuffleSeed };
+    const selectedQuestions = JSON.parse(localStorage.getItem('jscours_selections') ?? '{}') as Record<string, number[]>;
+    return { xp, completedChapters: new Set(completed), answeredQuizzes: quizzes, shuffleSeed, selectedQuestions };
   } catch {
-    return { xp: 0, completedChapters: new Set(), answeredQuizzes: {}, shuffleSeed: newSeed() };
+    return { xp: 0, completedChapters: new Set(), answeredQuizzes: {}, shuffleSeed: newSeed(), selectedQuestions: {} };
   }
 }
 
@@ -45,6 +57,7 @@ export function ProgressProvider({ children }: { children: ReactNode }) {
     localStorage.setItem('jscours_completed', JSON.stringify([...state.completedChapters]));
     localStorage.setItem('jscours_quizzes', JSON.stringify(state.answeredQuizzes));
     localStorage.setItem('jscours_seed', String(state.shuffleSeed));
+    localStorage.setItem('jscours_selections', JSON.stringify(state.selectedQuestions));
   }, [state]);
 
   const addXP = (amount: number) => {
@@ -71,7 +84,18 @@ export function ProgressProvider({ children }: { children: ReactNode }) {
   const hasAnsweredQuiz = (chapterId: ChapterId, quizIdx: number) =>
     `${chapterId}-${quizIdx}` in state.answeredQuizzes;
 
+  const initQuestionSelection = (chapterId: ChapterId, totalCount: number, pickCount = 3) => {
+    const key = String(chapterId);
+    setState(s => {
+      const existing = s.selectedQuestions[key];
+      if (existing && existing.length === Math.min(pickCount, totalCount)) return s;
+      const selected = pickRandom(totalCount, pickCount);
+      return { ...s, selectedQuestions: { ...s.selectedQuestions, [key]: selected } };
+    });
+  };
+
   const resetChapterQuizzes = (chapterId: ChapterId, xpToRemove: number) => {
+    const key = String(chapterId);
     setState(s => {
       const newAnswered = { ...s.answeredQuizzes };
       Object.keys(newAnswered)
@@ -79,23 +103,29 @@ export function ProgressProvider({ children }: { children: ReactNode }) {
         .forEach(k => delete newAnswered[k]);
       const newCompleted = new Set(s.completedChapters);
       newCompleted.delete(chapterId);
+      const newSelections = { ...s.selectedQuestions };
+      delete newSelections[key];
       return {
         ...s,
         xp: Math.max(0, s.xp - xpToRemove),
         answeredQuizzes: newAnswered,
         completedChapters: newCompleted,
+        selectedQuestions: newSelections,
       };
     });
   };
 
   const resetProgress = () => {
-    // Vider le localStorage immédiatement pour éviter toute race condition
     localStorage.removeItem('jscours_xp');
     localStorage.removeItem('jscours_completed');
     localStorage.removeItem('jscours_quizzes');
+    localStorage.removeItem('jscours_selections');
+    localStorage.removeItem('jscours_exam_sel');
+    localStorage.removeItem('jscours_exam_ans');
+    localStorage.removeItem('jscours_exam_seed');
     const seed = newSeed();
     localStorage.setItem('jscours_seed', String(seed));
-    setState({ xp: 0, completedChapters: new Set(), answeredQuizzes: {}, shuffleSeed: seed });
+    setState({ xp: 0, completedChapters: new Set(), answeredQuizzes: {}, shuffleSeed: seed, selectedQuestions: {} });
   };
 
   return (
@@ -108,6 +138,7 @@ export function ProgressProvider({ children }: { children: ReactNode }) {
       hasAnsweredQuiz,
       resetProgress,
       resetChapterQuizzes,
+      initQuestionSelection,
     }}>
       {children}
     </ProgressContext.Provider>

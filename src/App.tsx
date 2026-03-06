@@ -2,6 +2,7 @@ import { BrowserRouter, Routes, Route, Navigate, useParams } from 'react-router-
 import { ProgressProvider } from './context/ProgressContext';
 import Layout from './components/Layout/Layout';
 import ChapterView from './components/Chapter/ChapterView';
+import ExamView from './pages/ExamView';
 
 function ChapterViewRoute() {
   const { id } = useParams<{ id: string }>();
@@ -15,6 +16,7 @@ function AppRouter() {
       <Routes>
         <Route path="/" element={<ChapterView chapterId="home" />} />
         <Route path="/chapter/:id" element={<ChapterViewRoute />} />
+        <Route path="/exam" element={<ExamView />} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </Layout>

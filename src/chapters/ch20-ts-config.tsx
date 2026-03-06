@@ -206,6 +206,66 @@ export const chapter: Chapter = {
       ],
       correct: 1,
       explanation: "✅ Parfait ! esbuild est écrit en Go et strip simplement les annotations TypeScript sans les vérifier — ce qui le rend 10 à 100x plus rapide que tsc. En dev, la vitesse prime. Pour la rigueur, tsc --noEmit tourne en parallèle ou avant le build."
+    },
+    {
+      question: "Quelle est la différence entre l'option `target` et l'option `lib` dans tsconfig.json ?",
+      sub: "Options target et lib",
+      options: [
+        "target et lib contrôlent tous les deux la version de JavaScript générée",
+        "target définit la version JS compilée en sortie ; lib déclare quelles APIs sont disponibles dans l'environnement d'exécution",
+        "lib définit la version JS compilée ; target déclare les APIs disponibles",
+        "target s'applique aux modules, lib aux classes"
+      ],
+      correct: 1,
+      explanation: "✅ Exact ! `target: 'ES2022'` dit à tsc de générer du JavaScript compatible ES2022 (syntaxe des classes, optional chaining natif, etc.). `lib: ['ES2022', 'DOM']` dit à TypeScript quelles APIs existent à l'exécution — sans 'DOM', il ne connaît pas window, fetch ou document. Les deux peuvent être combinés indépendamment."
+    },
+    {
+      question: "À quoi servent les options `baseUrl` et `paths` dans tsconfig.json ?",
+      sub: "Alias de chemins d'importation",
+      options: [
+        "baseUrl définit le dossier de sortie, paths les fichiers à inclure",
+        "Elles permettent de créer des alias d'importation pour éviter les chemins relatifs profonds comme '../../../../utils'",
+        "baseUrl définit l'URL du serveur de développement",
+        "paths remplace node_modules pour la résolution des modules"
+      ],
+      correct: 1,
+      explanation: "✅ Parfait ! Avec `baseUrl: '.'` et `paths: { '@/*': ['./src/*'] }`, tu peux écrire `import { utils } from '@/utils'` au lieu de `import { utils } from '../../../utils'`. Cela rend les imports plus lisibles et résistants aux restructurations de dossiers. Attention : le bundler (Vite, webpack) doit aussi être configuré pour résoudre ces alias."
+    },
+    {
+      question: "Que fait l'option `strict: true` dans tsconfig.json ?",
+      sub: "Mode strict TypeScript",
+      options: [
+        "Active uniquement strictNullChecks",
+        "Active un ensemble de vérifications rigoureuses incluant noImplicitAny, strictNullChecks, strictFunctionTypes et d'autres",
+        "Interdit l'utilisation du type any dans tout le projet",
+        "Force tous les fichiers à utiliser 'use strict' JavaScript"
+      ],
+      correct: 1,
+      explanation: "✅ Exact ! `strict: true` est un raccourci qui active plusieurs flags en même temps : noImplicitAny, strictNullChecks, strictFunctionTypes, strictBindCallApply, strictPropertyInitialization, noImplicitThis et alwaysStrict. C'est la configuration recommandée car elle élimine les catégories entières de bugs les plus courants."
+    },
+    {
+      question: "Quel est le rôle d'un fichier `.d.ts` (fichier de déclaration) ?",
+      sub: "Fichiers de déclaration TypeScript",
+      options: [
+        "Contenir du code TypeScript compilé prêt pour le navigateur",
+        "Décrire les types d'un module JavaScript sans contenir d'implémentation — permettre à TS de typer des libs JS existantes",
+        "Remplacer le fichier tsconfig.json pour la configuration",
+        "Définir les variables d'environnement accessibles dans le projet"
+      ],
+      correct: 1,
+      explanation: "✅ Parfait ! Les fichiers .d.ts sont des 'stubs de types' purs : ils décrivent l'interface publique d'un module (fonctions, classes, constantes) sans aucune implémentation. C'est ce que contiennent les packages @types/xxx (lodash, node, react) — ils permettent à TypeScript de valider ton code contre des bibliothèques écrites en JavaScript."
+    },
+    {
+      question: "Pourquoi utiliser `skipLibCheck: true` dans tsconfig.json et dans quel contexte est-ce recommandé ?",
+      sub: "Option skipLibCheck",
+      options: [
+        "Pour ignorer les erreurs dans ton propre code — utile en développement rapide",
+        "Pour ignorer les erreurs de types dans les fichiers .d.ts des dépendances — utile quand des libs tierces ont des types incompatibles",
+        "Pour désactiver la vérification de lib complètement et accélérer la compilation",
+        "Pour sauter la génération des fichiers .d.ts en sortie"
+      ],
+      correct: 1,
+      explanation: "✅ Exact ! skipLibCheck: true dit à tsc d'ignorer les erreurs dans tous les fichiers .d.ts — notamment ceux de node_modules. C'est utile quand deux dépendances ont des versions de types incompatibles entre elles, ce qui est fréquent. Cela n'affecte pas la vérification de ton propre code. La plupart des projets modernes l'activent pour éviter des blocages sur des erreurs hors de leur contrôle."
     }
   ]
 };

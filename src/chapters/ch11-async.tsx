@@ -315,6 +315,66 @@ export const chapter: Chapter = {
       ],
       correct: 1,
       explanation: "✅ Exact ! forEach ne comprend pas les Promises retournées par les fonctions async — il les lance mais n'attend pas leur résolution. Le code après forEach continue immédiatement. Utilisez for...of pour des awaits séquentiels, ou Promise.all + .map() pour du parallèle."
+    },
+    {
+      question: "Une fonction déclarée avec le mot-clé 'async' retourne toujours quel type ?",
+      sub: "async function — valeur retournée",
+      options: [
+        "La valeur brute spécifiée dans le return",
+        "undefined si aucun return n'est présent, sinon la valeur",
+        "Toujours une Promise, même si le return contient une valeur synchrone",
+        "Un objet AsyncIterator"
+      ],
+      correct: 2,
+      explanation: "✅ Exact ! Une fonction async enveloppe toujours sa valeur de retour dans une Promise résolue. Si vous écrivez 'return 42', l'appelant reçoit une Promise qui se résout avec 42. C'est pourquoi chargerUserAsync(1) instanceof Promise vaut true, même si la fonction retourne une string."
+    },
+    {
+      question: "Quelle différence entre Promise.race et Promise.any ?",
+      sub: "Promise.race vs Promise.any",
+      options: [
+        "Promise.race attend toutes les Promises, Promise.any s'arrête à la première",
+        "Promise.race se résout ou rejette avec la PREMIÈRE Promise terminée (succès ou échec) ; Promise.any attend la première qui RÉUSSIT",
+        "Il n'y a aucune différence — ce sont des alias",
+        "Promise.race fonctionne uniquement avec 2 Promises, Promise.any avec n'importe quel nombre"
+      ],
+      correct: 1,
+      explanation: "✅ Parfait ! Promise.race retourne la première Promise terminée, qu'elle réussisse ou échoue — utile pour implémenter un timeout. Promise.any ignore les échecs et retourne la première qui réussit ; elle rejette seulement si TOUTES échouent (AggregateError). Choisissez selon si un échec précoce doit vous intéresser."
+    },
+    {
+      question: "Comment annuler une requête fetch en cours avec AbortController ?",
+      sub: "AbortController",
+      options: [
+        "En appelant fetch.cancel() sur l'objet retourné",
+        "En passant { signal: controller.signal } à fetch puis en appelant controller.abort()",
+        "En rejetant la Promise manuellement avec Promise.reject()",
+        "Il est impossible d'annuler un fetch une fois lancé"
+      ],
+      correct: 1,
+      explanation: "✅ Exact ! AbortController fonctionne en deux temps : on crée un controller, on passe son signal à fetch via { signal: controller.signal }, puis on appelle controller.abort() pour annuler. Fetch lèvera alors une AbortError (err.name === 'AbortError') que l'on peut attraper dans un catch. C'est indispensable pour nettoyer les requêtes dans useEffect de React."
+    },
+    {
+      question: "Qu'est-ce qu'une microtâche (microtask) par rapport à une macrotâche (macrotask) dans la boucle d'événements ?",
+      sub: "Microtâches vs macrotâches",
+      options: [
+        "Les microtâches sont exécutées après toutes les macrotâches en attente",
+        "Les microtâches (résolution de Promise) sont exécutées avant la prochaine macrotâche (setTimeout, setInterval)",
+        "setTimeout crée des microtâches, Promise.then crée des macrotâches",
+        "Il n'y a pas de différence d'ordre entre microtâches et macrotâches"
+      ],
+      correct: 1,
+      explanation: "✅ Exact ! La file des microtâches (Promise .then, queueMicrotask) est vidée entièrement avant que la boucle d'événements ne traite la prochaine macrotâche (setTimeout, setInterval, I/O). Cela explique pourquoi Promise.resolve().then(() => ...) s'exécute avant setTimeout(() => ..., 0), même si le timeout est à 0ms."
+    },
+    {
+      question: "Comment exécuter immédiatement une fonction async sans la nommer (async IIFE) ?",
+      sub: "Async IIFE",
+      options: [
+        "async { await fetch('/api'); }()",
+        "(async () => { await fetch('/api'); })()",
+        "await (() => fetch('/api'))()",
+        "new async function() { await fetch('/api'); }()"
+      ],
+      correct: 1,
+      explanation: "✅ Correct ! Un async IIFE (Immediately Invoked Function Expression) suit la syntaxe (async () => { /* code */ })(). Les parenthèses autour de la fonction la transforment en expression, puis () l'invoque immédiatement. C'est utile pour utiliser await au niveau module top-level dans les environnements qui ne le supportent pas nativement."
     }
   ]
 };

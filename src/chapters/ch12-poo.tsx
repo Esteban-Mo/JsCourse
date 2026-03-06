@@ -365,6 +365,66 @@ export const chapter: Chapter = {
       ],
       correct: 1,
       explanation: "✅ Exact ! L'Observer découple le producteur (sujet/émetteur) des consommateurs (observateurs/abonnés). Le sujet émet des événements sans savoir qui écoute. C'est le fondement de React, Redux, Vue, et Node.js EventEmitter."
+    },
+    {
+      question: "Que se passe-t-il si on tente d'accéder à un champ privé (#monChamp) depuis l'extérieur de la classe ?",
+      sub: "Champs privés avec #",
+      options: [
+        "La valeur retournée est undefined",
+        "Une SyntaxError est levée — les champs privés sont inaccessibles à l'extérieur de la classe",
+        "La valeur est retournée mais en lecture seule",
+        "Une TypeError est levée uniquement en mode strict"
+      ],
+      correct: 1,
+      explanation: "✅ Exact ! Les champs privés avec # (introduits en ES2022) sont enforced par le moteur JavaScript : accéder à instance.#champ depuis l'extérieur de la classe lève une SyntaxError au moment de l'analyse du code, pas seulement à l'exécution. C'est une vraie encapsulation, contrairement aux conventions de nommage comme _champ."
+    },
+    {
+      question: "Quelle méthode permet de vérifier le prototype d'un objet en JavaScript ?",
+      sub: "Inspection de la chaîne prototype",
+      options: [
+        "obj.prototype",
+        "obj.__proto__ uniquement",
+        "Object.getPrototypeOf(obj)",
+        "obj.constructor.prototype"
+      ],
+      correct: 2,
+      explanation: "✅ Correct ! Object.getPrototypeOf(obj) est la méthode officielle et recommandée pour inspecter le prototype d'un objet. __proto__ fonctionne dans la plupart des environnements mais est déprécié. obj.prototype est une propriété des fonctions/classes (pas des instances). Object.getPrototypeOf(chien) === Animal.prototype vaut true pour une instance de Animal."
+    },
+    {
+      question: "Pourquoi faut-il appeler super() avant d'utiliser 'this' dans le constructeur d'une classe enfant ?",
+      sub: "super() et initialisation de this",
+      options: [
+        "Pour des raisons de style uniquement — ce n'est pas obligatoire",
+        "Parce que super() est responsable de créer et d'initialiser l'objet 'this' dans le contexte de la classe parent",
+        "Pour copier les méthodes de la classe parent dans l'instance",
+        "Pour éviter les fuites mémoire lors de l'héritage"
+      ],
+      correct: 1,
+      explanation: "✅ Exact ! Dans une classe qui étend une autre, 'this' n'existe pas avant l'appel à super(). C'est la classe parent qui est responsable d'allouer et d'initialiser l'objet. Tenter d'utiliser 'this' avant super() lève une ReferenceError : 'Must call super constructor in derived class before accessing this'."
+    },
+    {
+      question: "Qu'est-ce qu'un mixin en JavaScript orienté objet ?",
+      sub: "Pattern mixin",
+      options: [
+        "Une classe abstraite qui ne peut pas être instanciée directement",
+        "Une fonction qui prend une classe en paramètre et retourne une nouvelle classe enrichie de comportements supplémentaires",
+        "Un décorateur qui modifie les propriétés d'un objet existant",
+        "Un type d'héritage multiple natif introduit en ES6"
+      ],
+      correct: 1,
+      explanation: "✅ Parfait ! Un mixin est une fonction de la forme (SuperClass) => class extends SuperClass { /* méthodes */ }. On l'applique en wrappant la classe : class User extends Serializable(Loggable(Animal)). C'est la façon de simuler l'héritage multiple en JS, car une classe ne peut étendre qu'une seule autre classe directement."
+    },
+    {
+      question: "Si on modifie Animal.prototype.respirer après avoir créé une instance, l'instance voit-elle le changement ?",
+      sub: "Dynamisme de la chaîne prototype",
+      options: [
+        "Non — l'instance a une copie figée du prototype au moment de sa création",
+        "Oui — l'instance consulte le prototype dynamiquement à chaque accès à la méthode",
+        "Seulement si l'instance est créée avec Object.create()",
+        "Seulement en mode non-strict"
+      ],
+      correct: 1,
+      explanation: "✅ Exact ! La chaîne de prototypes est consultée dynamiquement à chaque accès à une propriété. Si vous modifiez Animal.prototype.respirer après avoir créé des instances, toutes les instances existantes verront immédiatement la nouvelle version. C'est le dynamisme du système de prototypes de JavaScript — une propriété directe sur l'instance aurait la priorité sur le prototype."
     }
   ]
 };

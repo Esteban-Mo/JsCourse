@@ -341,6 +341,66 @@ export const chapter: Chapter = {
       ],
       correct: 1,
       explanation: "✅ Exact ! V8 crée des 'hidden classes' (shapes) pour tracker la structure des objets. Quand tous vos objets ont la même structure (mêmes propriétés dans le même ordre), ils partagent une hidden class et V8 peut compiler du code machine ultra-optimisé. Des structures instables (propriétés conditionnelles) cassent cette optimisation."
+    },
+    {
+      question: "Quel est le principal rôle de requestAnimationFrame par rapport à setTimeout pour les animations ?",
+      sub: "Animations et rendu",
+      options: [
+        "requestAnimationFrame est plus rapide car il s'exécute toutes les 1ms",
+        "requestAnimationFrame synchronise les mises à jour visuelles avec le cycle de rafraîchissement du navigateur (60fps), évitant les frames perdues et économisant la batterie",
+        "requestAnimationFrame fonctionne dans un Web Worker, contrairement à setTimeout",
+        "requestAnimationFrame est simplement un alias de setTimeout avec 16ms de délai"
+      ],
+      correct: 1,
+      explanation: "✅ Exact ! requestAnimationFrame planifie le callback juste avant que le navigateur repeigne l'écran. Il s'adapte automatiquement au taux de rafraîchissement (60Hz, 120Hz...), se met en pause quand l'onglet est caché, et aligne les mises à jour sur le pipeline de rendu — évitant les calculs inutiles que setTimeout ne peut pas faire."
+    },
+    {
+      question: "Quelle limitation fondamentale s'applique aux Web Workers ?",
+      sub: "Web Workers",
+      options: [
+        "Les Web Workers ne peuvent pas exécuter de code JavaScript complexe",
+        "Les Web Workers n'ont pas accès au DOM, à window, ni aux variables globales du thread principal",
+        "Les Web Workers sont limités à 1 seconde d'exécution",
+        "Les Web Workers ne peuvent pas utiliser fetch ou XMLHttpRequest"
+      ],
+      correct: 1,
+      explanation: "✅ Exact ! Les Web Workers s'exécutent dans un thread séparé totalement isolé. Ils n'ont aucun accès au DOM, à window, à document, ni aux variables du thread principal. La communication se fait uniquement via postMessage(). En revanche, ils peuvent utiliser fetch, XMLHttpRequest, IndexedDB et les Web APIs non-DOM."
+    },
+    {
+      question: "Qu'est-ce que le 'layout thrashing' et comment l'éviter ?",
+      sub: "Optimisation du rendu DOM",
+      options: [
+        "Un crash du navigateur causé par trop d'éléments DOM",
+        "L'alternance lecture/écriture DOM dans une boucle qui force le navigateur à recalculer le layout à chaque itération",
+        "L'utilisation excessive de flexbox ou grid qui ralentit le rendu",
+        "Un débordement de la pile d'appels causé par des manipulations DOM récursives"
+      ],
+      correct: 1,
+      explanation: "✅ Correct ! Le layout thrashing survient quand on lit une propriété géométrique (offsetHeight, getBoundingClientRect) puis qu'on modifie le DOM, puis qu'on relit, forçant un reflow synchrone à chaque cycle. La solution : grouper toutes les lectures d'abord, puis toutes les écritures. requestAnimationFrame ou des librairies comme FastDOM automatisent ce batching."
+    },
+    {
+      question: "Quel est l'avantage des event listeners passifs (passive: true) ?",
+      sub: "Event listeners et performance",
+      options: [
+        "Les listeners passifs s'exécutent dans un Web Worker",
+        "Les listeners passifs informent le navigateur qu'on n'appellera pas preventDefault(), lui permettant d'optimiser le défilement sans attendre le handler",
+        "Les listeners passifs sont automatiquement supprimés après le premier déclenchement",
+        "Les listeners passifs consomment moins de mémoire que les listeners normaux"
+      ],
+      correct: 1,
+      explanation: "✅ Exact ! Sans { passive: true }, le navigateur doit attendre que le handler scroll ou touchstart se termine avant de défiler — car il ne sait pas si preventDefault() sera appelé. Avec { passive: true }, il sait qu'on ne bloquera jamais le défilement natif et peut optimiser immédiatement. Gain typique : 60fps stable sur mobile contre saccades."
+    },
+    {
+      question: "Quelle structure de données faut-il préférer à Map pour éviter les fuites mémoire dans un cache d'objets ?",
+      sub: "Gestion mémoire avancée",
+      options: [
+        "Set, car il ne stocke que des clés sans valeurs associées",
+        "Un tableau ordinaire avec indexOf pour la recherche",
+        "WeakMap, car ses clés sont détenues faiblement et libérées automatiquement par le GC quand l'objet-clé n'a plus d'autres références",
+        "Object.create(null) pour éviter la chaîne de prototypes"
+      ],
+      correct: 2,
+      explanation: "✅ Parfait ! Map maintient des références fortes vers ses clés — un objet en clé de Map ne sera jamais collecté par le GC tant que le Map existe, causant une fuite mémoire si le cache grossit indéfiniment. WeakMap détient ses clés faiblement : quand l'objet-clé n'est plus référencé ailleurs, le GC peut le collecter et WeakMap libère automatiquement l'entrée associée."
     }
   ]
 };

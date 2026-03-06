@@ -246,6 +246,78 @@ export const chapter: Chapter = {
       ],
       correct: 1,
       explanation: "✅ Parfait ! <T> déclare un paramètre de type générique. Quand tu appelles identity('hello'), TypeScript infère T = string. Les génériques permettent d'écrire du code réutilisable et type-safe."
+    },
+    {
+      question: "Comment fonctionne le type narrowing avec typeof en TypeScript ?",
+      sub: "Type narrowing",
+      options: [
+        "typeof supprime les annotations de type dans le bloc conditionnel",
+        "TypeScript réduit (narrow) le type d'une variable dans une branche conditionnelle selon la vérification typeof — dans if (typeof x === 'string'), x est garanti string",
+        "typeof fonctionne uniquement avec les types primitifs déclarés avec let",
+        "typeof est une fonction TypeScript qui retourne le type au moment de la compilation"
+      ],
+      correct: 1,
+      explanation: "✅ Exact ! Le type narrowing est la capacité de TypeScript à réduire un type union à un type plus précis dans un bloc conditionnel. Après if (typeof u === 'string'), TypeScript sait que u est string dans ce bloc et autorise les méthodes string. D'autres gardes de type : instanceof (pour les classes), les discriminated unions (prop === 'valeur'), et les user-defined type guards (x is string)."
+    },
+    {
+      question: "Qu'est-ce qu'une union discriminante (discriminated union) en TypeScript ?",
+      sub: "Unions discriminantes",
+      options: [
+        "Une union de types primitifs comme string | number | boolean",
+        "Un type union dont chaque membre possède une propriété littérale commune (discriminant) permettant à TypeScript de distinguer les membres dans un switch ou un if",
+        "Une union de types qui exclut null et undefined",
+        "Une union sur laquelle on ne peut pas appliquer le type narrowing"
+      ],
+      correct: 1,
+      explanation: "✅ Parfait ! Par exemple : type Forme = { type: 'cercle'; rayon: number } | { type: 'carre'; côté: number }. La propriété type est le discriminant. Dans un switch (forme.type) { case 'cercle': ... }, TypeScript sait exactement que forme.rayon existe et que forme.côté n'existe pas. C'est le pattern le plus sûr pour modéliser des états mutuellement exclusifs."
+    },
+    {
+      question: "Que fait le modificateur readonly sur une propriété d'interface ?",
+      sub: "Modificateur readonly",
+      options: [
+        "Il empêche la propriété d'être transmise comme argument de fonction",
+        "Il rend la propriété invisible aux opérations d'énumération (Object.keys)",
+        "Il interdit toute réassignation de la propriété après l'initialisation de l'objet — TypeScript signale une erreur à la compilation si on tente de modifier la valeur",
+        "Il est équivalent à Object.freeze() sur cette propriété à l'exécution"
+      ],
+      correct: 2,
+      explanation: "✅ Correct ! readonly est une contrainte TypeScript à la compilation uniquement — il n'existe plus dans le JavaScript compilé. Une propriété readonly peut être définie lors de la création de l'objet ou dans le constructeur, mais toute réassignation ultérieure déclenche une erreur TypeScript. Attention : readonly est superficiel comme const — les objets imbriqués restent mutables."
+    },
+    {
+      question: "Quelle est la différence entre Partial<T> et Required<T> en TypeScript ?",
+      sub: "Types utilitaires",
+      options: [
+        "Partial<T> supprime toutes les propriétés, Required<T> en ajoute de nouvelles",
+        "Partial<T> rend toutes les propriétés optionnelles (?), Required<T> rend toutes les propriétés obligatoires (supprime ?)",
+        "Partial<T> accepte null pour chaque propriété, Required<T> accepte uniquement des valeurs définies",
+        "Ce sont des alias l'un de l'autre pour des raisons de lisibilité"
+      ],
+      correct: 1,
+      explanation: "✅ Exact ! Partial<T> transforme toutes les propriétés de T en propriétés optionnelles — utile pour les objets de mise à jour partielle (PATCH). Required<T> fait l'inverse : toutes les propriétés deviennent obligatoires. Ces types utilitaires sont construits avec des types mappés : Partial<T> = { [K in keyof T]?: T[K] }, Required<T> = { [K in keyof T]-?: T[K] }."
+    },
+    {
+      question: "Que fait l'assertion as const sur un tableau ou un objet littéral ?",
+      sub: "as const",
+      options: [
+        "Elle exécute Object.freeze() sur l'objet à l'exécution",
+        "Elle indique à TypeScript d'inférer les types les plus étroits possibles (types littéraux) et de traiter toutes les propriétés comme readonly — ['nord', 'sud'] devient readonly ['nord', 'sud'] au lieu de string[]",
+        "Elle convertit le type vers any pour désactiver les vérifications",
+        "Elle est équivalente à déclarer la variable avec const au lieu de let"
+      ],
+      correct: 1,
+      explanation: "✅ Parfait ! Sans as const, TypeScript infère ['nord', 'sud'] comme string[]. Avec as const, il infère readonly ['nord', 'sud'] — les éléments ont les types littéraux 'nord' et 'sud', pas string. De même, { couleur: 'rouge' } as const donne { readonly couleur: 'rouge' } au lieu de { couleur: string }. Très utile pour créer des constantes qui servent de types (DIRECTIONS[number] devient 'nord' | 'sud')."
+    },
+    {
+      question: "Quelle différence y a-t-il entre unknown et any pour gérer des données d'origine inconnue ?",
+      sub: "unknown vs any",
+      options: [
+        "unknown est simplement le nouveau nom de any depuis TypeScript 4.0",
+        "any est plus sûr car TypeScript vérifie automatiquement les opérations dessus",
+        "unknown oblige à vérifier le type (narrowing) avant toute utilisation, tandis que any désactive complètement la vérification — unknown est un any sûr",
+        "unknown ne peut stocker que des types primitifs, any accepte n'importe quelle valeur"
+      ],
+      correct: 2,
+      explanation: "✅ Exact ! Avec any, TypeScript ne vérifie rien — n.toFixed(2) sur un any typé string compilera sans erreur mais crashera à l'exécution. Avec unknown, TypeScript exige qu'on réduise le type avant utilisation : if (typeof u === 'string') { u.toUpperCase(); }. Pour les réponses d'API, JSON.parse() et données utilisateur, préfère toujours unknown — il force à écrire les vérifications qui rendent le code sûr."
     }
   ]
 };
