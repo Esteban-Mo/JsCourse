@@ -49,7 +49,7 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
   return (
     <aside className={`sidebar${isOpen ? ' open' : ''}`} aria-label="Navigation du cours">
       <div className="sidebar-header">
-        <div className="logo" onClick={handleLogoClick}>JS<span>.</span>cours</div>
+        <div className="logo" onClick={handleLogoClick}>JS<span>.</span>procours</div>
         <div className="progress-bar-wrap">
           <div className="progress-bar-fill" style={{ width: `${progress}%` }} />
         </div>
