@@ -3,32 +3,32 @@ import { useProgress } from '../context/ProgressContext';
 import type { Chapter } from '../types';
 
 const MODULES = [
-  { emoji: '📦', title: 'Les Bases', desc: 'Variables, types, portée, hoisting, coercition', level: 'Débutant', chap: '2 chapitres', id: 1 },
-  { emoji: '🔄', title: 'Contrôle de flux', desc: 'Conditions et boucles', level: 'Débutant', chap: '2 chapitres', id: 3 },
-  { emoji: '🧩', title: 'Fonctions', desc: 'Déclarations, flèches, closures', level: 'Intermédiaire', chap: '1 chapitre', id: 5 },
-  { emoji: '🗂️', title: 'Tableaux & Objets', desc: 'Structures de données', level: 'Intermédiaire', chap: '1 chapitre', id: 6 },
-  { emoji: '🧰', title: 'Méthodes de tableaux', desc: 'map, filter, reduce, find, flat, sort et chaînage', level: 'Intermédiaire', chap: '1 chapitre', id: 21 },
-  { emoji: '🔤', title: 'Manipulation de chaînes', desc: 'slice, split, replace, template literals, tagged templates', level: 'Intermédiaire', chap: '1 chapitre', id: 22 },
-  { emoji: '📅', title: 'Dates & Intl', desc: 'Date API, formatage localisé, temps relatif', level: 'Intermédiaire', chap: '1 chapitre', id: 23 },
-  { emoji: '🌐', title: 'DOM & Events', desc: 'querySelector, événements, formulaires, localStorage', level: 'Intermédiaire', chap: '1 chapitre', id: 7 },
-  { emoji: '🔍', title: 'Expressions Régulières', desc: 'Patterns, groupes, validation, extraction', level: 'Intermédiaire', chap: '1 chapitre', id: 8 },
-  { emoji: '⚡', title: 'ES6+ Moderne', desc: 'Déstructuration, spread, optional chaining', level: 'Avancé', chap: '1 chapitre', id: 9 },
-  { emoji: '🚨', title: 'Gestion des Erreurs', desc: 'try/catch, erreurs custom, re-throw', level: 'Avancé', chap: '1 chapitre', id: 10 },
-  { emoji: '🔮', title: 'Async JS', desc: 'Promises, async/await, fetch', level: 'Avancé', chap: '1 chapitre', id: 11 },
-  { emoji: '📤', title: 'Modules ES', desc: 'import/export, dynamic import, tree-shaking', level: 'Avancé', chap: '1 chapitre', id: 24 },
-  { emoji: '🧪', title: 'Tests avec Jest', desc: 'jest.fn(), jest.mock(), fetch, mocks, coverage', level: 'Avancé', chap: '1 chapitre', id: 25 },
-  { emoji: '🌍', title: 'Web APIs modernes', desc: 'IntersectionObserver, Clipboard, Performance API', level: 'Avancé', chap: '1 chapitre', id: 26 },
-  { emoji: '🏗️', title: 'POO & Patterns', desc: 'Classes, prototypes, design patterns', level: 'Expert', chap: '1 chapitre', id: 12 },
-  { emoji: '🌀', title: 'Générateurs & Itérateurs', desc: 'function*, yield, protocole itérable, async generators', level: 'Expert', chap: '1 chapitre', id: 27 },
-  { emoji: '🚀', title: 'Performance & V8', desc: 'Event loop, optimisations, mémoire', level: 'Expert+', chap: '1 chapitre', id: 13 },
-  { emoji: '🧮', title: 'Algorithmes fondamentaux', desc: 'Big O, tri, récursion, mémoïsation, structures de données', level: 'Expert+', chap: '1 chapitre', id: 28 },
-  { emoji: '🔬', title: 'Métaprogrammation', desc: 'Proxy, Reflect, Symbols, WeakMap', level: 'Maître', chap: '1 chapitre', id: 14 },
-  { emoji: '🧠', title: 'Patterns Avancés', desc: 'Functional JS, monades, currying', level: 'Maître', chap: '1 chapitre', id: 15 },
-  { emoji: '🔷', title: 'TypeScript — Bases', desc: 'Types, interfaces, unions, génériques', level: 'Bonus TS', chap: '1 chapitre', id: 16 },
-  { emoji: '💎', title: 'TypeScript — Avancé', desc: 'Utility types, mapped types, infer', level: 'Bonus TS', chap: '1 chapitre', id: 17 },
-  { emoji: '🏛️', title: 'TypeScript — POO', desc: 'Classes abstraites, type guards, discriminated unions', level: 'Bonus TS', chap: '1 chapitre', id: 18 },
-  { emoji: '🎨', title: 'TypeScript — Décorateurs', desc: 'Décorateurs, Singleton, Repository, Factory', level: 'Bonus TS', chap: '1 chapitre', id: 19 },
-  { emoji: '⚙️', title: 'TypeScript — Config', desc: 'tsconfig, strict mode, Vite, ESLint, .d.ts', level: 'Bonus TS', chap: '1 chapitre', id: 20 },
+  { emoji: '📦', title: 'Les Bases', desc: 'Variables, types, portée, hoisting, coercition', level: 'Débutant', stars: '★☆☆☆☆', id: 1 },
+  { emoji: '🔄', title: 'Contrôle de flux', desc: 'Conditions et boucles', level: 'Débutant', stars: '★★☆☆☆', id: 3 },
+  { emoji: '🧩', title: 'Fonctions', desc: 'Déclarations, flèches, closures', level: 'Intermédiaire', stars: '★★★☆☆', id: 5 },
+  { emoji: '🗂️', title: 'Tableaux & Objets', desc: 'Structures de données', level: 'Intermédiaire', stars: '★★★☆☆', id: 6 },
+  { emoji: '🧰', title: 'Méthodes de tableaux', desc: 'map, filter, reduce, find, flat, sort et chaînage', level: 'Intermédiaire', stars: '★★★☆☆', id: 21 },
+  { emoji: '🔤', title: 'Manipulation de chaînes', desc: 'slice, split, replace, template literals, tagged templates', level: 'Intermédiaire', stars: '★★★☆☆', id: 22 },
+  { emoji: '📅', title: 'Dates & Intl', desc: 'Date API, formatage localisé, temps relatif', level: 'Intermédiaire', stars: '★★★☆☆', id: 23 },
+  { emoji: '🌐', title: 'DOM & Events', desc: 'querySelector, événements, formulaires, localStorage', level: 'Intermédiaire', stars: '★★★☆☆', id: 7 },
+  { emoji: '🔍', title: 'Expressions Régulières', desc: 'Patterns, groupes, validation, extraction', level: 'Intermédiaire', stars: '★★★☆☆', id: 8 },
+  { emoji: '⚡', title: 'ES6+ Moderne', desc: 'Déstructuration, spread, optional chaining', level: 'Avancé', stars: '★★★★☆', id: 9 },
+  { emoji: '🚨', title: 'Gestion des Erreurs', desc: 'try/catch, erreurs custom, re-throw', level: 'Avancé', stars: '★★★★☆', id: 10 },
+  { emoji: '🔮', title: 'Async JS', desc: 'Promises, async/await, fetch', level: 'Avancé', stars: '★★★★☆', id: 11 },
+  { emoji: '📤', title: 'Modules ES', desc: 'import/export, dynamic import, tree-shaking', level: 'Avancé', stars: '★★★★☆', id: 24 },
+  { emoji: '🧪', title: 'Tests avec Jest', desc: 'jest.fn(), jest.mock(), fetch, mocks, coverage', level: 'Avancé', stars: '★★★★☆', id: 25 },
+  { emoji: '🌍', title: 'Web APIs modernes', desc: 'IntersectionObserver, Clipboard, Performance API', level: 'Avancé', stars: '★★★★☆', id: 26 },
+  { emoji: '🏗️', title: 'POO & Patterns', desc: 'Classes, prototypes, design patterns', level: 'Expert', stars: '★★★★★', id: 12 },
+  { emoji: '🌀', title: 'Générateurs & Itérateurs', desc: 'function*, yield, protocole itérable, async generators', level: 'Expert', stars: '★★★★★', id: 27 },
+  { emoji: '🚀', title: 'Performance & V8', desc: 'Event loop, optimisations, mémoire', level: 'Expert+', stars: '★★★★★', id: 13 },
+  { emoji: '🧮', title: 'Algorithmes fondamentaux', desc: 'Big O, tri, récursion, mémoïsation, structures de données', level: 'Expert+', stars: '★★★★★', id: 28 },
+  { emoji: '🔬', title: 'Métaprogrammation', desc: 'Proxy, Reflect, Symbols, WeakMap', level: 'Maître', stars: '★★★★★', id: 14 },
+  { emoji: '🧠', title: 'Patterns Avancés', desc: 'Functional JS, monades, currying', level: 'Maître', stars: '★★★★★', id: 15 },
+  { emoji: '🔷', title: 'TypeScript — Bases', desc: 'Types, interfaces, unions, génériques', level: 'Bonus TS', stars: '★★★☆☆', id: 16 },
+  { emoji: '💎', title: 'TypeScript — Avancé', desc: 'Utility types, mapped types, infer', level: 'Bonus TS', stars: '★★★★★', id: 17 },
+  { emoji: '🏛️', title: 'TypeScript — POO', desc: 'Classes abstraites, type guards, discriminated unions', level: 'Bonus TS', stars: '★★★★☆', id: 18 },
+  { emoji: '🎨', title: 'TypeScript — Décorateurs', desc: 'Décorateurs, Singleton, Repository, Factory', level: 'Bonus TS', stars: '★★★★★', id: 19 },
+  { emoji: '⚙️', title: 'TypeScript — Config', desc: 'tsconfig, strict mode, Vite, ESLint, .d.ts', level: 'Bonus TS', stars: '★★★☆☆', id: 20 },
 ];
 
 function levelCls(level: string): string {
@@ -57,7 +57,7 @@ function Home() {
               <span className="module-emoji">{m.emoji}</span>
               <div className="module-title">{m.title}</div>
               <p className="module-desc">{m.desc}</p>
-              <div className="module-chapters">{m.level} · {m.chap}</div>
+              <div className="module-chapters">{m.level} · {m.stars}</div>
             </Link>
           );
         })}
