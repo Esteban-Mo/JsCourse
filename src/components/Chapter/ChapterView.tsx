@@ -1,11 +1,18 @@
-import { useEffect } from 'react';
+import { useEffect, useRef, useState } from 'react';
+import { createPortal } from 'react-dom';
 import { Link } from 'react-router-dom';
+import confetti from 'canvas-confetti';
 import { CHAPTERS } from '../../chapters';
 import QuizSection from '../Quiz/QuizSection';
 import NavButtons from './NavButtons';
 import CompletionScreen from './CompletionScreen';
 import type { ChapterId } from '../../types';
 import { useProgress } from '../../context/ProgressContext';
+
+interface TocItem {
+  id: string;
+  text: string;
+}
 
 interface ChapterViewProps {
   chapterId: ChapterId;
@@ -20,7 +27,12 @@ export default function ChapterView({ chapterId }: ChapterViewProps) {
   const next = idx < CHAPTERS.length - 1 ? CHAPTERS[idx + 1] : null;
   const isLast = idx === CHAPTERS.length - 1;
 
-  // Vrai si toutes les questions du chapitre ont une réponse correcte (ou s'il n'y en a pas)
+  const contentRef = useRef<HTMLDivElement>(null);
+  const [readingTime, setReadingTime] = useState<number | null>(null);
+  const [tocItems, setTocItems] = useState<TocItem[]>([]);
+  const [activeTocId, setActiveTocId] = useState<string | null>(null);
+
+  // Vrai si tous les quizz du chapitre sont réussis (ou s'il n'y en a pas)
   const allQuizzesPassed =
     !chapter?.quiz ||
     chapter.quiz.length === 0 ||
@@ -29,13 +41,78 @@ export default function ChapterView({ chapterId }: ChapterViewProps) {
       return key in answeredQuizzes && answeredQuizzes[key] === q.correct;
     });
 
-  // Valider le dernier chapitre uniquement si tous les quizz sont réussis
+  // Réinitialise la ref quand on change de chapitre (évite les faux confettis)
+  const prevPassedRef = useRef(allQuizzesPassed);
+  useEffect(() => {
+    prevPassedRef.current = allQuizzesPassed;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [chapterId]);
+
+  // Confetti : se déclenche uniquement lors du passage false → true
+  useEffect(() => {
+    if (allQuizzesPassed && !prevPassedRef.current && chapter?.quiz?.length) {
+      confetti({
+        particleCount: 120,
+        spread: 80,
+        origin: { y: 0.7 },
+        colors: ['#f7c948', '#7c6af7', '#4af7a8'],
+      });
+    }
+    prevPassedRef.current = allQuizzesPassed;
+  }, [allQuizzesPassed, chapter?.quiz?.length]);
+
+  // Valide le dernier chapitre quand tous les quizz sont réussis
   useEffect(() => {
     if (isLast && typeof chapterId === 'number' && allQuizzesPassed) {
       markCompleted(chapterId);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isLast, chapterId, allQuizzesPassed]);
+
+  // Calcul du temps de lecture + extraction du sommaire depuis le DOM
+  useEffect(() => {
+    setReadingTime(null);
+    setTocItems([]);
+    setActiveTocId(null);
+
+    const raf = requestAnimationFrame(() => {
+      if (!contentRef.current) return;
+
+      // Temps de lecture (~200 mots/min)
+      const text = contentRef.current.innerText ?? '';
+      const words = text.trim().split(/\s+/).filter(Boolean).length;
+      setReadingTime(Math.max(1, Math.ceil(words / 200)));
+
+      // Sommaire depuis les <h2>
+      const headings = Array.from(contentRef.current.querySelectorAll('h2'));
+      const items = headings.map((h, i) => {
+        const id = `toc-section-${i}`;
+        h.id = id;
+        return { id, text: h.textContent?.trim() ?? '' };
+      }).filter(item => item.text);
+      setTocItems(items);
+    });
+
+    return () => cancelAnimationFrame(raf);
+  }, [chapterId]);
+
+  // Highlight de la section active dans le TOC
+  useEffect(() => {
+    if (tocItems.length === 0) return;
+    const observer = new IntersectionObserver(
+      (entries) => {
+        for (const entry of entries) {
+          if (entry.isIntersecting) setActiveTocId(entry.target.id);
+        }
+      },
+      { rootMargin: '-10% 0px -80% 0px' }
+    );
+    tocItems.forEach(item => {
+      const el = document.getElementById(item.id);
+      if (el) observer.observe(el);
+    });
+    return () => observer.disconnect();
+  }, [tocItems]);
 
   if (!chapter) {
     return (
@@ -54,7 +131,12 @@ export default function ChapterView({ chapterId }: ChapterViewProps) {
 
   return (
     <div className="chapter-view">
-      <ChapterComponent />
+      {readingTime !== null && (
+        <div className="reading-time-chip">⏱ ~{readingTime} min de lecture</div>
+      )}
+      <div ref={contentRef}>
+        <ChapterComponent />
+      </div>
       {chapter.quiz && chapter.quiz.length > 0 && (
         <QuizSection questions={chapter.quiz} chapterId={chapterId} />
       )}
@@ -67,6 +149,27 @@ export default function ChapterView({ chapterId }: ChapterViewProps) {
           currentChapterId={chapterId}
           canComplete={allQuizzesPassed}
         />
+      )}
+
+      {/* Table des matières sticky (portail, uniquement sur grands écrans) */}
+      {tocItems.length > 1 && createPortal(
+        <nav className="toc-panel" aria-label="Sommaire du chapitre">
+          <div className="toc-title">Sommaire</div>
+          {tocItems.map(item => (
+            <a
+              key={item.id}
+              href={`#${item.id}`}
+              className={`toc-item${activeTocId === item.id ? ' active' : ''}`}
+              onClick={(e) => {
+                e.preventDefault();
+                document.getElementById(item.id)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+              }}
+            >
+              {item.text}
+            </a>
+          ))}
+        </nav>,
+        document.body
       )}
     </div>
   );

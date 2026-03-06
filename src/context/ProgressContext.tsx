@@ -5,6 +5,7 @@ interface ProgressState {
   xp: number;
   completedChapters: Set<ChapterId>;
   answeredQuizzes: Record<string, number>;
+  shuffleSeed: number;
 }
 
 interface ProgressContextValue extends ProgressState {
@@ -18,14 +19,20 @@ interface ProgressContextValue extends ProgressState {
 
 const ProgressContext = createContext<ProgressContextValue | null>(null);
 
+function newSeed(): number {
+  return Math.floor(Math.random() * 2 ** 31);
+}
+
 function loadState(): ProgressState {
   try {
     const xp = parseInt(localStorage.getItem('jscours_xp') ?? '0', 10) || 0;
     const completed = JSON.parse(localStorage.getItem('jscours_completed') ?? '[]') as ChapterId[];
     const quizzes = JSON.parse(localStorage.getItem('jscours_quizzes') ?? '{}') as Record<string, number>;
-    return { xp, completedChapters: new Set(completed), answeredQuizzes: quizzes };
+    const storedSeed = parseInt(localStorage.getItem('jscours_seed') ?? '0', 10);
+    const shuffleSeed = storedSeed || newSeed();
+    return { xp, completedChapters: new Set(completed), answeredQuizzes: quizzes, shuffleSeed };
   } catch {
-    return { xp: 0, completedChapters: new Set(), answeredQuizzes: {} };
+    return { xp: 0, completedChapters: new Set(), answeredQuizzes: {}, shuffleSeed: newSeed() };
   }
 }
 
@@ -36,6 +43,7 @@ export function ProgressProvider({ children }: { children: ReactNode }) {
     localStorage.setItem('jscours_xp', String(state.xp));
     localStorage.setItem('jscours_completed', JSON.stringify([...state.completedChapters]));
     localStorage.setItem('jscours_quizzes', JSON.stringify(state.answeredQuizzes));
+    localStorage.setItem('jscours_seed', String(state.shuffleSeed));
   }, [state]);
 
   const addXP = (amount: number) => {
@@ -63,7 +71,13 @@ export function ProgressProvider({ children }: { children: ReactNode }) {
     `${chapterId}-${quizIdx}` in state.answeredQuizzes;
 
   const resetProgress = () => {
-    setState({ xp: 0, completedChapters: new Set(), answeredQuizzes: {} });
+    // Vider le localStorage immédiatement pour éviter toute race condition
+    localStorage.removeItem('jscours_xp');
+    localStorage.removeItem('jscours_completed');
+    localStorage.removeItem('jscours_quizzes');
+    const seed = newSeed();
+    localStorage.setItem('jscours_seed', String(seed));
+    setState({ xp: 0, completedChapters: new Set(), answeredQuizzes: {}, shuffleSeed: seed });
   };
 
   return (

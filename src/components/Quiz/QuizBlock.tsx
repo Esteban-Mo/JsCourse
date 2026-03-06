@@ -1,6 +1,7 @@
-import { useState } from 'react';
+import { useMemo } from 'react';
 import type { QuizQuestion, ChapterId } from '../../types';
 import { useProgress } from '../../context/ProgressContext';
+import { seededShuffle } from '../../utils/shuffle';
 
 interface QuizBlockProps {
   question: QuizQuestion;
@@ -11,19 +12,27 @@ interface QuizBlockProps {
 const LETTERS = ['A', 'B', 'C', 'D'];
 
 export default function QuizBlock({ question, chapterId, quizIdx }: QuizBlockProps) {
-  const { recordQuizAnswer, addXP, answeredQuizzes } = useProgress();
+  const { recordQuizAnswer, addXP, answeredQuizzes, shuffleSeed } = useProgress();
   const key = `${chapterId}-${quizIdx}`;
-  const savedAnswer = key in answeredQuizzes ? answeredQuizzes[key] : null;
 
-  const [selected, setSelected] = useState<number | null>(savedAnswer);
+  // Dériver l'état directement du contexte → se remet à null automatiquement après resetProgress
+  const selected = key in answeredQuizzes ? answeredQuizzes[key] : null;
 
-  const handleSelect = (idx: number) => {
+  // Mélange déterministe : stable pendant la session, change à chaque reset
+  const shuffledOptions = useMemo(() => {
+    const numId = typeof chapterId === 'number' ? chapterId : 0;
+    const seed = shuffleSeed ^ (numId * 1000 + quizIdx);
+    return seededShuffle(
+      question.options.map((opt, i) => ({ opt, originalIdx: i })),
+      seed
+    );
+  }, [shuffleSeed, chapterId, quizIdx, question.options]);
+
+  const handleSelect = (shuffledIdx: number) => {
     if (selected !== null) return;
-    setSelected(idx);
-    recordQuizAnswer(chapterId, quizIdx, idx);
-    if (idx === question.correct) {
-      addXP(25);
-    }
+    const originalIdx = shuffledOptions[shuffledIdx].originalIdx;
+    recordQuizAnswer(chapterId, quizIdx, originalIdx);
+    if (originalIdx === question.correct) addXP(25);
   };
 
   return (
@@ -31,16 +40,16 @@ export default function QuizBlock({ question, chapterId, quizIdx }: QuizBlockPro
       <div className="quiz-question">{question.question}</div>
       <div className="quiz-sub">{question.sub}</div>
       <div className="quiz-options">
-        {question.options.map((opt, idx) => {
+        {shuffledOptions.map(({ opt, originalIdx }, shuffledIdx) => {
           let cls = 'quiz-option';
           if (selected !== null) {
             cls += ' disabled';
-            if (idx === question.correct) cls += ' correct';
-            else if (idx === selected) cls += ' wrong';
+            if (originalIdx === question.correct) cls += ' correct';
+            else if (originalIdx === selected) cls += ' wrong';
           }
           return (
-            <button key={idx} className={cls} onClick={() => handleSelect(idx)}>
-              <span className="option-letter">{LETTERS[idx]}</span>
+            <button key={originalIdx} className={cls} onClick={() => handleSelect(shuffledIdx)}>
+              <span className="option-letter">{LETTERS[shuffledIdx]}</span>
               {opt}
             </button>
           );

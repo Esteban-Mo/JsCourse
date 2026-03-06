@@ -66,6 +66,14 @@ export default function Layout({ children }: LayoutProps) {
         <TopBar label={topLabel} onMenuToggle={() => setSidebarOpen(v => !v)} />
         <div className="content">{children}</div>
       </div>
+      <a
+        href="https://www.linkedin.com/in/esteban-mortier/"
+        target="_blank"
+        rel="noopener noreferrer"
+        className="author-credit"
+      >
+        Esteban Mortier
+      </a>
     </>
   );
 }

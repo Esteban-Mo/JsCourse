@@ -1,4 +1,5 @@
 import { useProgress } from '../../context/ProgressContext';
+import { getRank } from '../../utils/xp';
 
 interface TopBarProps {
   label: string;
@@ -7,11 +8,15 @@ interface TopBarProps {
 
 export default function TopBar({ label, onMenuToggle }: TopBarProps) {
   const { xp } = useProgress();
+  const rank = getRank(xp);
   return (
     <div className="top-bar">
       <button className="menu-toggle" onClick={onMenuToggle} aria-label="Ouvrir le menu">☰</button>
       <span className="chapter-label">{label}</span>
-      <div className="xp-badge">⚡ {xp} XP</div>
+      <div className="xp-area">
+        <span className="rank-label" style={{ color: rank.color }}>{rank.label}</span>
+        <div className="xp-badge">⚡ {xp} XP</div>
+      </div>
     </div>
   );
 }
