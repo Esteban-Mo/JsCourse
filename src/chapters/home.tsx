@@ -16,7 +16,7 @@ const MODULES = [
   { emoji: '🚨', title: 'Gestion des Erreurs', desc: 'try/catch, erreurs custom, re-throw', level: 'Avancé', chap: '1 chapitre', id: 10 },
   { emoji: '🔮', title: 'Async JS', desc: 'Promises, async/await, fetch', level: 'Avancé', chap: '1 chapitre', id: 11 },
   { emoji: '📤', title: 'Modules ES', desc: 'import/export, dynamic import, tree-shaking', level: 'Avancé', chap: '1 chapitre', id: 24 },
-  { emoji: '🧪', title: 'Tests avec Vitest', desc: 'describe, it, expect, mocks, tests async', level: 'Avancé', chap: '1 chapitre', id: 25 },
+  { emoji: '🧪', title: 'Tests avec Jest', desc: 'jest.fn(), jest.mock(), fetch, mocks, coverage', level: 'Avancé', chap: '1 chapitre', id: 25 },
   { emoji: '🌍', title: 'Web APIs modernes', desc: 'IntersectionObserver, Clipboard, Performance API', level: 'Avancé', chap: '1 chapitre', id: 26 },
   { emoji: '🏗️', title: 'POO & Patterns', desc: 'Classes, prototypes, design patterns', level: 'Expert', chap: '1 chapitre', id: 12 },
   { emoji: '🌀', title: 'Générateurs & Itérateurs', desc: 'function*, yield, protocole itérable, async generators', level: 'Expert', chap: '1 chapitre', id: 27 },

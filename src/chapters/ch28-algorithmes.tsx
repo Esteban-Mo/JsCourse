@@ -8,17 +8,55 @@ function Ch28() {
       <div className="chapter-intro-card">
         <div className="level-badge level-expert">🧮</div>
         <div className="chapter-meta">
-          <div className="difficulty-stars">⭐⭐⭐⭐⭐</div>
+          <div className="difficulty-stars">★★★★★</div>
           <h3>Algorithmes fondamentaux</h3>
           <p>Complexité, recherche, tri, récursion, mémoïsation et structures de données</p>
         </div>
       </div>
 
-      <h2>Notation Big O — complexité</h2>
+      <h2>Qu'est-ce qu'un algorithme, et pourquoi s'en préoccuper ?</h2>
       <p>
-        La <strong>notation Big O</strong> décrit comment le temps d'exécution (ou la mémoire)
-        évolue en fonction de la taille de l'entrée <em>n</em>.
-        C'est l'outil pour comparer l'efficacité de deux algorithmes.
+        Un <strong>algorithme</strong> est une recette précise pour résoudre un problème : une suite
+        finie d'étapes qui prend une entrée, fait des transformations bien définies, et produit une
+        sortie. Comme une recette de cuisine, deux algorithmes peuvent produire le même résultat, mais
+        l'un peut prendre 10 minutes et l'autre 3 heures pour la même quantité d'ingrédients.
+      </p>
+      <p>
+        Les développeurs JavaScript ont souvent l'impression qu'ils n'ont pas besoin d'algorithmes —
+        "les méthodes natives font le travail". C'est vrai pour la plupart des cas. Mais comprendre
+        les algorithmes te donne trois avantages concrets : d'abord, tu peux choisir la <em>bonne</em>{' '}
+        méthode native (un <code>Set</code> est O(1) pour la recherche, un tableau est O(n) — ça change
+        tout sur 100 000 éléments). Ensuite, tu sais quand le code devient un goulot d'étranglement
+        avant que les utilisateurs ne s'en plaignent. Enfin, les algorithmes sont omniprésents dans
+        les entretiens techniques — les connaître t'ouvre des portes.
+      </p>
+      <InfoBox type="tip">
+        Les algorithmes de tri et de recherche sont la fondation. Maîtrise-les et le reste devient
+        naturel. Les concepts clés : Big O, récursion, mémoïsation, Stack, Queue, sliding window — tu
+        les retrouveras dans des contextes inattendus (React, parseurs, systèmes de routing, etc.).
+      </InfoBox>
+
+      <h2>Notation Big O — combien de temps ça prend vraiment ?</h2>
+      <p>
+        La <strong>notation Big O</strong> décrit <em>comment le temps d'exécution évolue</em> quand
+        la taille de l'entrée augmente. Ce n'est pas une mesure du temps absolu (en millisecondes),
+        mais du <em>taux de croissance</em>. Sur un ordinateur lent, O(1) sera plus lent qu'O(n) pour
+        n=3 — mais dès que n devient grand, c'est O(n) qui explose.
+      </p>
+      <p>
+        Pense à un restaurant. <strong>O(1)</strong> c'est lire le menu pour trouver le prix d'un plat —
+        peu importe que le menu ait 10 ou 1000 plats, tu regardes directement à la bonne page.{' '}
+        <strong>O(n)</strong> c'est demander à chaque serveur si le plat du jour est disponible —
+        plus il y a de serveurs, plus ça prend de temps. <strong>O(n²)</strong> c'est comparer
+        chaque plat avec chaque autre plat pour trouver les doublons — 10 plats = 100 comparaisons,
+        100 plats = 10 000 comparaisons.
+      </p>
+      <p>
+        L'ordre de grandeur de complexité, du plus rapide au plus lent :{' '}
+        <strong>O(1) &lt; O(log n) &lt; O(n) &lt; O(n log n) &lt; O(n²)</strong>.
+        En JavaScript, les méthodes natives ont leurs complexités : <code>array[i]</code> est O(1),{' '}
+        <code>Array.includes()</code> est O(n), <code>Set.has()</code> est O(1),{' '}
+        <code>Array.sort()</code> est O(n log n), et une double boucle imbriquée est O(n²).
       </p>
       <CodeBlock language="javascript">{`// O(1) — Temps constant : toujours la même durée
 function premierÉlément(arr) {
@@ -55,6 +93,12 @@ function rechercherBinaire(arr, cible) {
   }
   return -1;
 }`}</CodeBlock>
+      <p>
+        La recherche binaire illustre parfaitement O(log n) : à chaque étape, elle <em>coupe</em> l'espace
+        de recherche en deux. Sur 1 million d'éléments, elle trouve la cible en au plus 20 étapes
+        (car 2²⁰ = 1 048 576). Une recherche linéaire O(n) prendrait jusqu'à 1 000 000 d'étapes.
+        Le prérequis : le tableau doit être <strong>trié</strong>.
+      </p>
 
       <div className="table-container">
         <table>
@@ -71,8 +115,34 @@ function rechercherBinaire(arr, cible) {
         </table>
       </div>
 
-      <h2>Algorithmes de tri</h2>
+      <h2>Algorithmes de tri — stratégies et compromis</h2>
+      <p>
+        Trier une liste est l'un des problèmes les plus étudiés en informatique. Il n'existe pas d'algorithme
+        de tri "parfait" — chaque approche a ses forces et ses faiblesses selon la taille des données,
+        si elles sont déjà partiellement triées, et la mémoire disponible. Comprendre comment ils fonctionnent
+        t'aide à choisir le bon outil et à comprendre pourquoi <code>Array.sort()</code> se comporte
+        parfois de façon surprenante.
+      </p>
+      <p>
+        Voici les stratégies de chaque algorithme classique. Le <strong>Bubble sort</strong> compare
+        deux voisins adjacents et les échange si nécessaire — à chaque passage complet, le plus grand
+        élément "remonte" comme une bulle à la surface. Simple à comprendre, catastrophique en
+        performance (O(n²)). Le <strong>Selection sort</strong> cherche le minimum dans le tableau,
+        le place en premier, puis recommence sur le reste — comme trier une main de cartes en prenant
+        toujours la plus petite. Le <strong>Insertion sort</strong> construit le tableau trié un élément
+        à la fois, en insérant chaque nouvel élément à sa bonne place — exactement comme on trie
+        les cartes qu'on reçoit une par une dans sa main.
+      </p>
+      <p>
+        Le <strong>Merge sort</strong> adopte une stratégie "diviser pour régner" : il coupe le tableau
+        en deux moitiés, trie chaque moitié récursivement, puis les fusionne. Comme trier deux piles
+        de cartes déjà triées et les mélanger en ordre. Garanti O(n log n). Le <strong>Quick sort</strong>
+        choisit un "pivot" et partitionne le tableau en éléments plus petits et plus grands que le pivot,
+        puis trie chaque partition récursivement. En moyenne O(n log n), mais O(n²) si le pivot est
+        mal choisi.
+      </p>
       <CodeBlock language="javascript">{`// Bubble sort — O(n²) — éducatif, pas utilisé en prod
+// Stratégie : comparer les voisins, les échanger si besoin — les grands "remontent"
 function bubbleSort(arr) {
   const a = [...arr];
   for (let i = 0; i < a.length - 1; i++) {
@@ -83,7 +153,38 @@ function bubbleSort(arr) {
   return a;
 }
 
+// Selection sort — O(n²)
+// Stratégie : trouver le minimum, le placer en tête, recommencer sur le reste
+function selectionSort(arr) {
+  const a = [...arr];
+  for (let i = 0; i < a.length - 1; i++) {
+    let minIdx = i;
+    for (let j = i + 1; j < a.length; j++) {
+      if (a[j] < a[minIdx]) minIdx = j;
+    }
+    if (minIdx !== i) [a[i], a[minIdx]] = [a[minIdx], a[i]];
+  }
+  return a;
+}
+
+// Insertion sort — O(n²) moyen, O(n) si déjà trié
+// Stratégie : trier les cartes une par une, insérer chaque carte à sa place
+function insertionSort(arr) {
+  const a = [...arr];
+  for (let i = 1; i < a.length; i++) {
+    const clé = a[i];
+    let j = i - 1;
+    while (j >= 0 && a[j] > clé) {
+      a[j + 1] = a[j];
+      j--;
+    }
+    a[j + 1] = clé;
+  }
+  return a;
+}
+
 // Merge sort — O(n log n) — diviser pour régner
+// Stratégie : couper en deux, trier chaque moitié, fusionner
 function mergeSort(arr) {
   if (arr.length <= 1) return arr;
   const mid = Math.floor(arr.length / 2);
@@ -105,6 +206,7 @@ function fusionner(g, d) {
 mergeSort([5, 3, 8, 1, 9, 2]); // [1, 2, 3, 5, 8, 9]
 
 // Quick sort — O(n log n) moy, O(n²) pire cas
+// Stratégie : choisir un pivot, tout ce qui est < pivot à gauche, > à droite
 function quickSort(arr) {
   if (arr.length <= 1) return arr;
   const pivot = arr[Math.floor(arr.length / 2)];
@@ -114,22 +216,80 @@ function quickSort(arr) {
     ...quickSort(arr.filter(x => x > pivot)),
   ];
 }`}</CodeBlock>
+      <InfoBox type="tip">
+        <code>Array.prototype.sort()</code> dans le moteur V8 de Node.js utilise <strong>TimSort</strong> —
+        un algorithme hybride qui combine Merge sort et Insertion sort. Il est O(n log n) en moyenne,
+        mais se dégrade en O(n) quand le tableau est déjà (presque) trié. C'est pourquoi le tri natif
+        de JavaScript est excellemment optimisé pour les cas réels — tu n'as presque jamais besoin
+        d'implémenter ton propre algorithme de tri en production.
+      </InfoBox>
 
-      <h2>Récursion et mémoïsation</h2>
+      <h2>Récursion — quand une fonction s'appelle elle-même</h2>
+      <p>
+        La <strong>récursion</strong> est une technique où une fonction se résout en s'appelant elle-même
+        sur un problème plus petit. Pense aux poupées russes : pour ouvrir la grande poupée, tu ouvres
+        la suivante, qui contient la suivante, jusqu'à atteindre la plus petite qui ne s'ouvre pas —
+        c'est le <strong>cas de base</strong>.
+      </p>
+      <p>
+        Chaque appel récursif crée un nouveau <strong>frame dans la call stack</strong> — une case
+        mémoire qui retient les variables locales et l'endroit où reprendre l'exécution quand l'appel
+        se termine. Si tu visualises <code>factorielle(4)</code> mentalement : <code>4 * factorielle(3)</code>,
+        qui est <code>3 * factorielle(2)</code>, qui est <code>2 * factorielle(1)</code>, qui retourne
+        1. La pile commence alors à "se dérouler" de bas en haut : 1, puis 2*1=2, puis 3*2=6, puis 4*6=24.
+      </p>
+      <p>
+        Le <strong>cas de base</strong> est la condition d'arrêt — sans lui, la fonction s'appelle
+        infiniment et la stack overflow (la pile déborde). C'est l'équivalent du fond des poupées
+        russes : sans la petite poupée solide, tu ouvres les poupées pour toujours.
+      </p>
       <CodeBlock language="javascript">{`// Récursion — une fonction qui s'appelle elle-même
 function factorielle(n) {
-  if (n <= 1) return 1;          // cas de base
-  return n * factorielle(n - 1); // appel récursif
+  if (n <= 1) return 1;          // cas de base — la petite poupée solide
+  return n * factorielle(n - 1); // appel récursif — ouvrir la poupée suivante
 }
-factorielle(5); // 120
+factorielle(5); // 5 * 4 * 3 * 2 * 1 = 120
+
+// Visualisation de la call stack pour factorielle(4) :
+// → factorielle(4) attend factorielle(3)
+//   → factorielle(3) attend factorielle(2)
+//     → factorielle(2) attend factorielle(1)
+//       → factorielle(1) retourne 1     ← cas de base atteint
+//     ← factorielle(2) retourne 2*1 = 2
+//   ← factorielle(3) retourne 3*2 = 6
+// ← factorielle(4) retourne 4*6 = 24
 
 // ❌ Fibonacci naïf — O(2^n), TRÈS lent
 function fibLent(n) {
   if (n <= 1) return n;
   return fibLent(n - 1) + fibLent(n - 2);
-}
+  // fibLent(5) calcule fibLent(3) DEUX FOIS
+  // fibLent(30) fait ~2^30 = 1 milliard d'appels !
+}`}</CodeBlock>
+      <InfoBox type="warning">
+        La call stack JavaScript a une limite — typiquement autour de <strong>10 000 à 15 000 appels
+        récursifs</strong> avant d'obtenir une <code>RangeError: Maximum call stack size exceeded</code>.
+        Pour les grandes profondeurs, préfère une version itérative (avec une boucle et une pile explicite)
+        ou la <em>tail call optimization</em> (optimisation des appels terminaux, supportée en mode strict
+        dans certains environnements).
+      </InfoBox>
 
-// ✅ Mémoïsation — mettre en cache les résultats calculés
+      <h2>Mémoïsation — échanger de la mémoire contre de la vitesse</h2>
+      <p>
+        La <strong>mémoïsation</strong> est une technique d'optimisation qui consiste à sauvegarder
+        les résultats des appels de fonction déjà calculés, pour ne pas les recalculer si on demande
+        à nouveau le même résultat. C'est le principe du carnet de notes : la première fois que tu
+        calcules 47 × 83, tu notes le résultat. La prochaine fois qu'on te pose la même question,
+        tu regardes dans ton carnet au lieu de recalculer.
+      </p>
+      <p>
+        Le problème de Fibonacci illustre parfaitement pourquoi c'est puissant. <code>fibLent(5)</code>
+        calcule <code>fib(3)</code> deux fois, <code>fib(2)</code> trois fois, <code>fib(1)</code>
+        cinq fois. Pour <code>fibLent(40)</code>, c'est un arbre d'appels avec des milliards de noeuds.
+        Avec la mémoïsation, chaque valeur n'est calculée <em>qu'une seule fois</em> — la complexité
+        passe de O(2ⁿ) à O(n).
+      </p>
+      <CodeBlock language="javascript">{`// ✅ Mémoïsation — mettre en cache les résultats calculés
 function memoize(fn) {
   const cache = new Map();
   return function(...args) {
@@ -147,8 +307,11 @@ const fibMemo = memoize(function fib(n) {
 });
 
 fibMemo(40); // instantané vs plusieurs secondes sans mémo
+// Première fois : calcule et met en cache fib(0)...fib(40)
+// Deuxième fois : retourne depuis le cache en O(1)
 
 // Programmation dynamique (bottom-up, sans récursion)
+// Encore plus efficace : O(n) temps, O(1) mémoire
 function fibDP(n) {
   if (n <= 1) return n;
   let [a, b] = [0, 1];
@@ -156,14 +319,35 @@ function fibDP(n) {
   return b;
 }
 fibDP(50); // 12586269025`}</CodeBlock>
-
+      <p>
+        La version <strong>bottom-up</strong> (<code>fibDP</code>) est encore plus efficace que la
+        mémoïsation : elle construit les résultats du bas vers le haut, en ne gardant en mémoire que
+        les deux derniers résultats. O(n) en temps, O(1) en espace. C'est ce qu'on appelle la
+        <strong> programmation dynamique</strong> — décomposer un problème en sous-problèmes,
+        résoudre chaque sous-problème une seule fois et stocker la solution.
+      </p>
       <InfoBox type="tip">
         La mémoïsation est utile quand les appels récursifs se <strong>répètent</strong>
         (comme Fibonacci). Pour de larges n, la version itérative (bottom-up) est
-        généralement plus efficace en mémoire.
+        généralement plus efficace en mémoire — elle n'accumule pas de frames dans la call stack.
       </InfoBox>
 
-      <h2>Structures de données : Pile et File</h2>
+      <h2>Structures de données : Pile (Stack) et File (Queue)</h2>
+      <p>
+        Deux structures fondamentales, qui différent uniquement par l'ordre dans lequel on retire les éléments.
+        La <strong>Pile (Stack)</strong> fonctionne comme une pile d'assiettes : tu empiles des assiettes
+        une par une, et quand tu en veux une, tu prends toujours <em>celle du dessus</em> — la dernière
+        posée. C'est le principe <strong>LIFO</strong> : <em>Last In, First Out</em>. La call stack de
+        JavaScript est littéralement une pile : le dernier appel de fonction empilé est le premier à
+        être dépilé.
+      </p>
+      <p>
+        La <strong>File (Queue)</strong> fonctionne comme une file d'attente à la caisse du supermarché :
+        le premier client arrivé est le premier servi. Principe <strong>FIFO</strong> : <em>First In,
+        First Out</em>. La file d'événements JavaScript (event queue) fonctionne exactement ainsi —
+        les callbacks enregistrés avec <code>setTimeout</code>, les événements click, les messages
+        postMessage s'ajoutent à la fin de la file et sont traités dans l'ordre.
+      </p>
       <CodeBlock language="javascript">{`// PILE (Stack) — LIFO : Last In, First Out
 class Pile {
   #données = [];
@@ -176,6 +360,7 @@ class Pile {
 }
 
 // Cas d'usage : vérifier les parenthèses équilibrées
+// Principe : ouvrir → empiler, fermer → dépiler et vérifier la correspondance
 function équilibrées(str) {
   const pile = new Pile();
   const pairs = { ')': '(', ']': '[', '}': '{' };
@@ -201,6 +386,7 @@ class File {
 }
 
 // Cas d'usage : BFS (Breadth-First Search)
+// On explore les voisins niveau par niveau — la file garantit l'ordre
 function bfs(graph, départ) {
   const visités = new Set([départ]);
   const file = new File();
@@ -219,14 +405,38 @@ function bfs(graph, départ) {
   }
   return ordre;
 }`}</CodeBlock>
+      <InfoBox type="tip">
+        La pile est partout dans JavaScript : l'historique du navigateur (retour = dépiler la dernière
+        page), l'annulation dans un éditeur de texte (Ctrl+Z = dépiler la dernière action), la
+        récursion (chaque appel empile un frame). La file est dans l'event loop, dans les systèmes
+        de messages, dans les impressions d'imprimante.
+      </InfoBox>
 
-      <h2>Algorithmes pratiques</h2>
+      <h2>Sliding Window et Two Pointers — efficacité O(n)</h2>
+      <p>
+        Le pattern <strong>Sliding Window</strong> (fenêtre glissante) résout élégamment les problèmes
+        sur des sous-tableaux ou sous-chaînes consécutifs. Au lieu de recalculer la somme à chaque
+        position depuis zéro (O(n×k)), on maintient une fenêtre de taille fixe k qui <em>glisse</em>
+        sur le tableau : à chaque étape, on ajoute le nouvel élément entrant et on soustrait l'élément
+        sortant. Une seule passe suffit — O(n).
+      </p>
+      <p>
+        Visualise une fenêtre de voiture qui laisse défiler le paysage : tu ne recommences pas à regarder
+        depuis le début à chaque kilomètre, tu ajustes simplement ce qui entre et ce qui sort du cadre.
+        Le pattern <strong>Two Pointers</strong> (deux pointeurs) utilise deux indices qui se déplacent
+        vers le centre d'un tableau trié — efficace pour les problèmes de paires ou de sous-tableaux
+        satisfaisant une condition.
+      </p>
       <CodeBlock language="javascript">{`// Sliding window — O(n) pour les sous-tableaux consécutifs
+// Problème : trouver la somme maximale de k éléments consécutifs
 function maxSommeConsécutive(arr, k) {
+  // Initialiser la première fenêtre
   let somme = arr.slice(0, k).reduce((a, b) => a + b, 0);
   let max = somme;
+
+  // Faire glisser la fenêtre : ajouter arr[i], retirer arr[i-k]
   for (let i = k; i < arr.length; i++) {
-    somme += arr[i] - arr[i - k];
+    somme += arr[i] - arr[i - k]; // +nouvel élément, -ancien élément
     if (somme > max) max = somme;
   }
   return max;
@@ -234,14 +444,14 @@ function maxSommeConsécutive(arr, k) {
 maxSommeConsécutive([2, 1, 5, 1, 3, 2], 3); // 9 (5+1+3)
 
 // Two pointers — O(n) pour trouver une paire de somme
+// Prérequis : tableau trié
 function deuxSomme(arr, cible) {
-  // arr doit être trié
   let [g, d] = [0, arr.length - 1];
   while (g < d) {
     const s = arr[g] + arr[d];
     if (s === cible) return [g, d];
-    if (s < cible) g++;
-    else d--;
+    if (s < cible) g++;  // somme trop petite → avancer le pointeur gauche
+    else d--;            // somme trop grande → reculer le pointeur droit
   }
   return null;
 }
@@ -255,6 +465,13 @@ function occurrences(arr) {
 }
 occurrences(['a', 'b', 'a', 'c', 'b', 'a']);
 // Map { 'a' => 3, 'b' => 2, 'c' => 1 }`}</CodeBlock>
+      <InfoBox type="danger">
+        Le piège classique des débutants : utiliser <code>Array.indexOf()</code> ou{' '}
+        <code>Array.includes()</code> à l'intérieur d'une boucle. Chaque appel est O(n),
+        donc la boucle entière devient O(n²) sans que tu t'en rendes compte. La solution :
+        convertir le tableau en <code>Set</code> ou en <code>Map</code> <em>avant</em> la boucle —
+        les lookups sont O(1), et la boucle entière reste O(n).
+      </InfoBox>
 
       <Challenge title="Anagrammes">
         Écris une fonction <code>sontAnagrammes(a, b)</code> qui vérifie si deux chaînes
@@ -274,7 +491,7 @@ export const chapter: Chapter = {
   title: 'Algorithmes fondamentaux',
   icon: '🧮',
   level: 'Expert+',
-  stars: '⭐⭐⭐⭐⭐',
+  stars: '★★★★★',
   component: Ch28,
   quiz: [
     {
@@ -282,7 +499,7 @@ export const chapter: Chapter = {
       sub: 'Le tableau doit être trié.',
       options: ['O(n)', 'O(n²)', 'O(log n)', 'O(1)'],
       correct: 2,
-      explanation: 'La recherche binaire divise l\'espace de recherche par 2 à chaque étape. Sur 1 million d\'éléments, elle effectue au maximum ~20 comparaisons.',
+      explanation: '✅ Exact ! La recherche binaire divise l\'espace de recherche par 2 à chaque étape : c\'est la définition de O(log n). Sur 1 million d\'éléments, elle effectue au maximum ~20 comparaisons (car log₂(1 000 000) ≈ 20), contre 1 000 000 pour une recherche linéaire. Le prérequis absolu : le tableau doit être trié — sinon l\'algorithme ne peut pas décider quelle moitié écarter.',
     },
     {
       question: 'Qu\'apporte la mémoïsation à une fonction récursive ?',
@@ -294,14 +511,14 @@ export const chapter: Chapter = {
         'Elle réduit la profondeur de la pile'
       ],
       correct: 1,
-      explanation: 'La mémoïsation stocke les résultats des appels précédents dans un cache. Fibonacci(40) passe de ~2^40 appels à 40 appels avec mémoïsation.',
+      explanation: '✅ Exact ! La mémoïsation stocke dans un cache (Map ou objet) les résultats des appels précédents. Pour Fibonacci, sans mémoïsation, fib(40) fait ~2⁴⁰ ≈ 1 milliard d\'appels car les mêmes valeurs sont recalculées des milliers de fois. Avec mémoïsation, chaque fib(n) est calculé une seule fois — on passe de O(2ⁿ) à O(n). C\'est l\'exemple parfait de "échanger de la mémoire contre de la vitesse".',
     },
     {
       question: 'Une structure LIFO correspond à quelle structure de données ?',
       sub: 'Last In, First Out.',
       options: ['File (Queue)', 'Tableau trié', 'Pile (Stack)', 'Arbre binaire'],
       correct: 2,
-      explanation: 'LIFO (Last In, First Out) = Pile (Stack). Le dernier élément ajouté est le premier sorti. Exemple : la pile d\'appels JavaScript (call stack).',
+      explanation: '✅ Exact ! LIFO (Last In, First Out) = Pile (Stack). Le dernier élément ajouté est le premier sorti — comme une pile d\'assiettes. La call stack JavaScript est une pile : le dernier appel de fonction empilé est le premier à se terminer. Le contraire est FIFO (First In, First Out) = File (Queue), comme une queue de supermarché ou la file d\'événements de l\'event loop.',
     },
   ],
 };

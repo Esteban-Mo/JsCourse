@@ -223,7 +223,7 @@ function Ch05Fonctions() {
       <div className="chapter-intro-card">
         <div className="level-badge level-intermediate">🧩</div>
         <div className="chapter-meta">
-          <div className="difficulty-stars">★★★★☆</div>
+          <div className="difficulty-stars">★★★☆☆</div>
           <h3>First-class, déclarations, this, closures, fonctions pures, HOF</h3>
           <p>Durée estimée : 35 min · 3 quizz inclus</p>
         </div>
@@ -296,7 +296,7 @@ export const chapter: Chapter = {
   title: 'Fonctions',
   icon: '🧩',
   level: 'Intermédiaire',
-  stars: '★★★★☆',
+  stars: '★★★☆☆',
   component: Ch05Fonctions,
   quiz: [
     {

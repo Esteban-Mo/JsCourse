@@ -118,7 +118,7 @@ function Ch18TsPoo() {
       <div className="chapter-intro-card">
         <div className="level-badge level-typescript">🏛️</div>
         <div className="chapter-meta">
-          <div className="difficulty-stars">★★★★★</div>
+          <div className="difficulty-stars">★★★★☆</div>
           <h3>Classes abstraites, modificateurs, type guards, discriminated unions</h3>
           <p>Durée estimée : 45 min · 2 quizz inclus</p>
         </div>
@@ -168,7 +168,7 @@ export const chapter: Chapter = {
   title: 'TypeScript — POO Avancée',
   icon: '🏛️',
   level: 'Bonus TS',
-  stars: '★★★★★',
+  stars: '★★★★☆',
   component: Ch18TsPoo,
   quiz: [
     {

@@ -761,6 +761,24 @@
   .toc-item:hover { color: var(--text); border-left-color: var(--border); }
   .toc-item.active { color: var(--accent); border-left-color: var(--accent); }
 
+  /* QUIZ RETRY */
+  .quiz-retry-wrap {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 8px;
+  }
+  .quiz-retry-btn {
+    background: none;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    color: var(--muted);
+    font-size: 13px;
+    padding: 8px 16px;
+    cursor: pointer;
+    transition: color 0.2s, border-color 0.2s;
+  }
+  .quiz-retry-btn:hover { color: var(--accent); border-color: var(--accent); }
+
   /* AUTHOR CREDIT */
   .author-credit {
     position: fixed;

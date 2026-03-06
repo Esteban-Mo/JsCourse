@@ -204,7 +204,7 @@ function Ch11Async() {
       <div className="chapter-intro-card">
         <div className="level-badge level-advanced">🔮</div>
         <div className="chapter-meta">
-          <div className="difficulty-stars">★★★★★</div>
+          <div className="difficulty-stars">★★★★☆</div>
           <h3>Callbacks, Promises, async/await, Promise.all/race/any, AbortController</h3>
           <p>Durée estimée : 40 min · 3 quizz inclus</p>
         </div>
@@ -277,7 +277,7 @@ export const chapter: Chapter = {
   title: 'Async & Promises',
   icon: '🔮',
   level: 'Avancé',
-  stars: '★★★★★',
+  stars: '★★★★☆',
   component: Ch11Async,
   quiz: [
     {

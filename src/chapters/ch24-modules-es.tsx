@@ -8,13 +8,67 @@ function Ch24() {
       <div className="chapter-intro-card">
         <div className="level-badge level-advanced">📤</div>
         <div className="chapter-meta">
-          <div className="difficulty-stars">⭐⭐⭐</div>
+          <div className="difficulty-stars">★★★★☆</div>
           <h3>Modules ES</h3>
           <p>import/export, imports dynamiques, tree-shaking et organisation du code</p>
         </div>
       </div>
 
+      <h2>L'histoire des modules — pourquoi ça a mis si longtemps</h2>
+      <p>
+        Aujourd'hui, diviser son code en fichiers avec <code>import</code> et <code>export</code>{' '}
+        semble évident. Mais JavaScript a existé pendant des années <em>sans</em> système de
+        modules natif. Tout le code d'une page web s'exécutait dans un seul espace global —
+        et les variables de bibliothèques différentes se marchaient dessus.
+      </p>
+      <p>
+        Les développeurs ont d'abord inventé le pattern <strong>IIFE</strong> (Immediately Invoked
+        Function Expression) pour créer de l'isolation. Puis Node.js a introduit{' '}
+        <strong>CommonJS</strong> en 2009 avec <code>require()</code>. Le format <strong>AMD</strong>{' '}
+        (Asynchronous Module Definition) a tenté de résoudre le chargement asynchrone dans le
+        navigateur. Il a fallu attendre <strong>ES2015 (ES6)</strong> pour avoir enfin un système
+        de modules standardisé et natif : les <strong>ES Modules (ESM)</strong>.
+      </p>
+      <CodeBlock language="javascript">{`// ❌ L'ancienne époque : tout est global, les collisions sont inévitables
+var utils = { format: function() {} };    // jQuery, Lodash, ton code... tout dans window
+
+// Pattern IIFE — isolation manuelle via une fonction auto-exécutée
+var MonModule = (function() {
+  var _privé = 'secret'; // non accessible dehors
+  return {
+    getPrivé: function() { return _privé; }
+  };
+})();
+
+// CommonJS (Node.js, 2009) — synchrone
+const path = require('path');
+module.exports = { maFonction };
+
+// ES Modules (2015) — le standard actuel
+import { maFonction } from './utils.js';
+export const maConstante = 42;`}</CodeBlock>
+
+      <InfoBox type="tip">
+        <strong>La portée du module (module scope).</strong> Dans un ES Module, les variables
+        déclarées au niveau supérieur <em>ne sont PAS globales</em>. Elles sont privées au module.
+        C'est le comportement inverse des anciens scripts. Pour partager quelque chose, tu dois
+        explicitement l'exporter. Cette isolation est la grande victoire des modules.
+      </InfoBox>
+
       <h2>Export nommé vs export par défaut</h2>
+      <p>
+        Il existe deux façons d'exporter depuis un module, et le choix entre elles a des
+        implications sur la lisibilité, le refactoring et les performances (tree-shaking).
+        Comprendre la différence est essentiel pour organiser une grande base de code.
+      </p>
+      <p>
+        Les <strong>exports nommés</strong> sont explicites : l'importeur doit utiliser le nom
+        exact. Si tu renommes la fonction exportée, le compilateur TypeScript (ou ESLint) te
+        signale immédiatement toutes les utilisations cassées — c'est le comportement le plus
+        sûr. Les <strong>exports par défaut</strong> laissent l'importeur choisir n'importe quel
+        nom, ce qui est pratique pour les composants React ou les classes principales, mais
+        rend le refactoring plus difficile.
+      </p>
       <CodeBlock language="javascript">{`// --- math.js ---
 
 // Exports nommés (plusieurs par fichier)
@@ -47,15 +101,26 @@ Math.PI;          // 3.14159
 Math.additionner(2, 3); // 5`}</CodeBlock>
 
       <InfoBox type="tip">
-        Convention : les <strong>exports nommés</strong> sont préférés dans les grandes bases de code
-        car ils permettent l'auto-complétion et le tree-shaking plus efficacement.
-        L'export par défaut est courant pour les composants React ou les classes principales.
+        Convention dans les grandes bases de code : préférez les <strong>exports nommés</strong>.
+        Ils permettent l'auto-complétion de l'IDE, facilitent le refactoring automatique, et sont
+        mieux supportés par le tree-shaking. L'export par défaut est courant pour les composants
+        React (un fichier = un composant = un export par défaut) ou les classes principales d'une
+        bibliothèque.
       </InfoBox>
 
       <h2>Re-exports et barrel files</h2>
       <p>
-        Un <strong>barrel file</strong> (souvent <code>index.js</code>) regroupe et ré-exporte
-        les exports d'un dossier pour simplifier les imports.
+        Imagine un projet avec des dizaines de fonctions utilitaires réparties dans une dizaine de
+        fichiers. Sans organisation, chaque composant de l'app devrait écrire des imports comme{' '}
+        <code>import {'{'} formatDate {'}'} from '../../utils/formatters.js'</code> et{' '}
+        <code>import {'{'} isEmail {'}'} from '../../utils/validators.js'</code>. Fastidieux et
+        fragile.
+      </p>
+      <p>
+        Le pattern <strong>barrel file</strong> résout ça : un fichier <code>index.js</code> dans
+        le dossier qui ré-exporte tout ce que le dossier expose publiquement. Les consommateurs
+        importent depuis un seul endroit. Si tu déplaces une fonction d'un sous-fichier à un autre,
+        seul le barrel change — les imports des consommateurs restent intacts.
       </p>
       <CodeBlock language="javascript">{`// --- utils/formatters.js ---
 export function formatDate(d) { return d.toLocaleDateString('fr-FR'); }
@@ -78,11 +143,29 @@ import { formatDate, isEmail } from './utils/index.js';
 // Ou même depuis le dossier (Node résout index.js automatiquement)
 import { formatDate, isEmail } from './utils';`}</CodeBlock>
 
+      <InfoBox type="warning">
+        <strong>Attention aux imports circulaires.</strong> Si <code>A.js</code> importe depuis{' '}
+        <code>B.js</code>, et <code>B.js</code> importe depuis <code>A.js</code>, tu as une
+        dépendance circulaire. JavaScript gère ça en partie (il ne plante pas), mais les valeurs
+        peuvent être <code>undefined</code> au moment de l'évaluation initiale. Les barrel files
+        augmentent ce risque si on n'est pas vigilant. Solution : dessine le graphe de dépendances
+        de ton projet — si tu vois des cycles, restructure le code pour les éliminer.
+      </InfoBox>
+
       <h2>Imports dynamiques — import()</h2>
       <p>
-        <code>import()</code> est une fonction asynchrone qui charge un module
-        <strong> à la demande</strong>, sans l'embarquer dans le bundle initial.
-        Indispensable pour le <em>code splitting</em>.
+        Les imports statiques (<code>import ... from ...</code>) en haut d'un fichier sont résolus{' '}
+        <em>avant</em> l'exécution du code. Le bundler les embarque tous dans le bundle initial.
+        C'est parfait pour le code toujours nécessaire, mais pénalisant pour le reste : pourquoi
+        charger une librairie de graphiques si l'utilisateur n'a pas encore cliqué sur le bouton
+        "Afficher le graphique" ?
+      </p>
+      <p>
+        <code>import()</code> est une fonction asynchrone qui charge un module <strong>à la
+        demande</strong>. Le bundler (Vite, Webpack) crée un fichier JavaScript séparé (un "chunk")
+        qui n'est téléchargé que quand <code>import()</code> est appelé. C'est ce qu'on appelle
+        le <strong>code splitting</strong> — diviser le bundle en morceaux chargés selon les
+        besoins.
       </p>
       <CodeBlock language="javascript">{`// Import statique (chargé au démarrage)
 import { parse } from './lourde-librairie.js';
@@ -110,7 +193,23 @@ import { lazy, Suspense } from 'react';
 const GrosComposant = lazy(() => import('./GrosComposant.jsx'));
 // → Vite/webpack crée un chunk séparé`}</CodeBlock>
 
+      <p>
+        Remarque que <code>import()</code> retourne une <strong>Promise</strong> qui se résout
+        vers l'objet module complet. L'export par défaut est accessible via <code>.default</code>,
+        et les exports nommés via leur nom directement (destructuration). C'est pourquoi on voit
+        souvent <code>const {'{'} Chart {'}'} = await import(...)</code> pour les exports nommés,
+        et <code>const module = await import(...); module.default</code> pour le défaut.
+      </p>
+
       <h2>import.meta — métadonnées du module</h2>
+      <p>
+        <code>import.meta</code> est un objet spécial qui expose des{' '}
+        <strong>informations sur le module courant lui-même</strong> — pas le code qu'il contient,
+        mais le fichier : son URL, son environnement d'exécution. C'est l'équivalent ESM de
+        <code>__filename</code> et <code>__dirname</code> en CommonJS. La propriété{' '}
+        <code>import.meta.url</code> est standard, mais les bundlers comme Vite y ajoutent leurs
+        propres propriétés.
+      </p>
       <CodeBlock language="javascript">{`// URL du module courant
 console.log(import.meta.url);
 // 'file:///projet/src/utils/math.js' (ou URL HTTP en navigateur)
@@ -128,7 +227,22 @@ const modules = import.meta.glob('./chapters/*.js');
 // Charger tous les modules d'un coup
 const modules = import.meta.glob('./chapters/*.js', { eager: true });`}</CodeBlock>
 
-      <h2>ESM vs CommonJS</h2>
+      <h2>ESM vs CommonJS — pourquoi la différence est profonde</h2>
+      <p>
+        La différence entre <code>require()</code> et <code>import</code> n'est pas seulement
+        syntaxique — elle est <strong>architecturale</strong>. <code>require()</code> est
+        synchrone : quand Node.js rencontre un <code>require()</code>, il <em>bloque</em> l'exécution
+        jusqu'à ce que le fichier soit lu et évalué. C'est simple et prévisible, mais ça veut
+        dire qu'on ne peut pas faire d'<code>await</code> au top-level d'un module CJS.
+      </p>
+      <p>
+        Les imports ESM sont <strong>statiques</strong> : le moteur JS analyse tous les imports
+        avant l'exécution, construit un graphe de dépendances complet, puis charge les modules en
+        parallèle si possible. C'est plus complexe, mais ça permet le top-level await, le
+        tree-shaking, et le chargement parallèle. C'est aussi pourquoi tu ne peux pas mettre{' '}
+        <code>import</code> à l'intérieur d'un <code>if</code> ou d'une fonction — sa position
+        doit être connue statiquement.
+      </p>
       <div className="table-container">
         <table>
           <thead>
@@ -145,10 +259,28 @@ const modules = import.meta.glob('./chapters/*.js', { eager: true });`}</CodeBlo
         </table>
       </div>
 
-      <h2>Tree-shaking</h2>
+      <InfoBox type="tip">
+        <strong>.mjs vs .js et "type": "module".</strong> Par défaut, Node.js traite les fichiers
+        <code>.js</code> comme CommonJS. Pour utiliser ESM, deux options : nommer le fichier{' '}
+        <code>.mjs</code> (ES Module explicite), ou ajouter <code>"type": "module"</code> dans
+        <code>package.json</code> (tous les <code>.js</code> deviennent ESM). Vite gère ça
+        automatiquement pour le navigateur, mais comprendre la distinction est important pour les
+        scripts Node.js et les bibliothèques.
+      </InfoBox>
+
+      <h2>Tree-shaking — comment les bundlers éliminent le code mort</h2>
       <p>
-        Le tree-shaking est l'élimination automatique du code mort par le bundler (Vite, Webpack).
-        Il ne fonctionne qu'avec les <strong>exports nommés ESM</strong>.
+        Imagine une bibliothèque avec 200 fonctions utilitaires. Tu n'en utilises que 3. Sans
+        tree-shaking, les 200 fonctions seraient embarquées dans ton bundle — 197 fonctions qui
+        chargent inutilement dans le navigateur de l'utilisateur. Le tree-shaking élimine le{' '}
+        <strong>code mort</strong> (dead code) : le code exporté mais jamais importé nulle part.
+      </p>
+      <p>
+        Le tree-shaking n'est possible qu'avec ESM parce que les imports ESM sont{' '}
+        <strong>statiques et analysables</strong> : le bundler peut lire le code <em>sans
+        l'exécuter</em> et déterminer exactement quels exports sont utilisés. Avec{' '}
+        <code>require()</code>, les imports peuvent être dynamiques (une variable dans le chemin,
+        une condition…), donc le bundler ne peut pas savoir à l'avance ce qui sera chargé.
       </p>
       <CodeBlock language="javascript">{`// ✅ Tree-shakeable : seul additionner sera inclus dans le bundle
 import { additionner } from './math.js'; // multiplier est éliminé
@@ -165,6 +297,23 @@ math.additionner(1, 2);
 // - Éviter les "side effects" dans les modules
 // - Déclarer "sideEffects": false dans package.json
 // - Préférer des exports granulaires plutôt qu'un seul gros objet`}</CodeBlock>
+
+      <p>
+        Un <strong>side effect</strong> est du code qui s'exécute au moment de l'import et qui
+        modifie quelque chose en dehors du module (ajouter un écouteur global, modifier{' '}
+        <code>window</code>, enregistrer un plugin…). Les bundlers sont conservateurs : si un
+        module a des side effects potentiels, ils le gardent dans le bundle même si aucun export
+        n'est utilisé. Déclarer <code>"sideEffects": false</code> dans <code>package.json</code>{' '}
+        dit au bundler que tes modules sont "purs" et peuvent être éliminés librement.
+      </p>
+
+      <InfoBox type="warning">
+        <strong>Les exports par défaut et le tree-shaking.</strong> Un export par défaut exporte
+        un seul objet. Si cet objet est une classe ou un objet littéral avec plusieurs méthodes,
+        le bundler ne peut pas tree-shaker les méthodes individuelles — il prend ou laisse
+        l'objet entier. C'est l'une des raisons pour lesquelles les bibliothèques modernes
+        préfèrent les exports nommés granulaires plutôt qu'un seul objet exporté par défaut.
+      </InfoBox>
 
       <Challenge title="Refactoring avec modules">
         Refactorise ce code en 3 fichiers modulaires : <code>validators.js</code>,
@@ -186,7 +335,7 @@ export const chapter: Chapter = {
   title: 'Modules ES',
   icon: '📤',
   level: 'Avancé',
-  stars: '⭐⭐⭐',
+  stars: '★★★★☆',
   component: Ch24,
   quiz: [
     {
@@ -194,14 +343,14 @@ export const chapter: Chapter = {
       sub: 'default export vs named exports.',
       options: ['Autant que voulu', 'Zéro', 'Un seul', 'Deux maximum'],
       correct: 2,
-      explanation: 'Un module ne peut avoir qu\'un seul export par défaut (export default), mais peut avoir autant d\'exports nommés que nécessaire.',
+      explanation: '✅ Exact ! Un module ne peut avoir qu\'un seul export par défaut (export default), mais peut avoir autant d\'exports nommés que nécessaire. Tenter deux export default dans le même fichier est une erreur de syntaxe.',
     },
     {
       question: 'Quelle syntaxe permet de charger un module seulement si nécessaire ?',
       sub: 'Code splitting et lazy loading.',
       options: ['import lazy()', 'require()', 'import()', 'import * as'],
       correct: 2,
-      explanation: 'import() est une fonction asynchrone qui charge dynamiquement un module à la demande, permettant le code splitting.',
+      explanation: '✅ Exact ! import() est une fonction asynchrone qui retourne une Promise et charge dynamiquement un module à la demande. Le bundler crée un fichier chunk séparé qui n\'est téléchargé que quand import() est appelé — c\'est le principe du code splitting.',
     },
     {
       question: 'Pourquoi le tree-shaking fonctionne avec ESM mais pas avec CommonJS ?',
@@ -213,7 +362,7 @@ export const chapter: Chapter = {
         'ESM supporte TypeScript'
       ],
       correct: 1,
-      explanation: 'Les imports ESM sont statiques (analysables sans exécuter le code), ce qui permet au bundler d\'éliminer les exports non utilisés. CJS utilise require() qui est dynamique.',
+      explanation: '💡 Les imports ESM sont statiques : leur position est connue avant l\'exécution, le bundler peut donc analyser le graphe de dépendances complet sans exécuter le code. require() de CJS est dynamique (peut être dans un if, recevoir une variable…), rendant l\'analyse statique impossible.',
     },
   ],
 };

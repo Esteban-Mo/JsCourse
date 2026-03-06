@@ -121,6 +121,14 @@ console.log(s.replace(/\\d+/g, "X")); // "abc X def X"
 const msg = "Publié le 2024-03-15";
 const [, annee] = msg.match(/(\\d{4})/); // annee = "2024"`;
 
+const codeBacktracking = `// Pattern vulnérable au backtracking catastrophique
+// Ne jamais écrire des patterns comme : /(a+)+$/
+// Sur la chaîne "aaaaaaaaaaaaaab", le moteur essaie des milliers
+// de combinaisons avant de conclure à l'échec — c'est exponentiel !
+
+// Version sûre : être précis sur ce qu'on veut matcher
+/^a+b$/  // correct et efficace`;
+
 function Ch08Regex() {
   return (
     <>
@@ -136,29 +144,69 @@ function Ch08Regex() {
         </div>
       </div>
 
-      <p>Une expression régulière (<em>regex</em>) est un motif qui décrit un ensemble de chaînes de caractères. Elle sert à valider, rechercher, extraire ou transformer du texte. C'est un outil universel présent dans tous les langages — et incontournable en JavaScript.</p>
+      <p>
+        Une expression régulière (<em>regex</em>) est un <strong>langage de description de motifs</strong> — un mini-programme qui définit un ensemble de chaînes de caractères. Sous le capot, le moteur de regex construit un <em>automate fini</em> qui parcourt la chaîne caractère par caractère, testant si le motif correspond. C'est un outil universel présent dans tous les langages — inventé dans les années 1950 par le mathématicien Stephen Kleene, et toujours aussi indispensable aujourd'hui.
+      </p>
+      <p>
+        Pourquoi apprendre les regex ? Imagine que tu dois extraire tous les numéros de téléphone d'un texte libre, ou valider qu'une adresse email a le bon format, ou transformer du texte en masse. Sans regex, tu écrirais des dizaines de lignes de code avec des boucles, des indexOf, des substring — fragiles et difficiles à maintenir. Avec une regex, c'est souvent une seule ligne. La courbe d'apprentissage est raide, mais l'investissement est rentable très rapidement.
+      </p>
 
-      <h2>Créer une regex</h2>
-
+      <h2>Créer une regex — littérale ou constructeur ?</h2>
+      <p>
+        Il existe deux syntaxes pour créer une regex en JavaScript. La <strong>syntaxe littérale</strong> (<code>/pattern/flags</code>) est compilée lors du chargement du script — elle est plus rapide et plus lisible pour les patterns statiques, et c'est celle que tu utiliseras la grande majorité du temps. Le <strong>constructeur</strong> (<code>new RegExp(pattern, flags)</code>) est nécessaire quand le pattern est dynamique — quand tu construis la regex à partir d'une variable ou d'une entrée utilisateur. Attention : dans ce cas, les backslashes doivent être doublés (<code>\\\\d</code> pour matcher un chiffre) puisque la string les interprète d'abord.
+      </p>
       <CodeBlock language="javascript">{codeCreer}</CodeBlock>
+      <InfoBox type="tip">
+        Les flags les plus utilisés : <code>g</code> (global — trouve toutes les occurrences, pas seulement la première), <code>i</code> (insensible à la casse), <code>m</code> (multiline — <code>^</code> et <code>$</code> matchent le début/fin de chaque ligne), et <code>s</code> (dotAll — le point <code>.</code> matche aussi les sauts de ligne). On les combine librement : <code>/pattern/gim</code>.
+      </InfoBox>
 
-      <h2>Syntaxe des patterns</h2>
-
+      <h2>Syntaxe des patterns — les briques de base</h2>
+      <p>
+        Un pattern regex est composé de <strong>métacaractères</strong> (symboles avec une signification spéciale) et de caractères littéraux. Les classes de caractères prédéfinies (<code>\d</code>, <code>\w</code>, <code>\s</code>) sont des raccourcis pour des ensembles communs. Les crochets (<code>[]</code>) définissent tes propres classes. Les <strong>ancres</strong> (<code>^</code>, <code>$</code>, <code>\b</code>) ne matchent pas des caractères mais des <em>positions</em> dans la chaîne — une distinction cruciale pour la validation.
+      </p>
       <CodeBlock language="javascript">{codePatterns1}</CodeBlock>
 
+      <h2>Quantificateurs — greedy vs lazy</h2>
+      <p>
+        Les quantificateurs contrôlent <em>combien de fois</em> un élément doit apparaître. Par défaut, ils sont <strong>greedy</strong> (gourmands) : ils capturent le maximum possible. Ajouter <code>?</code> après un quantificateur le rend <strong>lazy</strong> (paresseux) : il capture le minimum possible. Cette distinction est cruciale pour parser du HTML, du JSON, ou tout format où les délimiteurs peuvent se répéter — un quantificateur greedy avalera tout jusqu'au dernier délimiteur, alors qu'un lazy s'arrêtera au premier.
+      </p>
       <CodeBlock language="javascript">{codePatterns2}</CodeBlock>
+      <InfoBox type="warning">
+        Ne parse jamais du HTML complexe avec des regex — utilise un vrai parser DOM (<code>DOMParser</code>). Les regex restent utiles pour des cas simples et bien délimités, mais le HTML réel peut avoir des imbrications arbitraires que les regex ne peuvent pas gérer correctement.
+      </InfoBox>
 
-      <h2>Méthodes</h2>
-
+      <h2>Méthodes — String et RegExp sont deux mondes</h2>
+      <p>
+        Une source de confusion fréquente : les méthodes de manipulation de regex sont réparties entre l'objet <code>String</code> et l'objet <code>RegExp</code>, pour des raisons historiques. <code>test()</code> et <code>exec()</code> sont des méthodes de la regex (<code>regex.test(str)</code>). <code>match()</code>, <code>matchAll()</code>, <code>replace()</code>, <code>search()</code> et <code>split()</code> sont des méthodes de la string (<code>str.match(regex)</code>). Cette asymétrie est héritée de JavaScript 1.0 et n'a jamais été corrigée pour ne pas casser l'existant.
+      </p>
       <CodeBlock language="javascript">{codeMethodes}</CodeBlock>
 
-      <h2>Groupes &amp; Captures</h2>
-
+      <h2>Groupes &amp; Captures — extraire, pas juste valider</h2>
+      <p>
+        Les groupes capturants (avec des parenthèses <code>()</code>) permettent de ne pas juste <em>détecter</em> un motif, mais d'en <em>extraire</em> des parties. C'est l'une des fonctionnalités les plus puissantes des regex — et la plus sous-utilisée. Un groupe numéroté (<code>$1</code>, <code>$2</code>) est accessible par position, mais ça devient vite fragile si tu modifies le pattern. Les <strong>groupes nommés</strong> (<code>?&lt;nom&gt;</code>, ES2018) sont bien supérieurs : le nom est explicite, l'ordre importe peu, et le code est auto-documenté. Les <strong>groupes non-capturants</strong> (<code>?:</code>) servent à grouper des parties du pattern pour les quantificateurs ou les alternatives, sans polluer les résultats capturés.
+      </p>
       <CodeBlock language="javascript">{codeGroupes}</CodeBlock>
+      <InfoBox type="tip">
+        Préfère toujours les <strong>groupes nommés</strong> (<code>?&lt;annee&gt;</code>) aux groupes numérotés (<code>$1</code>) dans le code de production. Si tu ajoutes un groupe au milieu du pattern plus tard, tous les numéros décalent et tu introduis un bug silencieux. Avec les noms, rien ne change.
+      </InfoBox>
 
       <h2>Cas d'usage pratiques</h2>
-
+      <p>
+        Les regex brillent dans un ensemble précis de tâches : validation de formats (email, téléphone, code postal), extraction de données structurées dans du texte libre, et transformations de texte en masse. Pour chacun de ces cas, une regex bien écrite remplace facilement 20-30 lignes de code impératif.
+      </p>
       <CodeBlock language="javascript">{codePratique}</CodeBlock>
+      <InfoBox type="warning">
+        <strong>Ne pas valider les emails avec une regex complexe.</strong> Une regex qui valide correctement TOUS les emails légaux selon la RFC 5321 est extraordinairement complexe (plusieurs centaines de caractères). La regex simplifiée ci-dessus filtre les cas évidents, mais elle acceptera des emails invalides et en rejettera des valides. Pour une vraie validation, envoie un email de confirmation — c'est la seule méthode fiable.
+      </InfoBox>
+
+      <h2>Danger — le backtracking catastrophique</h2>
+      <p>
+        Les regex peuvent être dangereuses pour les performances. Le phénomène de <strong>backtracking catastrophique</strong> arrive quand un pattern ambigu force le moteur à explorer exponentiellement de combinaisons avant de conclure à un échec. Sur une chaîne suffisamment longue, cela peut bloquer le thread JavaScript pendant des secondes — voire des minutes. C'est une vulnérabilité réelle, connue sous le nom de <em>ReDoS</em> (Regular Expression Denial of Service). Les patterns les plus risqués contiennent des groupes répétés imbriqués.
+      </p>
+      <CodeBlock language="javascript">{codeBacktracking}</CodeBlock>
+      <InfoBox type="danger">
+        N'utilise jamais des patterns avec des quantificateurs imbriqués ambigus (<code>(a+)+</code>, <code>(.*)*</code>) sur des données contrôlées par l'utilisateur. Si la chaîne est malformée, le moteur peut entrer dans une boucle quasi-infinie. Pour les inputs utilisateur, teste toujours tes regex avec des chaînes longues et malformées, ou utilise un outil d'analyse de regex comme <code>safe-regex</code>.
+      </InfoBox>
 
       <InfoBox type="tip">
         Pour tester et visualiser tes regex en temps réel, utilise <strong>regex101.com</strong> — il affiche les groupes capturés, explique chaque partie du pattern, et propose des alternatives. Indispensable pour les regex complexes.

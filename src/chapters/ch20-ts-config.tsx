@@ -128,7 +128,7 @@ function Ch20TsConfig() {
       <div className="chapter-intro-card">
         <div className="level-badge level-typescript">⚙️</div>
         <div className="chapter-meta">
-          <div className="difficulty-stars">★★★★★</div>
+          <div className="difficulty-stars">★★★☆☆</div>
           <h3>tsconfig.json, strict mode, paths, .d.ts, Vite, ESLint</h3>
           <p>Durée estimée : 40 min · 2 quizz inclus</p>
         </div>
@@ -180,7 +180,7 @@ export const chapter: Chapter = {
   title: 'TypeScript — Config & Éco',
   icon: '⚙️',
   level: 'Bonus TS',
-  stars: '★★★★★',
+  stars: '★★★☆☆',
   component: Ch20TsConfig,
   quiz: [
     {

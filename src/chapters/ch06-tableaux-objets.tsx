@@ -263,7 +263,7 @@ function Ch06TableauxObjets() {
       <div className="chapter-intro-card">
         <div className="level-badge level-intermediate">🗂️</div>
         <div className="chapter-meta">
-          <div className="difficulty-stars">★★★★☆</div>
+          <div className="difficulty-stars">★★★☆☆</div>
           <h3>Référence vs copie, mutation, map/filter/reduce, sort, objets avancés</h3>
           <p>Durée estimée : 35 min · 3 quizz inclus</p>
         </div>
@@ -344,7 +344,7 @@ export const chapter: Chapter = {
   title: 'Tableaux & Objets',
   icon: '🗂️',
   level: 'Intermédiaire',
-  stars: '★★★★☆',
+  stars: '★★★☆☆',
   component: Ch06TableauxObjets,
   quiz: [
     {

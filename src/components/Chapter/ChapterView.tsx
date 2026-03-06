@@ -91,6 +91,7 @@ export default function ChapterView({ chapterId }: ChapterViewProps) {
         return { id, text: h.textContent?.trim() ?? '' };
       }).filter(item => item.text);
       setTocItems(items);
+      if (items.length > 0) setActiveTocId(items[0].id);
     });
 
     return () => cancelAnimationFrame(raf);

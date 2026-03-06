@@ -206,7 +206,7 @@ function Ch03Conditions() {
       <div className="chapter-intro-card">
         <div className="level-badge level-beginner">🔀</div>
         <div className="chapter-meta">
-          <div className="difficulty-stars">★★★☆☆</div>
+          <div className="difficulty-stars">★★☆☆☆</div>
           <h3>if/else, truthy/falsy, ternaire, switch et object lookup</h3>
           <p>Durée estimée : 25 min · 3 quizz inclus</p>
         </div>
@@ -310,7 +310,7 @@ export const chapter: Chapter = {
   title: 'Conditions',
   icon: '🔀',
   level: 'Débutant',
-  stars: '★★★☆☆',
+  stars: '★★☆☆☆',
   component: Ch03Conditions,
   quiz: [
     {

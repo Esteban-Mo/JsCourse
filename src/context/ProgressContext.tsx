@@ -15,6 +15,7 @@ interface ProgressContextValue extends ProgressState {
   isCompleted: (id: ChapterId) => boolean;
   hasAnsweredQuiz: (chapterId: ChapterId, quizIdx: number) => boolean;
   resetProgress: () => void;
+  resetChapterQuizzes: (chapterId: ChapterId, xpToRemove: number) => void;
 }
 
 const ProgressContext = createContext<ProgressContextValue | null>(null);
@@ -70,6 +71,23 @@ export function ProgressProvider({ children }: { children: ReactNode }) {
   const hasAnsweredQuiz = (chapterId: ChapterId, quizIdx: number) =>
     `${chapterId}-${quizIdx}` in state.answeredQuizzes;
 
+  const resetChapterQuizzes = (chapterId: ChapterId, xpToRemove: number) => {
+    setState(s => {
+      const newAnswered = { ...s.answeredQuizzes };
+      Object.keys(newAnswered)
+        .filter(k => k.startsWith(`${chapterId}-`))
+        .forEach(k => delete newAnswered[k]);
+      const newCompleted = new Set(s.completedChapters);
+      newCompleted.delete(chapterId);
+      return {
+        ...s,
+        xp: Math.max(0, s.xp - xpToRemove),
+        answeredQuizzes: newAnswered,
+        completedChapters: newCompleted,
+      };
+    });
+  };
+
   const resetProgress = () => {
     // Vider le localStorage immédiatement pour éviter toute race condition
     localStorage.removeItem('jscours_xp');
@@ -89,6 +107,7 @@ export function ProgressProvider({ children }: { children: ReactNode }) {
       isCompleted,
       hasAnsweredQuiz,
       resetProgress,
+      resetChapterQuizzes,
     }}>
       {children}
     </ProgressContext.Provider>

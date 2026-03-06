@@ -193,7 +193,7 @@ function Ch04Boucles() {
       <div className="chapter-intro-card">
         <div className="level-badge level-beginner">🔄</div>
         <div className="chapter-meta">
-          <div className="difficulty-stars">★★★☆☆</div>
+          <div className="difficulty-stars">★★☆☆☆</div>
           <h3>for, while, do...while, for...of, for...in, méthodes de tableau</h3>
           <p>Durée estimée : 25 min · 3 quizz inclus</p>
         </div>
@@ -279,7 +279,7 @@ export const chapter: Chapter = {
   title: 'Boucles',
   icon: '🔄',
   level: 'Débutant',
-  stars: '★★★☆☆',
+  stars: '★★☆☆☆',
   component: Ch04Boucles,
   quiz: [
     {

@@ -8,17 +8,51 @@ function Ch27() {
       <div className="chapter-intro-card">
         <div className="level-badge level-expert">🌀</div>
         <div className="chapter-meta">
-          <div className="difficulty-stars">⭐⭐⭐⭐</div>
+          <div className="difficulty-stars">★★★★★</div>
           <h3>Générateurs &amp; Itérateurs</h3>
           <p>Protocoles itérables, generators, évaluation paresseuse et séquences infinies</p>
         </div>
       </div>
 
+      <h2>Le modèle PUSH vs PULL — la révolution des générateurs</h2>
+      <p>
+        Une fonction JavaScript normale fonctionne en mode <strong>PUSH</strong> : vous l'appelez, elle
+        calcule toutes ses valeurs, et vous "jette" le résultat final en une seule fois. Imaginez quelqu'un
+        qui remplit un seau d'eau et vous le lance — vous recevez tout le contenu d'un coup, que vous
+        en ayez besoin ou non. Si le seau contient un million de litres (un million d'éléments à calculer),
+        vous devez attendre que tout soit rempli avant de pouvoir utiliser la première goutte.
+      </p>
+      <p>
+        Les générateurs introduisent le modèle <strong>PULL</strong> : vous contrôlez le débit. C'est
+        un robinet plutôt qu'un seau. Vous "tirez" une valeur quand vous en avez besoin, le générateur
+        calcule uniquement cette valeur et se met en pause, en attendant que vous demandiez la suivante.
+        Cette évaluation à la demande s'appelle l'<strong>évaluation paresseuse</strong> (lazy evaluation).
+        Les conséquences sont profondes : vous pouvez manipuler des séquences de millions d'éléments,
+        voire de séquences infinies, sans jamais les stocker entièrement en mémoire.
+      </p>
+      <InfoBox type="tip">
+        Les générateurs ne sont <strong>pas</strong> la même chose que les fonctions <code>async</code>.
+        Les fonctions async concernent l'attente d'opérations I/O (réseau, disque). Les générateurs
+        concernent le contrôle de flux et l'évaluation paresseuse de séquences. Ce sont deux concepts
+        orthogonaux — qui peuvent néanmoins être combinés (async generators) comme on le verra.
+      </InfoBox>
+
       <h2>Le protocole itérable</h2>
       <p>
-        En JavaScript, un objet est <strong>itérable</strong> s'il possède une méthode
-        <code>[Symbol.iterator]()</code> qui retourne un <strong>itérateur</strong>.
-        Un itérateur est un objet avec une méthode <code>next()</code> qui retourne <code>{'{ value, done }'}</code>.
+        Avant de comprendre les générateurs, il faut comprendre le protocole sur lequel ils reposent.
+        JavaScript définit une interface uniforme pour tout ce qui peut être "parcouru" : le{' '}
+        <strong>protocole itérable</strong>. Un objet est itérable s'il possède une méthode spéciale
+        accessible via la clé <code>Symbol.iterator</code>. Cette méthode, quand on l'appelle, retourne
+        un <strong>itérateur</strong> — un objet avec une méthode <code>next()</code>.
+      </p>
+      <p>
+        Chaque appel à <code>next()</code> retourne un objet de la forme <code>{'{ value, done }'}</code>.
+        Tant que <code>done</code> vaut <code>false</code>, <code>value</code> contient la valeur courante.
+        Quand la séquence est épuisée, <code>done</code> passe à <code>true</code> et <code>value</code>
+        vaut <code>undefined</code>. Pourquoi ce protocole ? Il fournit une interface commune qui permet
+        à <code>for...of</code>, l'opérateur spread (<code>...</code>) et la destructuration de fonctionner
+        de manière identique sur les tableaux, les strings, les Maps, les Sets, et tout objet personnalisé
+        respectant ce contrat.
       </p>
       <CodeBlock language="javascript">{`// Les types itérables natifs
 for (const v of [1, 2, 3]) {}        // Array
@@ -55,11 +89,29 @@ const range = {
 for (const n of range) console.log(n); // 1 2 3 4 5
 console.log([...range]); // [1, 2, 3, 4, 5]`}</CodeBlock>
 
-      <h2>Fonctions génératrices</h2>
       <p>
-        <code>function*</code> crée une <strong>fonction génératrice</strong>. Elle retourne
-        un générateur (qui est à la fois un itérateur ET un itérable). Le mot clé
-        <code>yield</code> suspend l'exécution et renvoie une valeur.
+        Cet objet <code>range</code> illustre parfaitement le protocole : il implémente{' '}
+        <code>[Symbol.iterator]()</code> qui retourne un objet avec <code>next()</code>. Mais écrire
+        ce boilerplate manuellement est verbeux et sujet aux erreurs. Les générateurs sont la syntaxe
+        élégante de JavaScript pour créer des itérateurs sans tout ce code répétitif.
+      </p>
+
+      <h2>Fonctions génératrices — function*</h2>
+      <p>
+        La syntaxe <code>function*</code> (avec un astérisque) déclare une <strong>fonction génératrice</strong>.
+        L'astérisque n'est pas un opérateur de multiplication ici — c'est un marqueur syntaxique qui
+        dit au moteur JavaScript : "cette fonction ne s'exécute pas normalement ; elle retourne un objet
+        Générateur". Appeler une fonction génératrice ne l'exécute <em>pas</em>. Elle retourne immédiatement
+        un objet Générateur, et le corps de la fonction ne commence à s'exécuter qu'au premier appel
+        à <code>.next()</code>.
+      </p>
+      <p>
+        Le mot-clé <code>yield</code> est le cœur du générateur. Il fait deux choses simultanément :
+        il <strong>suspend</strong> l'exécution de la fonction génératrice à cet endroit précis, et
+        il <strong>retourne</strong> la valeur à droite vers l'appelant via l'objet{' '}
+        <code>{'{ value, done: false }'}</code>. Quand <code>.next()</code> est appelé à nouveau,
+        l'exécution reprend exactement là où elle s'était arrêtée, comme si on avait appuyé sur "lecture"
+        après une pause.
       </p>
       <CodeBlock language="javascript">{`function* compteur(début, fin) {
   for (let i = début; i <= fin; i++) {
@@ -98,13 +150,29 @@ function take(gen, n) {
 
 take(fibonacci(), 8); // [0, 1, 1, 2, 3, 5, 8, 13]`}</CodeBlock>
 
-      <InfoBox type="tip">
-        Les générateurs permettent l'<strong>évaluation paresseuse</strong> : les valeurs
-        sont calculées à la demande, pas toutes en avance. Parfait pour les grandes quantités
-        de données ou les séquences infinies.
+      <p>
+        Regardez la boucle <code>while (true)</code> dans <code>fibonacci()</code>. Cette boucle infinie
+        serait catastrophique dans une fonction normale — elle bloquerait le navigateur pour toujours.
+        Dans un générateur, c'est parfaitement sûr : la boucle ne tourne que quand vous appelez{' '}
+        <code>.next()</code>, et s'arrête dès que vous n'en avez plus besoin. La fonction <code>take()</code>
+        utilise <code>break</code> pour sortir du <code>for...of</code>, ce qui envoie un signal d'arrêt
+        au générateur (il ne calculera jamais le 9ème nombre de Fibonacci, même si la boucle est infinie).
+      </p>
+      <InfoBox type="success">
+        Les générateurs sont <strong>extrêmement efficaces en mémoire</strong> pour les grands ensembles
+        de données. Un générateur qui produit un million de nombres n'occupe que quelques octets en mémoire
+        — contre plusieurs mégaoctets pour un tableau de un million d'éléments. Si vous traitez de grandes
+        collections et n'avez besoin que d'une partie des résultats, les générateurs sont la solution idéale.
       </InfoBox>
 
-      <h2>yield* — délégation</h2>
+      <h2>yield* — délégation vers un autre itérable</h2>
+      <p>
+        <code>yield*</code> est une forme spéciale de yield qui délègue l'itération à un autre itérable
+        ou générateur. Plutôt que de yielder un tableau ou un générateur entier comme valeur unique,{' '}
+        <code>yield*</code> "déplie" cet itérable et yield chacun de ses éléments individuellement.
+        C'est l'équivalent de parcourir l'itérable avec un <code>for...of</code> et de yielder chaque
+        valeur une par une — mais en syntaxe concise.
+      </p>
       <CodeBlock language="javascript">{`// yield* délègue à un autre itérable
 function* aplatir(tableau) {
   for (const item of tableau) {
@@ -127,7 +195,27 @@ function* concat(...iterables) {
 
 [...concat([1, 2], [3, 4], [5, 6])]; // [1, 2, 3, 4, 5, 6]`}</CodeBlock>
 
-      <h2>Communication bidirectionnelle avec next(valeur)</h2>
+      <p>
+        La récursion dans <code>aplatir()</code> est particulièrement élégante : quand on rencontre
+        un sous-tableau, on yield* tous ses éléments en appelant récursivement le même générateur.
+        Cela aplati des structures imbriquées arbitrairement profondes, et grâce à l'évaluation paresseuse,
+        chaque élément n'est extrait que quand il est demandé.
+      </p>
+
+      <h2>yield comme rue à double sens — next(valeur)</h2>
+      <p>
+        Jusqu'ici, yield ne faisait que <em>sortir</em> des valeurs du générateur vers l'appelant.
+        Mais <code>yield</code> est en réalité une <strong>communication bidirectionnelle</strong>.
+        L'expression <code>const x = yield quelqueChose</code> fait deux choses : elle sort{' '}
+        <code>quelqueChose</code> vers l'appelant, <em>et</em> reçoit en retour la valeur passée au
+        prochain <code>.next(valeur)</code>. Le yield est simultanément une sortie et une entrée.
+      </p>
+      <p>
+        Cette capacité permet aux générateurs de fonctionner comme des <strong>coroutines</strong> :
+        deux morceaux de code qui se passent la main en échangeant des données. C'est sur ce mécanisme
+        que la bibliothèque <code>co</code> a construit le support async/await avant que ce dernier
+        soit natif dans JavaScript.
+      </p>
       <CodeBlock language="javascript">{`function* dialogue() {
   const prénom = yield 'Quel est ton prénom ?';
   const ville  = yield \`Bonjour \${prénom} ! Tu habites où ?\`;
@@ -153,7 +241,29 @@ const g = risqué();
 g.next();                    // démarrage
 g.throw(new Error('oups')); // { value: 'erreur capturée : oups', done: false }`}</CodeBlock>
 
+      <InfoBox type="warning">
+        Notez que le premier <code>conv.next()</code> n'accepte pas d'argument utile — la valeur passée
+        serait ignorée, car il n'y a pas encore d'expression <code>yield</code> en attente de recevoir
+        quoi que ce soit. La première valeur envoyée via <code>next()</code> n'est "reçue" qu'à partir
+        du deuxième appel. C'est une source fréquente de confusion pour les débutants avec les générateurs.
+      </InfoBox>
+
       <h2>Générateurs asynchrones</h2>
+      <p>
+        La combinaison <code>async function*</code> crée un <strong>générateur asynchrone</strong> :
+        un générateur qui peut utiliser <code>await</code> à l'intérieur. Chaque valeur qu'il yield
+        est enveloppée dans une Promise, et on le consomme avec <code>for await...of</code> plutôt
+        que <code>for...of</code>. C'est la solution élégante pour les scénarios où vous avez une
+        source de données asynchrone et infinie : une API paginée, un stream réseau, un flux d'événements
+        en temps réel.
+      </p>
+      <p>
+        Sans générateur asynchrone, pour parcourir une API paginée, vous devriez soit tout charger
+        en mémoire (mauvais), soit écrire une boucle manuelle complexe avec des Promises chaînées
+        (verbeux et fragile). Avec un générateur asynchrone, la logique de pagination est encapsulée
+        proprement dans la fonction génératrice, et le code consommateur est aussi simple qu'un{' '}
+        <code>for await...of</code>.
+      </p>
       <CodeBlock language="javascript">{`// async function* combine async/await et generators
 async function* paginer(url) {
   let page = 1;
@@ -192,6 +302,13 @@ for await (const chunk of lireStream(res)) {
   afficher(chunk);
 }`}</CodeBlock>
 
+      <p>
+        Le <code>break</code> dans <code>chargerTous()</code> illustre une force des générateurs asynchrones :
+        l'arrêt précoce est gratuit. Quand on sort du <code>for await...of</code>, le générateur est
+        immédiatement suspendu et les pages suivantes ne sont jamais chargées depuis le réseau. Avec
+        une approche traditionnelle, vous auriez dû implémenter vous-même la logique d'annulation.
+      </p>
+
       <h2>Cas d'usage réels</h2>
       <CodeBlock language="javascript">{`// 1. Pipeline de transformation lazy
 function* map(iter, fn) {
@@ -227,6 +344,14 @@ function* traitementLong(données) {
   }
 }`}</CodeBlock>
 
+      <InfoBox type="success">
+        Le pipeline <code>filter → map → take</code> dans l'exemple 1 est <strong>entièrement lazy</strong> :
+        pour obtenir les 100 premières erreurs d'un fichier d'un million de lignes, on ne parcoure
+        que les lignes nécessaires jusqu'à en trouver 100 qui correspondent. Aucun tableau intermédiaire
+        n'est créé. C'est la même idée que les pipelines de streams Unix (<code>grep | sed | head</code>)
+        — élégant et ultra-efficace.
+      </InfoBox>
+
       <Challenge title="Range générateur">
         Implémente un générateur <code>range(start, end, step=1)</code>
         similaire à Python, qui supporte les pas négatifs.
@@ -247,7 +372,7 @@ export const chapter: Chapter = {
   title: 'Générateurs & Itérateurs',
   icon: '🌀',
   level: 'Expert',
-  stars: '⭐⭐⭐⭐',
+  stars: '★★★★★',
   component: Ch27,
   quiz: [
     {
@@ -260,7 +385,7 @@ export const chapter: Chapter = {
         'Lance une exception'
       ],
       correct: 1,
-      explanation: 'yield suspend l\'exécution de la fonction génératrice, retourne la valeur à l\'appelant, et reprend là où elle s\'était arrêtée lors du prochain appel à next().',
+      explanation: '✅ Exact ! yield suspend l\'exécution de la fonction génératrice à cet endroit précis, retourne la valeur à l\'appelant sous la forme { value, done: false }, et reprend exactement là où elle s\'était arrêtée lors du prochain appel à next(). C\'est ce mécanisme de pause/reprise qui rend les générateurs si puissants.',
     },
     {
       question: 'Comment consommer un générateur asynchrone ?',
@@ -272,14 +397,14 @@ export const chapter: Chapter = {
         'await gen.all()'
       ],
       correct: 1,
-      explanation: 'for await...of est conçu pour consommer les générateurs asynchrones (async function*), attendant chaque valeur produite par yield.',
+      explanation: '✅ Exact ! for await...of est la syntaxe conçue pour consommer les générateurs asynchrones (async function*). Chaque valeur yielded est une Promise, et for await...of l\'attend automatiquement avant de passer à l\'itération suivante. C\'est la syntaxe idéale pour les APIs paginées et les streams réseau.',
     },
     {
       question: 'Quelle est la valeur de done quand le générateur est épuisé ?',
       sub: 'Protocole itérateur.',
       options: ['null', 'false', 'true', '"done"'],
       correct: 2,
-      explanation: 'Quand un générateur est épuisé (plus de yield), next() retourne { value: undefined, done: true }.',
+      explanation: '✅ Exact ! Quand un générateur est épuisé (la fonction génératrice a atteint sa fin ou un return), le prochain appel à next() retourne { value: undefined, done: true }. C\'est le signal que le protocole itérateur utilise pour indiquer la fin de la séquence, permettant à for...of et à l\'opérateur spread de savoir quand s\'arrêter.',
     },
   ],
 };
