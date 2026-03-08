@@ -1,5 +1,71 @@
-import { CodeBlock, InfoBox } from '../components/content';
+import { CodeBlock, InfoBox, Challenge } from '../components/content';
 import type { Chapter } from '../types';
+
+const codeChallengeMonorepo = `// tsconfig.base.json — partagé par tous les packages
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "strict": true,
+    "skipLibCheck": true,
+    "declaration": true
+  }
+}
+
+// packages/frontend/tsconfig.json
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "lib": ["ES2022", "DOM"],
+    "jsx": "react-jsx",
+    "paths": { "@/*": ["./src/*"] }
+  },
+  "include": ["src"]
+}
+
+// packages/backend/tsconfig.json
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "lib": ["ES2022"],
+    "module": "CommonJS",
+    "outDir": "./dist"
+  },
+  "include": ["src"]
+}`;
+
+const codeChallengeDts = `// Supposons une lib JS : lib-calcul.js
+// function calculer(op, a, b) { ... }
+// function arrondir(n, decimales) { ... }
+// const PRECISION = 2;
+
+// À écrire : lib-calcul.d.ts
+declare module "lib-calcul" {
+  type Operation = "add" | "sub" | "mul" | "div";
+
+  export function calculer(op: Operation, a: number, b: number): number;
+  export function arrondir(n: number, decimales?: number): number;
+  export const PRECISION: number;
+}
+
+// Étendre les types globaux
+declare global {
+  interface Window {
+    debugMode: boolean;
+    appVersion: string;
+  }
+
+  namespace NodeJS {
+    interface ProcessEnv {
+      readonly NODE_ENV: "development" | "production" | "test";
+      readonly DATABASE_URL: string;
+      readonly API_KEY?: string;
+    }
+  }
+}
+
+export {};  // Nécessaire pour que ce soit un module`;
 
 const codeTsConfig = `{
   "compilerOptions": {
@@ -142,11 +208,19 @@ function Ch20TsConfig() {
 
       <CodeBlock language="json">{codeTsConfig}</CodeBlock>
 
+      <InfoBox type="tip">
+        Pour les <strong>monorepos</strong> (plusieurs packages dans un dépôt), crée un <code>tsconfig.base.json</code> à la racine avec les options communes, puis chaque package étend avec <code>"extends": "../../tsconfig.base.json"</code>. Cela évite la duplication et garantit la cohérence des paramètres dans tout le projet.
+      </InfoBox>
+
       <h2>Le mode strict — pourquoi l'activer ?</h2>
 
       <p>Le mode strict est le paramètre le plus important. Il active plusieurs vérifications qui semblent contraignantes au début mais <strong>éliminent des classes entières de bugs</strong>.</p>
 
       <CodeBlock language="typescript">{codeStrictMode}</CodeBlock>
+
+      <InfoBox type="warning">
+        Si tu migres un <strong>projet JavaScript existant</strong> vers TypeScript, n'active pas <code>strict: true</code> d'un coup — tu te retrouveras avec des centaines d'erreurs. Active les flags un par un : commence par <code>noImplicitAny</code>, puis <code>strictNullChecks</code>, etc. La migration progressive est la clé d'une adoption réussie.
+      </InfoBox>
 
       <h2>Fichiers de déclaration .d.ts</h2>
 
@@ -154,11 +228,19 @@ function Ch20TsConfig() {
 
       <CodeBlock language="typescript">{codeDts}</CodeBlock>
 
+      <InfoBox type="tip">
+        Avant d'écrire un fichier <code>.d.ts</code>, vérifie si les types existent déjà sur <strong>DefinitelyTyped</strong> : <code>npm install -D @types/nom-du-package</code>. Plus de 8 000 bibliothèques populaires ont des types maintenus par la communauté. Si les types n'existent pas, crée un fichier <code>declarations.d.ts</code> dans ton projet.
+      </InfoBox>
+
       <h2>TypeScript avec Vite (setup moderne)</h2>
 
       <p>Vite est le bundler le plus rapide aujourd'hui. Il supporte TypeScript nativement — mais il utilise <strong>esbuild</strong> pour compiler (très rapide) sans vérifier les types. Pour les types, lance <code>tsc --noEmit</code> séparément.</p>
 
       <CodeBlock language="bash">{codeVite}</CodeBlock>
+
+      <InfoBox type="success">
+        Dans ta CI/CD, ajoute toujours <code>tsc --noEmit</code> comme étape de validation avant le build. Cela garantit que chaque déploiement passe la vérification des types, même si Vite compile sans les vérifier. Un pipeline typique : <code>tsc --noEmit &amp;&amp; eslint . &amp;&amp; vite build</code>.
+      </InfoBox>
 
       <h2>ESLint + TypeScript — la qualité automatique</h2>
 
@@ -171,6 +253,16 @@ function Ch20TsConfig() {
       <InfoBox type="success">
         <strong>Stack recommandée en 2025 :</strong> <code>Vite</code> (bundler) + <code>TypeScript</code> strict + <code>ESLint</code> + <code>Prettier</code> (formatage) + <code>Vitest</code> (tests). C'est la base de la quasi-totalité des projets modernes — React, Vue, Svelte, Node.js.
       </InfoBox>
+
+      <Challenge title="Défi : Configuration monorepo TypeScript">
+        <p>Crée une configuration TypeScript pour un monorepo avec un <code>tsconfig.base.json</code> commun et deux packages — <code>frontend</code> (Vite + React, DOM) et <code>backend</code> (Node.js, CommonJS). Chaque package étend la config de base et surcharge uniquement ce dont il a besoin.</p>
+        <CodeBlock language="json">{codeChallengeMonorepo}</CodeBlock>
+      </Challenge>
+
+      <Challenge title="Défi : Écrire un fichier .d.ts pour une lib JS">
+        <p>Crée un fichier de déclaration <code>.d.ts</code> pour une bibliothèque JS existante (<code>lib-calcul.js</code>) avec des types précis. Étend aussi les types globaux <code>Window</code> et <code>NodeJS.ProcessEnv</code> pour un projet full-stack.</p>
+        <CodeBlock language="typescript">{codeChallengeDts}</CodeBlock>
+      </Challenge>
     </>
   );
 }

@@ -281,6 +281,10 @@ function Ch15Patterns() {
 
       <CodeBlock language="javascript">{codeImmutabilite}</CodeBlock>
 
+      <InfoBox type="tip">
+        La FP n'est pas "tout ou rien". Commence par <strong>deux règles simples</strong> : (1) préfère les fonctions pures pour la logique métier, (2) évite de muter les données reçues en paramètre. Ces deux habitudes éliminent déjà la majorité des bugs liés aux effets de bord. L'immutabilité complète avec des structures persistantes peut venir plus tard si nécessaire.
+      </InfoBox>
+
       <h2>Currying — Pré-charger des arguments</h2>
 
       <p>Le currying transforme une fonction à N arguments en une chaîne de fonctions à 1 argument. C'est comme une usine de fonctions spécialisées.</p>
@@ -289,15 +293,27 @@ function Ch15Patterns() {
 
       <CodeBlock language="javascript">{codeCurry2}</CodeBlock>
 
+      <InfoBox type="tip">
+        En pratique, le currying brille avec <strong>l'application partielle</strong> pour créer des variantes spécialisées d'une fonction générique. Au lieu de répéter <code>filter(arr, x =&gt; x &gt; 5)</code> partout, tu crées une fois <code>const plusDe5 = superieurA(5)</code> et tu réutilises. Les bibliothèques <code>Ramda</code> et <code>fp-ts</code> sont entièrement basées sur ce principe.
+      </InfoBox>
+
       <h2>compose et pipe — Construire des pipelines de transformation</h2>
 
       <p><strong>compose</strong> applique des fonctions de droite à gauche (ordre mathématique). <strong>pipe</strong> applique de gauche à droite (ordre de lecture naturel).</p>
 
       <CodeBlock language="javascript">{codePipe}</CodeBlock>
 
+      <InfoBox type="warning">
+        Le débogage des pipelines peut être difficile — une erreur dans une étape intermédiaire donne parfois une stacktrace obscure. Une technique : insérer temporairement <code>tap = (fn) =&gt; (x) =&gt; (fn(x), x)</code> dans le pipe pour logger sans casser le flux : <code>pipe(nettoyer, tap(console.log), minuscules, ...)</code>.
+      </InfoBox>
+
       <h2>Mémoïsation — Cacher les résultats coûteux</h2>
 
       <CodeBlock language="javascript">{codeMemo}</CodeBlock>
+
+      <InfoBox type="tip">
+        La mémoïsation n'est utile que pour les fonctions <strong>pures et coûteuses</strong> appelées plusieurs fois avec les mêmes arguments. Évite-la pour : les fonctions rapides (le cache a un coût), les fonctions avec effets de bord, et les fonctions avec des arguments objets (sans WeakMap, la comparaison par référence rate souvent). React's <code>useMemo</code> et <code>useCallback</code> sont des formes de mémoïsation.
+      </InfoBox>
 
       <h2>Transducers — Composer des reducers efficacement</h2>
 
@@ -310,6 +326,10 @@ function Ch15Patterns() {
       <p>La monade <code>Maybe</code> encapsule une valeur qui peut être <code>null</code> ou <code>undefined</code>, et court-circuite toutes les opérations si la valeur est absente.</p>
 
       <CodeBlock language="javascript">{codeMaybe}</CodeBlock>
+
+      <InfoBox type="success">
+        En JavaScript moderne, l'<strong>optional chaining</strong> (<code>user?.adresse?.ville</code>) est une version simplifiée de la monade Maybe pour les accès de propriétés. Pour des pipelines de transformation plus complexes avec gestion d'erreurs, explore <code>fp-ts</code> ou <code>effect-ts</code> — ils implémentent Maybe (<code>Option</code>), Either (succès/échec), et bien plus.
+      </InfoBox>
 
       <h2>FP Pratique — Patterns dans React et JS moderne</h2>
 

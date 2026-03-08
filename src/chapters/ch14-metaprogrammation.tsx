@@ -279,11 +279,19 @@ function Ch14Metaprogrammation() {
 
       <CodeBlock language="javascript">{codeProxySchema}</CodeBlock>
 
+      <InfoBox type="warning">
+        Les Proxy ont un <strong>coût en performance</strong> mesurable (20-50% plus lent sur les accès aux propriétés). Utilise-les pour les données réactives, la validation aux frontières du système, ou les outils de développement — pas pour des objets accédés des millions de fois dans des boucles critiques. Vue 3 l'utilise uniquement sur les objets réactifs, pas sur tous les objets.
+      </InfoBox>
+
       <h2>Reflect — Le miroir des Proxy traps</h2>
 
       <p><code>Reflect</code> expose les opérations fondamentales de JS comme des fonctions. Son rôle principal : restaurer le comportement par défaut dans un Proxy trap tout en passant correctement le <code>receiver</code> (<code>this</code>).</p>
 
       <CodeBlock language="javascript">{codeReflect}</CodeBlock>
+
+      <InfoBox type="tip">
+        Utilise <strong>toujours</strong> <code>Reflect.get(target, prop, receiver)</code> plutôt que <code>target[prop]</code> dans un trap <code>get</code>. Sans le <code>receiver</code>, les getters qui utilisent <code>this</code> se retrouvent avec le mauvais contexte — un bug subtil et difficile à diagnostiquer. Les méthodes Reflect correspondent exactement aux traps Proxy : <code>get</code> → <code>Reflect.get</code>, <code>set</code> → <code>Reflect.set</code>, etc.
+      </InfoBox>
 
       <h2>Symbol.iterator — Rendre n'importe quel objet itérable</h2>
 
@@ -291,9 +299,17 @@ function Ch14Metaprogrammation() {
 
       <CodeBlock language="javascript">{codeIterator}</CodeBlock>
 
+      <InfoBox type="success">
+        Le <strong>protocole itérable</strong> est l'une des abstractions les plus puissantes de JavaScript moderne. Une fois qu'un objet implémente <code>[Symbol.iterator]</code>, il fonctionne automatiquement avec toute l'API qui comprend les itérables : <code>for...of</code>, spread (<code>[...r]</code>), déstructuration, <code>Array.from()</code>, <code>Promise.all()</code>, <code>Set()</code>, <code>Map()</code>... zéro adaptation supplémentaire.
+      </InfoBox>
+
       <h2>Symbol.toPrimitive — Contrôler la conversion de type</h2>
 
       <CodeBlock language="javascript">{codeToPrimitive}</CodeBlock>
+
+      <InfoBox type="warning">
+        La conversion de type implicite est une source fréquente de bugs. Bien que <code>Symbol.toPrimitive</code> permette de la contrôler, <strong>évite d'en dépendre</strong> dans le code métier — il est difficile de savoir quel <code>hint</code> JavaScript va utiliser dans une expression complexe. Préfère des conversions explicites : <code>Number(monObjet)</code>, <code>String(monObjet)</code>.
+      </InfoBox>
 
       <h2>Générateurs — Fonctions qui peuvent être pausées</h2>
 
@@ -301,7 +317,15 @@ function Ch14Metaprogrammation() {
 
       <CodeBlock language="javascript">{codeGenerateurs}</CodeBlock>
 
+      <InfoBox type="tip">
+        Les générateurs permettent aussi la <strong>communication bidirectionnelle</strong> via <code>.next(valeur)</code> : la valeur passée à <code>next()</code> devient le résultat de l'expression <code>yield</code> dans le générateur. C'est ainsi que <code>redux-saga</code> fonctionne — les générateurs décrivent des effets asynchrones comme une séquence synchrone, et le runtime les exécute.
+      </InfoBox>
+
       <CodeBlock language="javascript">{codeWeakMapPrivate}</CodeBlock>
+
+      <InfoBox type="tip">
+        Depuis ES2022, les <strong>champs privés avec <code>#</code></strong> sont préférables à WeakMap pour la plupart des cas : plus simples, meilleure ergonomie, performances équivalentes. Utilise WeakMap quand tu as besoin de données privées <em>associées à des objets externes</em> (que tu ne contrôles pas), ou quand tu veux que la libération mémoire soit strictement automatique.
+      </InfoBox>
 
       <Challenge title="Défi : Objet Observable réactif">
         <p>Combinez Proxy et le pattern Observer pour créer une fonction <code>observable(obj)</code> qui notifie automatiquement tous les abonnés quand une propriété change.</p>

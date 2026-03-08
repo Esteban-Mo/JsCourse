@@ -1,24 +1,78 @@
+import React from 'react';
 import { CodeBlock, InfoBox, Challenge } from '../components/content';
 import type { Chapter } from '../types';
 
-const codeEventLoopDiagram = `┌─────────────────────────────────────────────────────────┐
-│                    THREAD JAVASCRIPT                    │
-│                                                         │
-│  ┌─────────────┐    ┌──────────────┐  ┌─────────────┐  │
-│  │  Call Stack │    │  Web APIs    │  │  Queues     │  │
-│  │  (exécution)│    │  (async I/O) │  │             │  │
-│  │             │    │              │  │ Microtasks  │  │
-│  │  fn3()      │    │  setTimeout  │  │  Promise    │  │
-│  │  fn2()      │    │  fetch       │  │  queueMicro │  │
-│  │  fn1()      │    │  addEventListener              │  │
-│  │  [global]   │    │              │  │ Macrotasks  │  │
-│  └─────────────┘    └──────────────┘  │  setTimeout │  │
-│                           │           │  setInterval│  │
-│                           └──────────▶│  I/O events │  │
-│                                       └─────────────┘  │
-│                                                         │
-│  Priorité : Stack → Microtasks → Macrotasks (1 à la fois)
-└─────────────────────────────────────────────────────────┘`;
+function EventLoopDiagram() {
+  const box = (color: string): React.CSSProperties => ({
+    background: `rgba(${color}, 0.1)`,
+    border: `1px solid rgba(${color}, 0.35)`,
+    borderRadius: 4,
+    padding: '4px 8px',
+    marginBottom: 4,
+    color: '#e2e8f0',
+    fontSize: 12,
+    textAlign: 'center',
+  });
+  return (
+    <div style={{ background: 'var(--surface)', border: '2px solid var(--accent)', borderRadius: 12, padding: '20px 16px', margin: '16px 0' }}>
+      <div style={{ textAlign: 'center', color: 'var(--accent)', fontWeight: 'bold', letterSpacing: 2, fontSize: 12, marginBottom: 16 }}>
+        ── THREAD JAVASCRIPT ──
+      </div>
+      <div style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
+
+        {/* Call Stack */}
+        <div style={{ flex: 1, border: '1px solid var(--border)', borderRadius: 8, padding: 12 }}>
+          <div style={{ textAlign: 'center', borderBottom: '1px solid var(--border)', paddingBottom: 8, marginBottom: 10 }}>
+            <div style={{ color: '#60a5fa', fontWeight: 'bold', fontSize: 13 }}>Call Stack</div>
+            <div style={{ color: 'var(--muted)', fontSize: 11 }}>(exécution)</div>
+          </div>
+          {['fn3()', 'fn2()', 'fn1()', '[global]'].map(fn => (
+            <div key={fn} style={box('96,165,250')}>{fn}</div>
+          ))}
+        </div>
+
+        {/* Web APIs */}
+        <div style={{ flex: 1, border: '1px solid var(--border)', borderRadius: 8, padding: 12 }}>
+          <div style={{ textAlign: 'center', borderBottom: '1px solid var(--border)', paddingBottom: 8, marginBottom: 10 }}>
+            <div style={{ color: '#a78bfa', fontWeight: 'bold', fontSize: 13 }}>Web APIs</div>
+            <div style={{ color: 'var(--muted)', fontSize: 11 }}>(async I/O)</div>
+          </div>
+          {['setTimeout', 'fetch', 'addEventListener'].map(api => (
+            <div key={api} style={box('167,139,250')}>{api}</div>
+          ))}
+        </div>
+
+        {/* Arrow */}
+        <div style={{ color: 'var(--accent)', fontSize: 22, flexShrink: 0, lineHeight: 1 }}>→</div>
+
+        {/* Queues */}
+        <div style={{ flex: 1.2, border: '1px solid var(--border)', borderRadius: 8, padding: 12 }}>
+          <div style={{ textAlign: 'center', borderBottom: '1px solid var(--border)', paddingBottom: 8, marginBottom: 10 }}>
+            <div style={{ color: '#34d399', fontWeight: 'bold', fontSize: 13 }}>Queues</div>
+          </div>
+          <div style={{ fontSize: 11, color: '#fcd34d', fontWeight: 'bold', marginBottom: 4 }}>⚡ Microtasks</div>
+          {['Promise.then', 'queueMicrotask'].map(t => (
+            <div key={t} style={{ ...box('252,211,77'), fontSize: 11, marginBottom: 3 }}>{t}</div>
+          ))}
+          <div style={{ fontSize: 11, color: '#f87171', fontWeight: 'bold', margin: '8px 0 4px' }}>⏱ Macrotasks</div>
+          {['setTimeout', 'setInterval', 'I/O events'].map(t => (
+            <div key={t} style={{ ...box('248,113,113'), fontSize: 11, marginBottom: 3 }}>{t}</div>
+          ))}
+        </div>
+      </div>
+
+      <div style={{ marginTop: 14, textAlign: 'center', fontSize: 12, color: 'var(--muted)' }}>
+        Priorité :&nbsp;
+        <span style={{ color: '#60a5fa', fontWeight: 'bold' }}>Stack</span>
+        {' → '}
+        <span style={{ color: '#fcd34d', fontWeight: 'bold' }}>Microtasks</span>
+        {' → '}
+        <span style={{ color: '#f87171', fontWeight: 'bold' }}>Macrotasks</span>
+        <span style={{ opacity: 0.6 }}> (1 à la fois)</span>
+      </div>
+    </div>
+  );
+}
 
 const codeEventLoop = `// Démonstration de l'ordre d'exécution
 console.log("1 — Synchrone (Call Stack)");
@@ -250,7 +304,7 @@ function Ch13Performance() {
 
       <p>JavaScript est mono-thread mais non-bloquant grâce à un mécanisme précis. Voici l'ordre exact d'exécution :</p>
 
-      <CodeBlock language="text">{codeEventLoopDiagram}</CodeBlock>
+      <EventLoopDiagram />
 
       <CodeBlock language="javascript">{codeEventLoop}</CodeBlock>
 

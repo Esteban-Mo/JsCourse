@@ -1,5 +1,67 @@
-import { CodeBlock, InfoBox } from '../components/content';
+import { CodeBlock, InfoBox, Challenge } from '../components/content';
 import type { Chapter } from '../types';
+
+const codeChallengeRetry = `// Décorateur @Retry : réessaie automatiquement en cas d'erreur
+function Retry(tentatives: number, delai = 500) {
+  return function(target: any, key: string, desc: PropertyDescriptor) {
+    const original = desc.value;
+
+    desc.value = async function(...args: any[]) {
+      for (let i = 0; i < tentatives; i++) {
+        try {
+          return await original.apply(this, args);
+        } catch (err) {
+          if (i === tentatives - 1) throw err;
+          console.warn(\`[Retry] tentative \${i + 1}/\${tentatives} échouée, attente \${delai}ms\`);
+          await new Promise(r => setTimeout(r, delai));
+        }
+      }
+    };
+    return desc;
+  };
+}
+
+class ApiService {
+  @Retry(3, 1000)
+  async fetchUser(id: number) {
+    const res = await fetch(\`/api/users/\${id}\`);
+    if (!res.ok) throw new Error(\`HTTP \${res.status}\`);
+    return res.json();
+  }
+}`;
+
+const codeChallengeContainer = `// Conteneur d'injection de dépendances simple
+class Container {
+  private bindings = new Map<string, () => any>();
+  private singletons = new Map<string, any>();
+
+  bind<T>(token: string, factory: () => T): void {
+    this.bindings.set(token, factory);
+  }
+
+  singleton<T>(token: string, factory: () => T): void {
+    this.bindings.set(token, () => {
+      if (!this.singletons.has(token)) {
+        this.singletons.set(token, factory());
+      }
+      return this.singletons.get(token);
+    });
+  }
+
+  resolve<T>(token: string): T {
+    const factory = this.bindings.get(token);
+    if (!factory) throw new Error(\`Token non enregistré: \${token}\`);
+    return factory();
+  }
+}
+
+// Usage
+const container = new Container();
+container.singleton("db", () => new DatabaseConnection());
+container.bind("userRepo", () => new UserRepository(container.resolve("db")));
+container.bind("userService", () => new UserService(container.resolve("userRepo")));
+
+const service = container.resolve<UserService>("userService");`;
 
 const codeClasseDecorateurs = `// Un décorateur simple : ajoute un timestamp de création
 function Horodatable(constructeur: Function) {
@@ -153,17 +215,29 @@ function Ch19TsDecorateurs() {
 
       <CodeBlock language="typescript">{codeClasseDecorateurs}</CodeBlock>
 
+      <InfoBox type="tip">
+        Les décorateurs de classe sont exécutés <strong>une seule fois à la définition</strong> de la classe (au chargement du module), pas à chaque instanciation. Ils sont évalués de bas en haut quand plusieurs décorateurs sont empilés : <code>@A @B class C</code> applique B en premier, puis A.
+      </InfoBox>
+
       <h2>Décorateur de méthode</h2>
 
       <p>Un décorateur de méthode intercepte l'appel à une méthode. C'est très utile pour ajouter de la <strong>journalisation, du cache, de la gestion d'erreurs</strong> ou de la validation sans modifier la méthode elle-même.</p>
 
       <CodeBlock language="typescript">{codeMethodeDecorateurs}</CodeBlock>
 
+      <InfoBox type="success">
+        Les décorateurs de méthode sont au cœur de frameworks comme <strong>NestJS</strong> (<code>@Get()</code>, <code>@Post()</code>), <strong>TypeORM</strong> (<code>@Entity()</code>, <code>@Column()</code>), et <strong>class-validator</strong> (<code>@IsEmail()</code>, <code>@MinLength()</code>). Comprendre leur mécanique permet de mieux utiliser — et parfois créer — ces frameworks.
+      </InfoBox>
+
       <h2>Pattern Singleton avec TypeScript</h2>
 
       <p>Le Singleton garantit qu'une classe n'a <strong>qu'une seule instance</strong> dans toute l'application. C'est utile pour les connexions DB, les stores, les services de configuration.</p>
 
       <CodeBlock language="typescript">{codeSingleton}</CodeBlock>
+
+      <InfoBox type="warning">
+        En JavaScript moderne, les <strong>modules ES sont des singletons naturels</strong> : un module n'est évalué qu'une fois, et chaque import reçoit la même référence. Pour les cas simples, <code>export const config = new Config()</code> dans un module suffit souvent, sans besoin d'un pattern Singleton explicite.
+      </InfoBox>
 
       <h2>Pattern Repository</h2>
 
@@ -174,6 +248,16 @@ function Ch19TsDecorateurs() {
       <InfoBox type="tip">
         Le pattern Repository est la base de l'<strong>architecture hexagonale</strong> (Ports &amp; Adapters). Ton code métier (le cœur) ne sait jamais si les données viennent d'une PostgreSQL, MongoDB ou d'un simple tableau en mémoire — il parle uniquement à l'interface.
       </InfoBox>
+
+      <Challenge title="Défi : Décorateur @Retry pour les appels réseau">
+        <p>Crée un décorateur <code>@Retry(tentatives, delai)</code> qui réessaie automatiquement une méthode async en cas d'erreur, avec un délai configurable entre chaque tentative. Après le nombre maximum de tentatives, l'erreur est propagée.</p>
+        <CodeBlock language="typescript">{codeChallengeRetry}</CodeBlock>
+      </Challenge>
+
+      <Challenge title="Défi : Conteneur d'injection de dépendances">
+        <p>Implémente un <code>Container</code> IoC (Inversion of Control) simple qui gère des <em>bindings</em> nommés et des <em>singletons</em>. La méthode <code>resolve()</code> doit retourner une instance typée en résolvant les dépendances à la volée.</p>
+        <CodeBlock language="typescript">{codeChallengeContainer}</CodeBlock>
+      </Challenge>
     </>
   );
 }

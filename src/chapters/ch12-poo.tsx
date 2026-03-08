@@ -286,9 +286,17 @@ function Ch12Poo() {
 
       <CodeBlock language="javascript">{codeProto2}</CodeBlock>
 
+      <InfoBox type="tip">
+        La chaîne de prototypes est <strong>dynamique</strong> : si tu modifies <code>Animal.prototype.respirer</code> après avoir créé des instances, toutes les instances existantes verront immédiatement la nouvelle version. Une propriété définie directement sur l'instance (<em>own property</em>) a toujours la priorité sur la chaîne de prototypes.
+      </InfoBox>
+
       <h2>Classes ES6+ — Syntaxe complète</h2>
 
       <CodeBlock language="javascript">{codeClasse}</CodeBlock>
+
+      <InfoBox type="tip">
+        Les méthodes <strong>statiques</strong> (<code>static</code>) appartiennent à la classe elle-même, pas aux instances. Elles sont idéales pour les méthodes utilitaires ou les factories : <code>Date.now()</code>, <code>Array.from()</code>, <code>Object.keys()</code> sont tous des méthodes statiques. Tu les appelles sur la classe, jamais sur une instance.
+      </InfoBox>
 
       <h2>Héritage avec extends et super</h2>
 
@@ -298,11 +306,19 @@ function Ch12Poo() {
         <code>super()</code> doit être appelé avant toute référence à <code>this</code> dans le constructeur d'une classe enfant. C'est parce que le constructeur parent est responsable de créer l'objet <code>this</code>. Sans super(), <code>this</code> n'est pas encore initialisé.
       </InfoBox>
 
+      <InfoBox type="danger">
+        L'<strong>héritage profond</strong> (plus de 2-3 niveaux) est un anti-pattern. Il crée des couplages forts et des hierarchies difficiles à modifier. Préfère la <strong>composition</strong> (un objet contient un autre) à l'héritage quand c'est possible. Les mixins et le pattern Decorator sont de bonnes alternatives.
+      </InfoBox>
+
       <h2>Mixins — Composition d'héritage multiple</h2>
 
       <p>JavaScript n'a pas d'héritage multiple, mais on peut simuler la composition de comportements avec des <strong>mixins</strong> : des fonctions qui ajoutent des méthodes à une classe.</p>
 
       <CodeBlock language="javascript">{codeMixins}</CodeBlock>
+
+      <InfoBox type="tip">
+        Les mixins sont parfaits pour les comportements transversaux (cross-cutting concerns) comme la <strong>sérialisation</strong>, le <strong>logging</strong>, ou la <strong>validation</strong> — des comportements qui n'ont pas de relation d'héritage naturelle avec le domaine métier mais dont plusieurs classes ont besoin.
+      </InfoBox>
 
       <h2>Pattern Observer — Architecture événementielle</h2>
 
@@ -310,9 +326,17 @@ function Ch12Poo() {
 
       <CodeBlock language="javascript">{codeObserver}</CodeBlock>
 
+      <InfoBox type="success">
+        Toujours retourner une <strong>fonction de désabonnement</strong> depuis <code>on()</code> (comme dans l'exemple). Cela évite les fuites mémoire et les bugs de "zombie listeners" — des handlers qui continuent à s'exécuter sur des composants détruits. C'est exactement le pattern que React utilise dans <code>useEffect</code> avec sa fonction de cleanup.
+      </InfoBox>
+
       <h2>Pattern Builder — Construction d'objets complexes</h2>
 
       <CodeBlock language="javascript">{codeBuilder}</CodeBlock>
+
+      <InfoBox type="tip">
+        Le pattern Builder brille quand un objet a de nombreux paramètres optionnels — l'alternative est un constructeur avec 8 paramètres dont la moitié sont <code>undefined</code>. L'API fluide (chaque méthode retourne <code>this</code>) rend le code lisible comme de la prose et permet d'omettre facilement les étapes facultatives.
+      </InfoBox>
 
       <Challenge title="Défi : Store réactif (mini-Redux)">
         <p>Implémentez un <code>Store</code> qui combine l'Observer pattern et l'immutabilité. Il doit permettre de dispatcher des actions et notifier les abonnés à chaque changement d'état.</p>

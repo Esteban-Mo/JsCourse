@@ -1,4 +1,4 @@
-import { CodeBlock, InfoBox } from '../components/content';
+import { CodeBlock, InfoBox, Challenge } from '../components/content';
 import type { Chapter } from '../types';
 
 const codeModificateurs = `class CompteBancaire {
@@ -87,6 +87,74 @@ function parler(animal: Chat | Chien) {
   }
 }`;
 
+const codeChallengeFormes = `abstract class Forme {
+  abstract aire(): number;
+  abstract perimetre(): number;
+  abstract couleur: string;
+
+  decrire(): string {
+    return \`\${this.constructor.name} — aire: \${this.aire().toFixed(2)}, périmètre: \${this.perimetre().toFixed(2)}\`;
+  }
+
+  estPlusGrandeQue(autre: Forme): boolean {
+    return this.aire() > autre.aire();
+  }
+}
+
+class Cercle extends Forme {
+  couleur = "rouge";
+  constructor(private rayon: number) { super(); }
+  aire() { return Math.PI * this.rayon ** 2; }
+  perimetre() { return 2 * Math.PI * this.rayon; }
+}
+
+class Rectangle extends Forme {
+  couleur = "bleu";
+  constructor(private l: number, private h: number) { super(); }
+  aire() { return this.l * this.h; }
+  perimetre() { return 2 * (this.l + this.h); }
+}
+
+class Triangle extends Forme {
+  couleur = "vert";
+  constructor(private base: number, private hauteur: number, private hyp: number) { super(); }
+  aire() { return (this.base * this.hauteur) / 2; }
+  perimetre() { return this.base + this.hauteur + this.hyp; }
+}
+
+const formes: Forme[] = [new Cercle(5), new Rectangle(4, 6), new Triangle(3, 4, 5)];
+formes.sort((a, b) => b.aire() - a.aire());
+formes.forEach(f => console.log(f.decrire()));`;
+
+const codeChallengeNotif = `// Discriminated Union : système de notifications
+type Notification =
+  | { type: "email";   destinataire: string; sujet: string;  corps: string }
+  | { type: "sms";     telephone: string;    message: string }
+  | { type: "push";    deviceId: string;     titre: string;   payload?: object }
+  | { type: "webhook"; url: string;          data: object;    secret: string };
+
+function envoyer(notif: Notification): Promise<void> {
+  switch (notif.type) {
+    case "email":
+      return sendEmail(notif.destinataire, notif.sujet, notif.corps);
+    case "sms":
+      return sendSMS(notif.telephone, notif.message);
+    case "push":
+      return sendPush(notif.deviceId, notif.titre, notif.payload);
+    case "webhook":
+      return fetch(notif.url, {
+        method: "POST",
+        headers: { "X-Secret": notif.secret },
+        body: JSON.stringify(notif.data)
+      }).then(() => {});
+  }
+}
+
+// TypeScript vérifie l'exhaustivité — si on ajoute un type sans case, erreur !
+function assertNever(x: never): never {
+  throw new Error("Type non géré: " + JSON.stringify(x));
+}`;
+
 const codeDiscriminated = `// Exemple : gestion d'états d'une requête API
 type EtatRequete =
   | { etat: "chargement" }
@@ -138,17 +206,29 @@ function Ch18TsPoo() {
 
       <CodeBlock language="typescript">{codeModificateurs}</CodeBlock>
 
+      <InfoBox type="tip">
+        Le <strong>raccourci de constructeur</strong> TypeScript (<code>constructor(private solde: number)</code>) déclare <em>et</em> assigne la propriété en une seule ligne. C'est l'une des features les plus pratiques de TypeScript — elle réduit le boilerplate et rend le code plus lisible.
+      </InfoBox>
+
       <h2>Classes abstraites</h2>
 
       <p>Une classe abstraite est un <strong>modèle incomplet</strong> — elle définit la structure et le comportement commun, mais délègue certaines implémentations aux classes enfants. On ne peut pas instancier une classe abstraite directement.</p>
 
       <CodeBlock language="typescript">{codeAbstract}</CodeBlock>
 
+      <InfoBox type="warning">
+        Une classe abstraite n'est pas une interface. Elle peut contenir du <strong>code concret partagé</strong> (comme <code>decrire()</code>). Préfère les interfaces quand tu veux définir uniquement un contrat ; utilise une classe abstraite quand tu veux partager de la logique entre les implémentations.
+      </InfoBox>
+
       <h2>Type Guards — rétrécir le type</h2>
 
       <p>Quand une variable peut être de plusieurs types (union type), les <strong>type guards</strong> sont des vérifications qui permettent à TypeScript de "rétrécir" (narrow) le type dans chaque branche.</p>
 
       <CodeBlock language="typescript">{codeTypeGuards}</CodeBlock>
+
+      <InfoBox type="tip">
+        L'ordre des type guards <strong>compte</strong>. TypeScript narrowe le type dans chaque branche — après un <code>if (forme instanceof Cercle)</code>, le bloc <code>else</code> sait que ce n'est <em>pas</em> un Cercle. Tu peux enchaîner autant de guards que nécessaire pour arriver au type le plus précis possible.
+      </InfoBox>
 
       <h2>Discriminated Unions</h2>
 
@@ -159,6 +239,20 @@ function Ch18TsPoo() {
       <InfoBox type="success">
         Les <strong>discriminated unions</strong> sont le pattern TypeScript le plus utilisé dans les bases de code React et Redux. Ils remplacent avantageusement les hiérarchies de classes complexes par des types simples et exhaustifs.
       </InfoBox>
+
+      <InfoBox type="danger">
+        N'utilise <strong>jamais</strong> <code>as MonType</code> (type assertion) pour contourner les vérifications TypeScript. Cela dit au compilateur "fais-moi confiance" — et si tu as tort, le bug n'apparaîtra qu'à l'exécution. Écris plutôt un vrai type guard ou une discriminated union pour laisser TypeScript inférer en toute sécurité.
+      </InfoBox>
+
+      <Challenge title="Défi : Hiérarchie de formes géométriques">
+        <p>Crée trois classes concrètes (<code>Cercle</code>, <code>Rectangle</code>, <code>Triangle</code>) qui étendent une classe abstraite <code>Forme</code>. Ajoute une propriété abstraite <code>couleur</code>, une méthode <code>decrire()</code> commune et une méthode <code>estPlusGrandeQue()</code>. Trie un tableau de formes par aire décroissante.</p>
+        <CodeBlock language="typescript">{codeChallengeFormes}</CodeBlock>
+      </Challenge>
+
+      <Challenge title="Défi : Système de notifications multi-canaux">
+        <p>Modélise un système de notifications avec un discriminated union à 4 variantes (email, SMS, push, webhook). Implémente une fonction <code>envoyer()</code> avec un switch exhaustif — TypeScript doit détecter tout type oublié.</p>
+        <CodeBlock language="typescript">{codeChallengeNotif}</CodeBlock>
+      </Challenge>
     </>
   );
 }
