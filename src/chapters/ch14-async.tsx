@@ -285,72 +285,126 @@ function PromiseDiagram() {
 }
 
 function RestaurantDiagram() {
-  const box = (color: string): React.CSSProperties => ({
-    background: `rgba(${color}, 0.1)`,
-    border: `1px solid rgba(${color}, 0.35)`,
-    borderRadius: 6,
-    padding: '8px 12px',
-    color: '#e2e8f0',
-    fontSize: 12,
+  const box = (color: string, textColor: string = '#e2e8f0'): React.CSSProperties => ({
+    background: `rgba(${color}, 0.15)`,
+    border: `2px solid rgba(${color}, 0.5)`,
+    borderRadius: 8,
+    padding: '10px 14px',
+    color: textColor,
+    fontSize: 13,
     textAlign: 'center',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    lineHeight: 1.3
+    fontWeight: '500',
+    boxShadow: `0 4px 6px -1px rgba(${color}, 0.1)`,
   });
 
-  const arrow = (label?: string) => (
-    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', flexShrink: 0, padding: '0 8px' }}>
-      {label && <span style={{ fontSize: 10, color: 'var(--muted)', marginBottom: 2 }}>{label}</span>}
-      <span style={{ color: 'var(--accent)' }}>→</span>
-    </div>
-  );
-
   return (
-    <div style={{ background: 'var(--surface)', border: '2px solid var(--border)', borderRadius: 12, padding: '20px', margin: '24px 0' }}>
+    <div style={{ background: 'var(--surface)', border: '2px solid var(--border)', borderRadius: 12, padding: '24px', margin: '32px 0' }}>
 
-      {/* Bloquant */}
-      <div style={{ marginBottom: 24 }}>
-        <div style={{ color: '#f87171', fontWeight: 'bold', fontSize: 13, marginBottom: 12 }}>
-          ❌ Exécution Bloquante (Synchrone)
-        </div>
-        <div style={{ display: 'flex', alignItems: 'center', overflowX: 'auto', paddingBottom: 8 }}>
-          <div style={{ ...box('96,165,250'), width: 100, flexShrink: 0 }}>Cmd Table 1</div>
-          {arrow('1 min')}
-          <div style={{ ...box('248,113,113'), width: 140, borderStyle: 'dashed', flexShrink: 0 }}>Attend cuisine (bloqué !)<br /><span style={{ opacity: 0.7, fontSize: 10 }}>(JS ne peut rien faire)</span></div>
-          {arrow('15 min')}
-          <div style={{ ...box('52,211,153'), width: 100, flexShrink: 0 }}>Sert Table 1</div>
-          {arrow('1 min')}
-          <div style={{ ...box('96,165,250'), width: 100, flexShrink: 0 }}>Cmd Table 2</div>
-        </div>
-        <div style={{ fontSize: 11, color: 'var(--muted)', marginTop: 4 }}>
-          ⏱️ La table 2 a attendu 16 min avant d'être remarquée.
-        </div>
+      <div style={{ textAlign: 'center', color: 'var(--accent)', fontWeight: 'bold', letterSpacing: 1.5, fontSize: 14, marginBottom: 32 }}>
+        L'EXÉCUTION ASYNCHRONE DÉMYSTIFIÉE
       </div>
 
-      <div style={{ height: 1, background: 'var(--border)', width: '100%', marginBottom: 24 }}></div>
+      <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1fr) minmax(0, 1fr)', gap: '32px' }}>
 
-      {/* Non-Bloquant */}
-      <div>
-        <div style={{ color: '#34d399', fontWeight: 'bold', fontSize: 13, marginBottom: 12 }}>
-          ✅ Exécution Non-Bloquante (JS Asynchrone)
+        {/* Colonne Bloquante */}
+        <div style={{ background: 'rgba(248, 113, 113, 0.05)', borderRadius: 12, padding: '20px', border: '1px solid rgba(248, 113, 113, 0.2)', display: 'flex', flexDirection: 'column' }}>
+          <div style={{ color: '#f87171', fontWeight: 'bold', fontSize: 16, marginBottom: 8, textAlign: 'center' }}>
+            L'Approche Bloquante ❌
+          </div>
+          <div style={{ fontSize: 12, color: 'var(--muted)', textAlign: 'center', marginBottom: 24, minHeight: 40 }}>
+            Le serveur (JavaScript) attend devant la cuisine sans rien faire.
+          </div>
+
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', position: 'relative', flex: 1 }}>
+            <div style={{ ...box('96,165,250'), width: '100%' }}>👨‍🍳 Prend commande T1</div>
+
+            {/* Ligne de temps bloquante */}
+            <div style={{ position: 'relative', paddingLeft: '40px' }}>
+              <div style={{ position: 'absolute', left: '16px', top: '0', bottom: '0', width: '2px', background: '#f87171' }}></div>
+              <div style={{ ...box('248,113,113', '#fca5a5'), borderStyle: 'solid', background: 'rgba(248,113,113,0.1)' }}>
+                ⏳ Attend le plat...<br />
+                <span style={{ fontSize: 11, opacity: 0.8 }}>(15 minutes perdues)</span>
+              </div>
+            </div>
+
+            <div style={{ ...box('52,211,153'), width: '100%' }}>🍽️ Sert Table 1</div>
+            <div style={{ ...box('96,165,250'), width: '100%' }}>👨‍🍳 Prend commande T2</div>
+
+            {/* Tag de conclusion */}
+            <div style={{ marginTop: 'auto', background: 'rgba(248, 113, 113, 0.2)', color: '#fca5a5', padding: '8px', borderRadius: 6, fontSize: 12, textAlign: 'center' }}>
+              La Table 2 est furieuse d'attendre.
+            </div>
+          </div>
         </div>
-        <div style={{ display: 'flex', alignItems: 'center', overflowX: 'auto', paddingBottom: 8 }}>
-          <div style={{ ...box('96,165,250'), width: 100, flexShrink: 0 }}>Cmd Table 1</div>
-          {arrow('1 min')}
-          <div style={{ ...box('167,139,250'), width: 140, flexShrink: 0 }}>Délègue à la cuisine<br /><span style={{ opacity: 0.7, fontSize: 10 }}>(API asynchrone)</span></div>
-          {arrow('immédiat')}
-          <div style={{ ...box('96,165,250'), width: 100, flexShrink: 0 }}>Cmd Table 2</div>
-          {arrow('1 min')}
-          <div style={{ ...box('167,139,250'), width: 100, flexShrink: 0 }}>Délègue...</div>
-          {arrow('plus tard')}
-          <div style={{ ...box('52,211,153'), width: 100, borderStyle: 'dashed', flexShrink: 0 }}>Event Loop :<br />Sert Table 1</div>
+
+        {/* Colonne Non-Bloquante */}
+        <div style={{ background: 'rgba(52, 211, 153, 0.05)', borderRadius: 12, padding: '20px', border: '1px solid rgba(52, 211, 153, 0.2)', display: 'flex', flexDirection: 'column' }}>
+          <div style={{ color: '#34d399', fontWeight: 'bold', fontSize: 16, marginBottom: 8, textAlign: 'center' }}>
+            L'Approche Asynchrone ✅
+          </div>
+          <div style={{ fontSize: 12, color: 'var(--muted)', textAlign: 'center', marginBottom: 24, minHeight: 40 }}>
+            Le serveur délègue et continue son travail. La cuisine gère la durée asynchrone.
+          </div>
+
+          <div style={{ display: 'flex', gap: '16px', flex: 1 }}>
+
+            {/* Serveur (Call Stack) */}
+            <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '16px', minWidth: 0 }}>
+              <div style={{ fontSize: 11, fontWeight: 'bold', color: '#60a5fa', textAlign: 'center', whiteSpace: 'nowrap', textOverflow: 'ellipsis', overflow: 'hidden' }}>THREAD JS (Serveur)</div>
+              <div style={{ ...box('96,165,250'), padding: '10px 4px' }}>👨‍🍳 Cmd T1</div>
+              <div style={{ ...box('96,165,250'), padding: '10px 4px' }}>👨‍🍳 Cmd T2</div>
+              <div style={{ ...box('96,165,250'), padding: '10px 4px' }}>👨‍🍳 Cmd T3</div>
+              <div style={{ flex: 1, borderLeft: '2px dashed rgba(96,165,250,0.3)', margin: '4px auto 0' }}></div>
+              <div style={{ ...box('52,211,153'), padding: '10px 4px', marginTop: '16px' }}>🍽️ Sert T1</div>
+            </div>
+
+            {/* Cuisine (Web APIs) */}
+            <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '16px', minWidth: 0 }}>
+              <div style={{ fontSize: 11, fontWeight: 'bold', color: '#a78bfa', textAlign: 'center', whiteSpace: 'nowrap', textOverflow: 'ellipsis', overflow: 'hidden' }}>WEB APIs (Cuisine)</div>
+
+              <div style={{ position: 'relative', marginTop: 10 }}>
+                {/* Flèche de ticket */}
+                <svg style={{ position: 'absolute', left: '-20px', top: '10px', width: '20px', height: '10px', overflow: 'visible' }}>
+                  <path d="M 0 5 L 15 5" fill="none" stroke="#a78bfa" strokeWidth="1.5" strokeDasharray="2 2" />
+                  <polygon points="12,2 18,5 12,8" fill="#a78bfa" />
+                </svg>
+                <div style={{ ...box('167,139,250'), borderStyle: 'dashed', padding: '10px 4px' }}>🔥 Prépare T1 <span style={{ fontSize: 10 }}><br />(15min)</span></div>
+              </div>
+
+              <div style={{ position: 'relative', marginTop: 10 }}>
+                <svg style={{ position: 'absolute', left: '-20px', top: '10px', width: '20px', height: '10px', overflow: 'visible' }}>
+                  <path d="M 0 5 L 15 5" fill="none" stroke="#a78bfa" strokeWidth="1.5" strokeDasharray="2 2" />
+                  <polygon points="12,2 18,5 12,8" fill="#a78bfa" />
+                </svg>
+                <div style={{ ...box('167,139,250'), borderStyle: 'dashed', padding: '10px 4px' }}>🔥 Prépare T2</div>
+              </div>
+
+              <div style={{ position: 'relative', marginTop: 10 }}>
+                <svg style={{ position: 'absolute', left: '-20px', top: '10px', width: '20px', height: '10px', overflow: 'visible' }}>
+                  <path d="M 0 5 L 15 5" fill="none" stroke="#a78bfa" strokeWidth="1.5" strokeDasharray="2 2" />
+                  <polygon points="12,2 18,5 12,8" fill="#a78bfa" />
+                </svg>
+                <div style={{ ...box('167,139,250'), borderStyle: 'dashed', padding: '10px 4px' }}>🔥 Prépare T3</div>
+              </div>
+
+              {/* Retour au serveur */}
+              <div style={{ position: 'relative', height: 40, marginTop: 'auto' }}>
+                <svg style={{ position: 'absolute', left: '-30px', bottom: '2px', width: '60px', height: '40px', overflow: 'visible', zIndex: 0 }}>
+                  <path d="M 60 0 C 60 30, 20 20, 0 20" fill="none" stroke="#34d399" strokeWidth="2" strokeDasharray="4 4" />
+                  <polygon points="5,15 0,20 5,25" fill="#34d399" />
+                </svg>
+              </div>
+
+            </div>
+          </div>
+
+          {/* Tag de conclusion */}
+          <div style={{ marginTop: '16px', background: 'rgba(52, 211, 153, 0.2)', color: '#6ee7b7', padding: '8px', borderRadius: 6, fontSize: 12, textAlign: 'center', position: 'relative', zIndex: 1 }}>
+            Tout le monde est servi rapidement !
+          </div>
         </div>
-        <div style={{ fontSize: 11, color: 'var(--muted)', marginTop: 4 }}>
-          ⏱️ Le thread gère le flux en continu. La cuisine (Web APIs) gère le délai en arrière-plan.
-        </div>
+
       </div>
-
     </div>
   );
 }
