@@ -501,7 +501,7 @@ function toSlugComplet(titre) {
 
 toSlugComplet("L'été & l'automne"); // 'lete-et-lautomne'`}</CodeBlock>
 
-      <Challenge title="Formatteur de slug">
+      <Challenge title="Défi personnel à réaliser : Formatteur de slug">
         Écris une fonction <code>toSlug(titre)</code> qui transforme un titre en slug URL :
         minuscules, sans accents, espaces remplacés par des tirets, caractères spéciaux supprimés.
         <CodeBlock language="javascript">{`// Exemples attendus :

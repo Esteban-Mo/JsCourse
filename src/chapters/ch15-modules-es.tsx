@@ -315,7 +315,7 @@ math.additionner(1, 2);
         préfèrent les exports nommés granulaires plutôt qu'un seul objet exporté par défaut.
       </InfoBox>
 
-      <Challenge title="Refactoring avec modules">
+      <Challenge title="Défi personnel à réaliser : Refactoring avec modules">
         Refactorise ce code en 3 fichiers modulaires : <code>validators.js</code>,
         <code>formatters.js</code>, et <code>index.js</code> (barrel).
         <CodeBlock language="javascript">{`// monolithe.js — à séparer

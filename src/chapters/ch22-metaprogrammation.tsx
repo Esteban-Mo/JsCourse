@@ -273,7 +273,12 @@ function Ch14Metaprogrammation() {
 
       <h2>Proxy — Intercepter toutes les opérations sur un objet</h2>
 
-      <p>Un <code>Proxy</code> enveloppe un objet cible et peut intercepter (via des <em>traps</em>) toutes les opérations fondamentales : lecture, écriture, suppression, appel de fonction... Il est au cœur de la réactivité de Vue 3.</p>
+      <p>Un <code>Proxy</code> enveloppe un objet cible et peut intercepter toutes les opérations fondamentales : lecture, écriture, suppression, appel de fonction...</p>
+
+      <InfoBox type="tip">
+        <strong>Analogie du Videur de Boîte de Nuit 🕺</strong><br />
+        Visualisez l'objet JS comme une salle VIP. Le <code>Proxy</code> est le videur à l'entrée. Personne ne peut entrer ou interagir avec la salle VIP sans passer par lui. Le videur possède un manuel de consignes (le <code>handler</code>) qui lui dicte comment réagir à différentes situations (les <code>traps</code>). Par exemple, si quelqu'un essaie de lire une propriété (trap <code>get</code>), le videur peut dire : "Désolé, cette donnée est classée secrète". S'il y a une tentative de modification (trap <code>set</code>), il peut dire : "Hmm, cette donnée n'est pas au bon format, tu ne rentres pas". C'est d'ailleurs exactement comme ça que la réactivité de <strong>Vue 3</strong> fonctionne en coulisses !
+      </InfoBox>
 
       <CodeBlock language="javascript">{codeProxyTraps}</CodeBlock>
 
@@ -285,7 +290,8 @@ function Ch14Metaprogrammation() {
 
       <h2>Reflect — Le miroir des Proxy traps</h2>
 
-      <p><code>Reflect</code> expose les opérations fondamentales de JS comme des fonctions. Son rôle principal : restaurer le comportement par défaut dans un Proxy trap tout en passant correctement le <code>receiver</code> (<code>this</code>).</p>
+      <p>L'API <code>Reflect</code> expose les opérations fondamentales de JS (lire, écrire, supprimer) comme de simples fonctions. Son but principal est de travailler main dans la main avec <code>Proxy</code>.</p>
+      <p>Revenons à notre videur : parfois, il intercepte une demande mais décide finalement de la laisser passer normalement (le comportement par défaut). <code>Reflect</code>, c'est justement ce "comportement par défaut". Il permet au Proxy de valider une action sans avoir à recoder manuellement comment l'objet JS natif réagit.</p>
 
       <CodeBlock language="javascript">{codeReflect}</CodeBlock>
 
@@ -304,6 +310,8 @@ function Ch14Metaprogrammation() {
       </InfoBox>
 
       <h2>Symbol.toPrimitive — Contrôler la conversion de type</h2>
+
+      <p>Lorsque JavaScript a besoin de convertir un objet en valeur primitive (par exemple lors d'une addition ou d'une concaténation de chaîne), il appelle par défaut les méthodes <code>valueOf()</code> puis <code>toString()</code>. Le symbole caché <code>Symbol.toPrimitive</code> vous permet de prendre le contrôle total sur cette conversion en fonction du contexte (le <em>hint</em>) : nombre, chaîne de caractères ou par défaut.</p>
 
       <CodeBlock language="javascript">{codeToPrimitive}</CodeBlock>
 
@@ -327,7 +335,7 @@ function Ch14Metaprogrammation() {
         Depuis ES2022, les <strong>champs privés avec <code>#</code></strong> sont préférables à WeakMap pour la plupart des cas : plus simples, meilleure ergonomie, performances équivalentes. Utilise WeakMap quand tu as besoin de données privées <em>associées à des objets externes</em> (que tu ne contrôles pas), ou quand tu veux que la libération mémoire soit strictement automatique.
       </InfoBox>
 
-      <Challenge title="Défi : Objet Observable réactif">
+      <Challenge title="Défi personnel à réaliser : Objet Observable réactif">
         <p>Combinez Proxy et le pattern Observer pour créer une fonction <code>observable(obj)</code> qui notifie automatiquement tous les abonnés quand une propriété change.</p>
         <CodeBlock language="javascript">{codeChallenge}</CodeBlock>
       </Challenge>

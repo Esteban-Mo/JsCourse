@@ -290,7 +290,7 @@ function Ch03Conditions() {
         Règle pratique : utilisez <code>switch</code> quand les cas impliquent des <strong>blocs de code complexes</strong>, et l'object lookup quand chaque cas retourne simplement une <strong>valeur ou appelle une fonction</strong>.
       </InfoBox>
 
-      <Challenge title="Défi : Calculatrice de tarifs">
+      <Challenge title="Défi personnel à réaliser : Calculatrice de tarifs">
         <p>Écrivez une fonction <code>calculerTarif(age, estMembre)</code> qui retourne le prix d'entrée selon ces règles :</p>
         <ul>
           <li>Moins de 6 ans : gratuit (0€)</li>

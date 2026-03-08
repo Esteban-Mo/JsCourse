@@ -47,6 +47,9 @@ function Ch23() {
       </p>
 
       <h2>Créer et lire une date</h2>
+
+      <p>Il existe plusieurs façons d'instancier un objet <code>Date</code>, mais toutes ne se valent pas. Passer une chaîne de caractères au format ISO est généralement l'approche la plus sûre pour éviter les ambiguïtés liées au fuseau horaire local du navigateur.</p>
+
       <CodeBlock language="javascript">{`// Date actuelle
 const maintenant = new Date();
 
@@ -353,7 +356,7 @@ noms.sort(collator.compare);`}</CodeBlock>
         <code>Temporal</code> est déjà disponible via polyfill et sera standardisée prochainement.
       </InfoBox>
 
-      <Challenge title="Formateur de durée">
+      <Challenge title="Défi personnel à réaliser : Formateur de durée">
         Écris une fonction <code>formatDurée(ms)</code> qui convertit une durée en millisecondes
         en texte lisible : <code>formatDurée(3725000)</code> → <code>"1h 2min 5s"</code>
         <CodeBlock language="javascript">{`function formatDurée(ms) {

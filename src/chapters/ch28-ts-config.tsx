@@ -35,38 +35,6 @@ const codeChallengeMonorepo = `// tsconfig.base.json — partagé par tous les p
   "include": ["src"]
 }`;
 
-const codeChallengeDts = `// Supposons une lib JS : lib-calcul.js
-// function calculer(op, a, b) { ... }
-// function arrondir(n, decimales) { ... }
-// const PRECISION = 2;
-
-// À écrire : lib-calcul.d.ts
-declare module "lib-calcul" {
-  type Operation = "add" | "sub" | "mul" | "div";
-
-  export function calculer(op: Operation, a: number, b: number): number;
-  export function arrondir(n: number, decimales?: number): number;
-  export const PRECISION: number;
-}
-
-// Étendre les types globaux
-declare global {
-  interface Window {
-    debugMode: boolean;
-    appVersion: string;
-  }
-
-  namespace NodeJS {
-    interface ProcessEnv {
-      readonly NODE_ENV: "development" | "production" | "test";
-      readonly DATABASE_URL: string;
-      readonly API_KEY?: string;
-    }
-  }
-}
-
-export {};  // Nécessaire pour que ce soit un module`;
-
 const codeTsConfig = `{
   "compilerOptions": {
 
@@ -196,7 +164,7 @@ function Ch20TsConfig() {
         <div className="chapter-meta">
           <div className="difficulty-stars">★★★☆☆</div>
           <h3>tsconfig.json, strict mode, paths, .d.ts, Vite, ESLint</h3>
-          <p>Durée estimée : 40 min · 2 quizz inclus</p>
+          <p>Durée estimée : 40 min · 3 quizz inclus</p>
         </div>
       </div>
 
@@ -254,15 +222,11 @@ function Ch20TsConfig() {
         <strong>Stack recommandée en 2025 :</strong> <code>Vite</code> (bundler) + <code>TypeScript</code> strict + <code>ESLint</code> + <code>Prettier</code> (formatage) + <code>Vitest</code> (tests). C'est la base de la quasi-totalité des projets modernes — React, Vue, Svelte, Node.js.
       </InfoBox>
 
-      <Challenge title="Défi : Configuration monorepo TypeScript">
+      <Challenge title="Défi personnel à réaliser : Configuration monorepo TypeScript">
         <p>Crée une configuration TypeScript pour un monorepo avec un <code>tsconfig.base.json</code> commun et deux packages — <code>frontend</code> (Vite + React, DOM) et <code>backend</code> (Node.js, CommonJS). Chaque package étend la config de base et surcharge uniquement ce dont il a besoin.</p>
         <CodeBlock language="json">{codeChallengeMonorepo}</CodeBlock>
       </Challenge>
 
-      <Challenge title="Défi : Écrire un fichier .d.ts pour une lib JS">
-        <p>Crée un fichier de déclaration <code>.d.ts</code> pour une bibliothèque JS existante (<code>lib-calcul.js</code>) avec des types précis. Étend aussi les types globaux <code>Window</code> et <code>NodeJS.ProcessEnv</code> pour un projet full-stack.</p>
-        <CodeBlock language="typescript">{codeChallengeDts}</CodeBlock>
-      </Challenge>
     </>
   );
 }

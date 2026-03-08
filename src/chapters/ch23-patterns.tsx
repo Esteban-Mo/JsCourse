@@ -275,6 +275,11 @@ function Ch15Patterns() {
 
       <p>La <strong>programmation fonctionnelle</strong> (FP) n'est pas un langage ni un framework — c'est une philosophie de conception. Elle repose sur trois piliers : <strong>l'immutabilité</strong> (ne pas modifier les données), les <strong>fonctions pures</strong> (même entrée → même sortie, pas d'effets de bord), et la <strong>composition</strong> (construire des comportements complexes en combinant des fonctions simples).</p>
 
+      <InfoBox type="tip">
+        <strong>Pourquoi adopter la Programmation Fonctionnelle ?</strong><br />
+        Parce qu'elle rend le code incroyablement <em>prédictible</em>. Dans une application orientée objet classique, l'état global mute dans tous les sens de manière imprévisible, provoquant des bugs difficiles à tracer. En FP, une fonction pure est comme une équation mathématique : <code>f(x) = y</code>. Pas de surprise, pas d'effets secondaires cachés. C'est l'architecture adoptée massivement par React modernes et Redux.
+      </InfoBox>
+
       <h2>La philosophie FP — Pourquoi immuabilité et pureté</h2>
 
       <CodeBlock language="javascript">{codeImperatifVsFp}</CodeBlock>
@@ -287,7 +292,12 @@ function Ch15Patterns() {
 
       <h2>Currying — Pré-charger des arguments</h2>
 
-      <p>Le currying transforme une fonction à N arguments en une chaîne de fonctions à 1 argument. C'est comme une usine de fonctions spécialisées.</p>
+      <p>Le currying transforme une fonction à N arguments en une chaîne de fonctions emboîtées à 1 argument (ex: <code>f(a, b)</code> devient <code>f(a)(b)</code>).</p>
+
+      <InfoBox type="tip">
+        <strong>Analogie de la recette de cuisine 👨‍🍳</strong><br />
+        Imaginez une usine qui fabrique des sauces (notre fonction de base). Le currying, c'est comme "pré-configurer" la machine sur la chaîne de montage. On donne d'abord un ingrédient de base, par exemple la tomate (<code>f(tomate)</code>), et la machine recrache une nouvelle machine <em>spécialisée</em> dans les sauces tomates. Cette nouvelle machine attendra simplement le dernier ingrédient (le basilic ou l'ail) pour terminer le plat.
+      </InfoBox>
 
       <CodeBlock language="javascript">{codeCurry1}</CodeBlock>
 
@@ -308,6 +318,8 @@ function Ch15Patterns() {
       </InfoBox>
 
       <h2>Mémoïsation — Cacher les résultats coûteux</h2>
+
+      <p>La mémoïsation est une technique d'optimisation (souvent utilisée sur des fonctions pures) consistant à mettre en cache les résultats d'appels de fonctions afin de ne pas recalculer les mêmes valeurs si les mêmes arguments sont fournis. C'est essentiel pour améliorer les performances des algorithmes itératifs et récursifs.</p>
 
       <CodeBlock language="javascript">{codeMemo}</CodeBlock>
 
@@ -333,13 +345,15 @@ function Ch15Patterns() {
 
       <h2>FP Pratique — Patterns dans React et JS moderne</h2>
 
+      <p>Les principes de la programmation fonctionnelle se retrouvent partout dans le développement JavaScript d'aujourd'hui. L'application partielle permet de créer facilement des validateurs réutilisables, tandis que le pattern "Reducer" (popularisé par Redux et <code>useReducer</code> de React) est l'exemple parfait de gestion d'état immuable via une fonction pure.</p>
+
       <CodeBlock language="javascript">{codePratique}</CodeBlock>
 
       <InfoBox type="success">
         La FP n'est pas "tout ou rien". Dans le code React quotidien, vous utilisez déjà de la FP : les hooks (useState, useReducer), les components purs, les sélecteurs Redux. Comprendre les principes FP rend ces outils infiniment plus clairs.
       </InfoBox>
 
-      <Challenge title="Défi Final : Système de traitement de commandes">
+      <Challenge title="Défi personnel à réaliser : Système de traitement de commandes">
         <p>En utilisant uniquement des fonctions pures, pipe, curry et Maybe, construisez un pipeline de traitement de commandes e-commerce.</p>
         <CodeBlock language="javascript">{codeChallenge}</CodeBlock>
       </Challenge>

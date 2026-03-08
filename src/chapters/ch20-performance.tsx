@@ -61,6 +61,21 @@ function EventLoopDiagram() {
         </div>
       </div>
 
+      <div style={{ marginTop: 16, textAlign: 'center' }}>
+        <div style={{
+          display: 'inline-block',
+          background: 'rgba(52, 211, 153, 0.1)',
+          border: '1px dashed #34d399',
+          borderRadius: 8,
+          padding: '8px 16px',
+          color: '#34d399',
+          fontSize: 12,
+        }}>
+          <strong>🔄 L'Event Loop</strong> interroge en continu : <em style={{ opacity: 0.8 }}>"Le Call Stack est-il vide ?"</em><br />
+          Si oui → elle insère les <strong>Microtasks</strong>, le rendu, puis UNE seule <strong>Macrotask</strong>.
+        </div>
+      </div>
+
       <div style={{ marginTop: 14, textAlign: 'center', fontSize: 12, color: 'var(--muted)' }}>
         Priorité :&nbsp;
         <span style={{ color: '#60a5fa', fontWeight: 'bold' }}>Stack</span>
@@ -300,16 +315,60 @@ function Ch13Performance() {
 
       <p>Comprendre comment JavaScript s'exécute sous le capot vous permet d'écrire du code non seulement correct, mais aussi rapide et économe en mémoire. Ce chapitre démystifie l'Event Loop, le compilateur JIT de V8, et les patterns essentiels de performance.</p>
 
-      <h2>L'Event Loop — Visualisation complète</h2>
+      <h2>L'Event Loop — Explication complète</h2>
 
-      <p>JavaScript est mono-thread mais non-bloquant grâce à un mécanisme précis. Voici l'ordre exact d'exécution :</p>
+      <p>
+        JavaScript s'exécute dans un seul <em>thread</em>, ce qui signifie qu'il ne peut faire qu'une seule chose à la fois.
+        Pourtant, il reste <strong>non-bloquant</strong> (il ne plante pas pendant un téléchargement) grâce à <strong>l'Event Loop</strong> (la boucle d'événements)
+        et aux composants externes fournis par l'environnement (le navigateur web ou Node.js).
+      </p>
+
+      <h3>1. Le Call Stack (La pile d'appels)</h3>
+      <p>
+        C'est ici que le code <strong>synchrone</strong> s'exécute. JavaScript lit le script et empile tour à tour les fonctions sollicitées.
+        Lorsqu'une fonction est achevée, elle est dépilée (retirée). Si cette pile contient trop d'appels (ex: boucle infinie récursive),
+        elle finit par exploser en retournant l'erreur : <em>Maximum call stack size exceeded</em>.
+      </p>
+
+      <h3>2. Les Web APIs (L'environnement asynchrone)</h3>
+      <p>
+        Le moteur JavaScript (V8) ne gère pas lui-même le temps (<code>setTimeout</code>), le réseau (<code>fetch</code>), ou le DOM.
+        Lorsqu'il rencontre une de ces fonctions, il délègue la tâche au navigateur (ou à C++ côté Node.js) qui va traiter cela <strong>en arrière-plan</strong>.
+        Le Call Stack se libère aussitôt, permettant à JS de passer à la ligne suivante.
+      </p>
+
+      <h3>3. La file des Microtasks (Priorité haute) ⚡</h3>
+      <p>
+        Les microtasks sont destinées au code asynchrone urgent, devant s'exécuter <strong>dès que possible</strong>,
+        après la ligne de code en cours, mais avant de rendre le contrôle au navigateur. On y retrouve toutes les résolutions
+        de <strong>Promises</strong> (<code>.then()</code>, <code>.catch()</code>), le mot clé <code>await</code>, et la fonction native <code>queueMicrotask()</code>.
+      </p>
+
+      <h3>4. La file des Macrotasks (Priorité normale) ⏱</h3>
+      <p>
+        Les macrotasks regroupent tout le reste du travail "différé" : les callbacks de <code>setTimeout</code>/<code>setInterval</code>,
+        et les événements du DOM (comme la réaction à un clic utilisateur ou au scroll).
+      </p>
+
+      <InfoBox type="success">
+        <h4>L'algorithme de l'Event Loop (Ordre strict)</h4>
+        <ol style={{ paddingLeft: '1.5rem', marginTop: '0.5rem' }}>
+          <li>Exécuter le code synchrone présent dans le <strong>Call Stack</strong> jusqu'à ce qu'il soit entièrement vide.</li>
+          <li>Vider <strong>ENTIÈREMENT</strong> la file des <strong>Microtasks</strong> (y compris les nouvelles microtasks programmées par des microtasks en train de s'exécuter).</li>
+          <li>Mettre à jour le rendu de l'interface (si le navigateur estime qu'il est temps de redessiner l'écran).</li>
+          <li>Prendre <strong>UNE SEULE</strong> et unique <strong>Macrotask</strong> dans sa file et l'exécuter.</li>
+          <li>Recommencer au point 1.</li>
+        </ol>
+      </InfoBox>
 
       <EventLoopDiagram />
+      <br />
 
       <CodeBlock language="javascript">{codeEventLoop}</CodeBlock>
 
-      <InfoBox type="tip">
-        La règle clé : après chaque tâche synchrone et après chaque macrotask, <strong>toute la file des microtasks</strong> est vidée avant de passer à la macrotask suivante. C'est pourquoi des microtasks récursives peuvent bloquer le rendu du navigateur !
+      <InfoBox type="warning">
+        Attention au piège des <strong>Microtasks</strong> ! <br />
+        Puisque l'Event Loop vide <em>toute</em> la file des microtasks d'un seul coup sans interruption, si une Promise enchaîne continuellement ou récursivement d'autres Promises (créant des microtasks à l'infini), le navigateur ne pourra jamais passer à l'étape du rafraîchissement d'interface : <strong>l'onglet freezera purement et simplement !</strong>
       </InfoBox>
 
       <h2>V8 et les Hidden Classes — Comment JIT compile votre code</h2>
@@ -338,13 +397,15 @@ function Ch13Performance() {
 
       <h2>WeakRef et FinalizationRegistry — Mémoire avancée</h2>
 
+      <p>Traditionnellement, tant qu'une variable fait référence à un objet, ce dernier ne peut pas être nettoyé par le Garbage Collector (GC). L'objet <code>WeakRef</code> (référence faible) permet de pointer vers un objet sans empêcher sa destruction s'il n'est plus utilisé ailleurs. Combiné au <code>FinalizationRegistry</code>, il permet de réagir au moment exact où le navigateur supprime la donnée en mémoire.</p>
+
       <CodeBlock language="javascript">{codeWeakRef}</CodeBlock>
 
       <InfoBox type="warning">
         <code>WeakRef</code> et <code>FinalizationRegistry</code> sont des outils avancés. N'en dépendez pas pour la logique métier — le moment de collecte GC est imprévisible. Utilisez-les seulement pour des optimisations mémoire (caches, etc.).
       </InfoBox>
 
-      <Challenge title="Défi : Scheduler de tâches">
+      <Challenge title="Défi personnel à réaliser : Scheduler de tâches">
         <p>Implémentez un scheduler qui exécute des tâches par batch pour éviter de bloquer le thread principal. Utilisez <code>setTimeout(fn, 0)</code> pour céder la main à l'Event Loop entre chaque batch.</p>
         <CodeBlock language="javascript">{codeChallenge}</CodeBlock>
       </Challenge>

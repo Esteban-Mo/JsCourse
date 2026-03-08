@@ -282,6 +282,11 @@ function Ch12Poo() {
 
       <p>Chaque objet en JavaScript a une propriété interne <code>[[Prototype]]</code> qui pointe vers un autre objet. Quand vous accédez à une propriété, JS cherche dans l'objet, puis dans son prototype, puis dans le prototype du prototype... jusqu'à <code>null</code>.</p>
 
+      <InfoBox type="tip">
+        <strong>L'Analogie de l'arbre généalogique</strong><br />
+        Imaginez que vous cherchiez un outil spécifique (une méthode). Vous regardez d'abord dans votre propre boîte à outils (l'objet lui-même). Si vous ne le trouvez pas, vous demandez à votre parent (le prototype). S'il ne l'a pas non plus, le parent demande au sien, et ainsi de suite. Si personne dans la famille n'a cet outil, la recherche retourne <code>undefined</code>. C'est exactement ce qu'est la <em>Prototype Chain</em> !
+      </InfoBox>
+
       <CodeBlock language="javascript">{codeProto1}</CodeBlock>
 
       <CodeBlock language="javascript">{codeProto2}</CodeBlock>
@@ -290,7 +295,9 @@ function Ch12Poo() {
         La chaîne de prototypes est <strong>dynamique</strong> : si tu modifies <code>Animal.prototype.respirer</code> après avoir créé des instances, toutes les instances existantes verront immédiatement la nouvelle version. Une propriété définie directement sur l'instance (<em>own property</em>) a toujours la priorité sur la chaîne de prototypes.
       </InfoBox>
 
-      <h2>Classes ES6+ — Syntaxe complète</h2>
+      <h2>Classes ES6+ — Du sucre par-dessus les prototypes</h2>
+
+      <p>Bien que le mot-clé <code>class</code> existe depuis ES6, JS ne fonctionne toujours pas comme Java ou C#. Une classe n'est qu'une surcouche syntaxique plus élégante pour cacher la manipulation des prototypes vue juste au-dessus.</p>
 
       <CodeBlock language="javascript">{codeClasse}</CodeBlock>
 
@@ -299,6 +306,8 @@ function Ch12Poo() {
       </InfoBox>
 
       <h2>Héritage avec extends et super</h2>
+
+      <p>L'héritage permet à une classe d'étendre une autre (récupérer ses méthodes et propriétés) plutôt que de tout réécrire. Le mot-clé <code>extends</code> établit cette relation, tandis que <code>super</code> permet d'appeler le constructeur ou les méthodes de la classe parente.</p>
 
       <CodeBlock language="javascript">{codeHeritage}</CodeBlock>
 
@@ -332,13 +341,15 @@ function Ch12Poo() {
 
       <h2>Pattern Builder — Construction d'objets complexes</h2>
 
+      <p>Lorsque la création d'un objet requiert de nombreux paramètres (dont certains sont optionnels), un constructeur classique devient illisible. Le Builder Pattern résout ce problème en séparant la construction de l'objet en plusieurs méthodes chaînables de manière fluide (<em>fluent interface</em>).</p>
+
       <CodeBlock language="javascript">{codeBuilder}</CodeBlock>
 
       <InfoBox type="tip">
         Le pattern Builder brille quand un objet a de nombreux paramètres optionnels — l'alternative est un constructeur avec 8 paramètres dont la moitié sont <code>undefined</code>. L'API fluide (chaque méthode retourne <code>this</code>) rend le code lisible comme de la prose et permet d'omettre facilement les étapes facultatives.
       </InfoBox>
 
-      <Challenge title="Défi : Store réactif (mini-Redux)">
+      <Challenge title="Défi personnel à réaliser : Store réactif (mini-Redux)">
         <p>Implémentez un <code>Store</code> qui combine l'Observer pattern et l'immutabilité. Il doit permettre de dispatcher des actions et notifier les abonnés à chaque changement d'état.</p>
         <CodeBlock language="javascript">{codeChallenge}</CodeBlock>
       </Challenge>

@@ -247,6 +247,8 @@ function Ch04Boucles() {
 
       <h2>break, continue et boucles étiquetées</h2>
 
+      <p>Parfois, vous devez altérer le flux normal d'une itération avant qu'elle ne se termine d'elle-même. <code>break</code> permet de stopper net et de sortir complètement de la boucle, tandis que <code>continue</code> permet d'ignorer le reste de l'itération courante et de passer directement à la suivante. Les boucles étiquetées (labels) sont une fonctionnalité avancée permettant d'indiquer précisément à quelle boucle s'applique le <code>break</code> ou le <code>continue</code> en cas d'imbrication.</p>
+
       <CodeBlock language="javascript">{codeBreakContinue}</CodeBlock>
 
       <h2>Méthodes de tableau — Quand éviter les boucles for</h2>
@@ -259,7 +261,7 @@ function Ch04Boucles() {
         Guide de choix : <strong>map/filter/reduce</strong> pour transformer et produire une valeur, <strong>forEach</strong> pour des effets de bord sans besoin de break, <strong>for...of</strong> quand vous avez besoin de break/continue ou d'await, <strong>for</strong> classique quand vous avez besoin de l'index ET de performance maximale.
       </InfoBox>
 
-      <Challenge title="Défi : FizzBuzz élaboré">
+      <Challenge title="Défi personnel à réaliser : FizzBuzz élaboré">
         <p>Écrivez une boucle qui affiche les nombres de 1 à 50 avec ces règles :</p>
         <ul>
           <li>Multiple de 15 : "FizzBuzz"</li>

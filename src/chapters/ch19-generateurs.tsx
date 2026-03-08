@@ -310,6 +310,9 @@ for await (const chunk of lireStream(res)) {
       </p>
 
       <h2>Cas d'usage réels</h2>
+
+      <p>Les générateurs excellent particulièrement dans trois grands domaines : la création de pipelines de transformation efficaces en mémoire (sans tableaux intermédiaires), la génération de séquences infinies (comme des identifiants uniques), et la modélisation de processus longs pouvant être mis en pause pour ne pas bloquer l'interface.</p>
+
       <CodeBlock language="javascript">{`// 1. Pipeline de transformation lazy
 function* map(iter, fn) {
   for (const val of iter) yield fn(val);
@@ -352,16 +355,27 @@ function* traitementLong(données) {
         — élégant et ultra-efficace.
       </InfoBox>
 
-      <Challenge title="Range générateur">
-        Implémente un générateur <code>range(start, end, step=1)</code>
-        similaire à Python, qui supporte les pas négatifs.
-        <CodeBlock language="javascript">{`function* range(start, end, step = 1) {
-  // Votre code ici
+      <Challenge title="Défi personnel à réaliser : Générateur d'entrelacement (Zip)">
+        <p>
+          Implémente un générateur <code>zip(iter1, iter2)</code> qui prend deux itérables et produit
+          des paires combinant leurs valeurs une à une. Le générateur doit s'arrêter dès que l'itérable le plus court est épuisé.
+        </p>
+        <CodeBlock language="javascript">{`function* zip(iter1, iter2) {
+  // Indice : tu auras besoin d'obtenir les itérateurs manuellement
+  // via iter[Symbol.iterator]() et d'appeler .next()
+  
+  // Ton code ici
 }
 
-[...range(0, 10, 2)];   // [0, 2, 4, 6, 8]
-[...range(10, 0, -2)];  // [10, 8, 6, 4, 2]
-[...range(5)];          // Si appelé avec un seul arg : [0, 1, 2, 3, 4]`}</CodeBlock>
+const prenoms = ['Alice', 'Bob', 'Charlie'];
+const ages = [25, 30];
+
+for (const [prenom, age] of zip(prenoms, ages)) {
+  console.log(\`\${prenom} a \${age} ans\`);
+}
+// Affiche :
+// "Alice a 25 ans"
+// "Bob a 30 ans"`}</CodeBlock>
       </Challenge>
     </>
   );

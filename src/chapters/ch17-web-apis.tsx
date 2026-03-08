@@ -372,7 +372,7 @@ document.addEventListener('visibilitychange', () => {
         (copier l'URL dans le presse-papier par exemple) pour les plateformes non supportées.
       </InfoBox>
 
-      <Challenge title="Lazy loading maison">
+      <Challenge title="Défi personnel à réaliser : Lazy loading maison">
         Implémente un système de lazy loading pour des images avec
         IntersectionObserver. Les images doivent avoir un attribut <code>data-src</code>
         et charger leur vraie source uniquement quand elles sont à moins de

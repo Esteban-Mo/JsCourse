@@ -571,7 +571,7 @@ npx jest --coverage
         concentre-toi sur la logique métier critique, pas sur les getters/setters triviaux.
       </InfoBox>
 
-      <Challenge title="Tester un service de validation">
+      <Challenge title="Défi personnel à réaliser : Tester un service de validation">
         Écris les tests Jest complets pour ce service :
         <CodeBlock language="javascript">{`// validator.js
 function validerEmail(email) {

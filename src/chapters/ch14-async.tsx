@@ -1,3 +1,4 @@
+import React from 'react';
 import { CodeBlock, InfoBox, Challenge } from '../components/content';
 import type { Chapter } from '../types';
 
@@ -195,6 +196,165 @@ const data = await fetchAvecRetry("/api/unstable", 4);
 // Tentative 2... Échec, retry dans 200ms
 // Tentative 3... Succès !`;
 
+function PromiseDiagram() {
+  const box = (color: string): React.CSSProperties => ({
+    background: `rgba(${color}, 0.1)`,
+    border: `1px solid rgba(${color}, 0.35)`,
+    borderRadius: 8,
+    padding: '12px 20px',
+    color: '#e2e8f0',
+    fontSize: 14,
+    textAlign: 'center',
+    fontWeight: 'bold',
+    width: '140px',
+    boxShadow: `0 4px 6px -1px rgba(${color}, 0.1)`,
+    position: 'relative',
+    zIndex: 2,
+  });
+
+  return (
+    <div style={{ background: 'var(--surface)', border: '2px solid var(--accent)', borderRadius: 12, padding: '24px 16px', margin: '24px 0', overflow: 'hidden' }}>
+      <div style={{ textAlign: 'center', color: 'var(--accent)', fontWeight: 'bold', letterSpacing: 2, fontSize: 13, marginBottom: 24 }}>
+        ── CYCLE DE VIE D'UNE PROMISE ──
+      </div>
+
+      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', width: '100%', position: 'relative' }}>
+
+        {/* Pending state */}
+        <div style={{ ...box('96,165,250'), margin: '0 auto' }}>
+          ⏳ Pending<br />
+          <span style={{ fontSize: 11, fontWeight: 'normal', color: 'var(--muted)', marginTop: 4, display: 'block' }}>En attente</span>
+        </div>
+
+        {/* SVG Arrows */}
+        <svg width="340" height="80" viewBox="0 0 340 80" style={{ marginTop: '-10px', marginBottom: '-10px', position: 'relative', zIndex: 1, overflow: 'visible' }}>
+          <path d="M 170 10 L 170 35 L 80 35 L 80 65" fill="none" stroke="#34d399" strokeWidth="2" strokeDasharray="4 4" />
+          <polygon points="75,60 85,60 80,70" fill="#34d399" />
+
+          <path d="M 170 10 L 170 35 L 260 35 L 260 65" fill="none" stroke="#f87171" strokeWidth="2" strokeDasharray="4 4" />
+          <polygon points="255,60 265,60 260,70" fill="#f87171" />
+
+          <rect x="40" y="25" width="80" height="20" fill="var(--surface)" rx="4" />
+          <text x="80" y="39" fill="#34d399" fontSize="12" textAnchor="middle" fontWeight="bold">resolve(v)</text>
+
+          <rect x="220" y="25" width="80" height="20" fill="var(--surface)" rx="4" />
+          <text x="260" y="39" fill="#f87171" fontSize="12" textAnchor="middle" fontWeight="bold">reject(e)</text>
+        </svg>
+
+        {/* Branches */}
+        <div style={{ display: 'flex', width: '100%', maxWidth: '340px', justifyContent: 'space-between' }}>
+
+          {/* Resolve branch */}
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', flex: 1, paddingRight: '10px' }}>
+            <div style={{ ...box('52,211,153'), width: '130px', padding: '10px' }}>
+              ✅ Fulfilled
+            </div>
+            <div style={{ marginTop: 12, fontSize: 12, color: 'var(--muted)' }}>
+              Déclenche <code style={{ color: '#34d399', background: 'rgba(52,211,153,0.1)', padding: '2px 4px', borderRadius: '4px' }}>.then()</code>
+            </div>
+          </div>
+
+          {/* Reject branch */}
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', flex: 1, paddingLeft: '10px' }}>
+            <div style={{ ...box('248,113,113'), width: '130px', padding: '10px' }}>
+              ❌ Rejected
+            </div>
+            <div style={{ marginTop: 12, fontSize: 12, color: 'var(--muted)' }}>
+              Déclenche <code style={{ color: '#f87171', background: 'rgba(248,113,113,0.1)', padding: '2px 4px', borderRadius: '4px' }}>.catch()</code>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div style={{ marginTop: 32, textAlign: 'center' }}>
+        <div style={{
+          display: 'inline-block',
+          background: 'rgba(167, 139, 250, 0.1)',
+          border: '1px dashed #a78bfa',
+          borderRadius: 8,
+          padding: '10px 20px',
+          color: '#e2e8f0',
+          fontSize: 13,
+        }}>
+          💡 Une fois <strong>Fulfilled</strong> ou <strong>Rejected</strong>, la Promise est <strong style={{ color: '#a78bfa' }}>Settled (Terminée)</strong>.<br />
+          Son état et sa valeur sont définitifs et immuables.
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function RestaurantDiagram() {
+  const box = (color: string): React.CSSProperties => ({
+    background: `rgba(${color}, 0.1)`,
+    border: `1px solid rgba(${color}, 0.35)`,
+    borderRadius: 6,
+    padding: '8px 12px',
+    color: '#e2e8f0',
+    fontSize: 12,
+    textAlign: 'center',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    lineHeight: 1.3
+  });
+
+  const arrow = (label?: string) => (
+    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', flexShrink: 0, padding: '0 8px' }}>
+      {label && <span style={{ fontSize: 10, color: 'var(--muted)', marginBottom: 2 }}>{label}</span>}
+      <span style={{ color: 'var(--accent)' }}>→</span>
+    </div>
+  );
+
+  return (
+    <div style={{ background: 'var(--surface)', border: '2px solid var(--border)', borderRadius: 12, padding: '20px', margin: '24px 0' }}>
+
+      {/* Bloquant */}
+      <div style={{ marginBottom: 24 }}>
+        <div style={{ color: '#f87171', fontWeight: 'bold', fontSize: 13, marginBottom: 12 }}>
+          ❌ Exécution Bloquante (Synchrone)
+        </div>
+        <div style={{ display: 'flex', alignItems: 'center', overflowX: 'auto', paddingBottom: 8 }}>
+          <div style={{ ...box('96,165,250'), width: 100, flexShrink: 0 }}>Cmd Table 1</div>
+          {arrow('1 min')}
+          <div style={{ ...box('248,113,113'), width: 140, borderStyle: 'dashed', flexShrink: 0 }}>Attend cuisine (bloqué !)<br /><span style={{ opacity: 0.7, fontSize: 10 }}>(JS ne peut rien faire)</span></div>
+          {arrow('15 min')}
+          <div style={{ ...box('52,211,153'), width: 100, flexShrink: 0 }}>Sert Table 1</div>
+          {arrow('1 min')}
+          <div style={{ ...box('96,165,250'), width: 100, flexShrink: 0 }}>Cmd Table 2</div>
+        </div>
+        <div style={{ fontSize: 11, color: 'var(--muted)', marginTop: 4 }}>
+          ⏱️ La table 2 a attendu 16 min avant d'être remarquée.
+        </div>
+      </div>
+
+      <div style={{ height: 1, background: 'var(--border)', width: '100%', marginBottom: 24 }}></div>
+
+      {/* Non-Bloquant */}
+      <div>
+        <div style={{ color: '#34d399', fontWeight: 'bold', fontSize: 13, marginBottom: 12 }}>
+          ✅ Exécution Non-Bloquante (JS Asynchrone)
+        </div>
+        <div style={{ display: 'flex', alignItems: 'center', overflowX: 'auto', paddingBottom: 8 }}>
+          <div style={{ ...box('96,165,250'), width: 100, flexShrink: 0 }}>Cmd Table 1</div>
+          {arrow('1 min')}
+          <div style={{ ...box('167,139,250'), width: 140, flexShrink: 0 }}>Délègue à la cuisine<br /><span style={{ opacity: 0.7, fontSize: 10 }}>(API asynchrone)</span></div>
+          {arrow('immédiat')}
+          <div style={{ ...box('96,165,250'), width: 100, flexShrink: 0 }}>Cmd Table 2</div>
+          {arrow('1 min')}
+          <div style={{ ...box('167,139,250'), width: 100, flexShrink: 0 }}>Délègue...</div>
+          {arrow('plus tard')}
+          <div style={{ ...box('52,211,153'), width: 100, borderStyle: 'dashed', flexShrink: 0 }}>Event Loop :<br />Sert Table 1</div>
+        </div>
+        <div style={{ fontSize: 11, color: 'var(--muted)', marginTop: 4 }}>
+          ⏱️ Le thread gère le flux en continu. La cuisine (Web APIs) gère le délai en arrière-plan.
+        </div>
+      </div>
+
+    </div>
+  );
+}
+
 function Ch11Async() {
   return (
     <>
@@ -220,6 +380,8 @@ function Ch11Async() {
         <li><strong>Non-bloquant (JS)</strong> : Le serveur prend la commande, la transmet en cuisine, puis sert immédiatement d'autres tables. Quand le plat est prêt (callback/Promise), il revient le livrer.</li>
       </ul>
 
+      <RestaurantDiagram />
+
       <CodeBlock language="javascript">{codeNonBlocking}</CodeBlock>
 
       <h2>Callbacks — Le problème originel</h2>
@@ -238,6 +400,13 @@ function Ch11Async() {
       </ul>
       <p>Une Promise ne peut changer d'état qu'une seule fois, et cet état est définitif.</p>
 
+      <PromiseDiagram />
+
+      <InfoBox type="tip">
+        <strong>Analogie de la commande de Pizza 🍕</strong><br />
+        Quand vous commandez une pizza en ligne, le restaurant ne vous donne pas la pizza immédiatement. Il vous donne un ticket de caisse (la <code>Promise</code>). Ce ticket est dans l'état <em>pending</em> (en préparation). Vous pouvez continuer votre vie en attendant. Plus tard, le livreur sonne pour vous donner la pizza (état <em>fulfilled</em>), ou il vous appelle pour dire qu'ils n'ont plus de pâte (état <em>rejected</em>). Le <code>.then()</code> c'est ce que vous faites quand vous recevez la pizza (la manger), et le <code>.catch()</code> c'est ce que vous faites s'il y a une erreur (commander des sushis à la place).
+      </InfoBox>
+
       <CodeBlock language="javascript">{codePromise}</CodeBlock>
 
       <InfoBox type="tip">
@@ -246,11 +415,14 @@ function Ch11Async() {
 
       <h2>Promise.all, .allSettled, .race, .any — Orchestrer les Promises</h2>
 
+      <p>Quand vous avez plusieurs opérations asynchrones indépendantes, il est inefficace de les attendre une par une. JavaScript fournit quatre méthodes statiques ("combinateurs") de la classe <code>Promise</code> pour les exécuter toutes en même temps et décider comment gérer leurs résultats globaux.</p>
+
       <CodeBlock language="javascript">{codePromiseAll}</CodeBlock>
 
       <h2>async/await — Ce que ça fait vraiment</h2>
 
       <p><code>async/await</code> est du <strong>sucre syntaxique</strong> par-dessus les Promises — pas une technologie différente. Sous le capot, une fonction <code>async</code> retourne toujours une Promise, et <code>await</code> met en pause uniquement cette fonction, pas le thread entier.</p>
+      <p>L'avantage massif d'<code>await</code> est la lisibilité : il permet d'écrire du code asynchrone qui ressemble <em>visuellement</em> à du code synchrone traditionnel, de haut en bas, sans aucun <code>.then()</code> imbriqué.</p>
 
       <CodeBlock language="javascript">{codeAsyncAwait}</CodeBlock>
 
@@ -262,9 +434,11 @@ function Ch11Async() {
 
       <h2>AbortController — Annuler une requête en cours</h2>
 
+      <p>Pendant longtemps, il était impossible d'annuler une requête réseau (fetch) nativement. <code>AbortController</code> est l'API moderne standard pour cela. On crée un contrôleur, on passe son "signal" à la fonction asynchrone (comme <code>fetch</code>), puis on appelle <code>.abort()</code> quand on n'a plus besoin de la réponse.</p>
+
       <CodeBlock language="javascript">{codeAbort}</CodeBlock>
 
-      <Challenge title="Défi : Retry avec backoff exponentiel">
+      <Challenge title="Défi personnel à réaliser : Retry avec backoff exponentiel">
         <p>Implémentez une fonction <code>fetchAvecRetry(url, maxTentatives)</code> qui réessaie automatiquement en cas d'échec, avec un délai qui double à chaque tentative (100ms, 200ms, 400ms...).</p>
         <CodeBlock language="javascript">{codeChallenge}</CodeBlock>
       </Challenge>

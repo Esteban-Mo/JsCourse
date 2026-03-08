@@ -334,7 +334,7 @@ function Ch09Es6() {
         Mémorisez cette règle : utilisez <code>??</code> quand <code>0</code>, <code>""</code> ou <code>false</code> sont des valeurs valides. Utilisez <code>||</code> uniquement quand vous voulez vraiment rejeter toutes les valeurs falsy.
       </InfoBox>
 
-      <Challenge title="Défi : Pipeline de données">
+      <Challenge title="Défi personnel à réaliser : Pipeline de données">
         <p>Avec une liste d'utilisateurs, construisez un Map qui associe chaque ID à son nom, et un Set de toutes les villes uniques des utilisateurs actifs. Utilisez la déstructuration dans les boucles.</p>
         <CodeBlock language="javascript">{codeChallenge}</CodeBlock>
       </Challenge>

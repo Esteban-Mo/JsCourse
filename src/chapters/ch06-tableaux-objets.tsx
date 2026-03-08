@@ -305,9 +305,13 @@ function Ch06TableauxObjets() {
 
       <h2>find, findIndex, some, every, flat</h2>
 
+      <p>Ces méthodes sont indispensables pour interroger facilement le contenu d'un tableau. <code>find</code> et <code>some</code> sont particulièrement performantes car elles s'arrêtent dès qu'elles trouvent une correspondance (court-circuit), contrairement à <code>filter</code> qui parcourt toujours le tableau entier.</p>
+
       <CodeBlock language="javascript">{codeFindSome}</CodeBlock>
 
       <h2>Objets — Accès, propriétés calculées, et immutabilité</h2>
+
+      <p>Les objets sont des collections de paires clé-valeur. JavaScript offre plusieurs syntaxes pour accéder aux propriétés de façon statique ou dynamique, ainsi que des outils natifs comme <code>Object.freeze()</code> pour empêcher toute modification accidentelle d'un objet.</p>
 
       <CodeBlock language="javascript">{codeObjets1}</CodeBlock>
 
@@ -331,7 +335,7 @@ function Ch06TableauxObjets() {
         Ces trois méthodes sont conçues pour écrire du code <strong>immutable et défensif</strong>. <code>at()</code> évite les erreurs d'index hors-limites sur les indices négatifs, <code>with()</code> permet des mises à jour sans mutation, et <code>Object.hasOwn()</code> ne peut pas être écrasé par accident.
       </InfoBox>
 
-      <Challenge title="Défi : Agrégateur de données">
+      <Challenge title="Défi personnel à réaliser : Agrégateur de données">
         <p>Vous avez une liste de transactions. Calculez : le total des achats, le nombre de ventes par catégorie, et la transaction la plus élevée par catégorie.</p>
         <CodeBlock language="javascript">{codeChallenge}</CodeBlock>
       </Challenge>

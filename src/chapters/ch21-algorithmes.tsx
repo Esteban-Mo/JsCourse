@@ -473,7 +473,7 @@ occurrences(['a', 'b', 'a', 'c', 'b', 'a']);
         les lookups sont O(1), et la boucle entière reste O(n).
       </InfoBox>
 
-      <Challenge title="Anagrammes">
+      <Challenge title="Défi personnel à réaliser : Anagrammes">
         Écris une fonction <code>sontAnagrammes(a, b)</code> qui vérifie si deux chaînes
         sont des anagrammes (même lettres, ordre différent). Vise une complexité O(n).
         <CodeBlock language="javascript">{`sontAnagrammes('listen', 'silent'); // true

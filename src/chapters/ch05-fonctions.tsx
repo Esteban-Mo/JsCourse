@@ -255,6 +255,8 @@ function Ch05Fonctions() {
 
       <h2>Paramètres — Défaut, rest, et déstructuration</h2>
 
+      <p>JavaScript moderne offre une flexibilité incroyable pour la gestion des arguments d'une fonction. Vous pouvez définir des valeurs de repli (défaut) si un argument manque, regrouper une infinité d'arguments dans un tableau (rest), ou extraire directement les propriétés d'un objet passé en argument (déstructuration).</p>
+
       <CodeBlock language="javascript">{codeParams}</CodeBlock>
 
       <h2>Fonctions pures — La prévisibilité comme principe</h2>
@@ -283,7 +285,7 @@ function Ch05Fonctions() {
 
       <CodeBlock language="javascript">{codeHOF2}</CodeBlock>
 
-      <Challenge title="Défi : Mémoïsation">
+      <Challenge title="Défi personnel à réaliser : Mémoïsation">
         <p>Implémentez une fonction <code>memoize(fn)</code> qui met en cache les résultats d'une fonction. Si la fonction est appelée avec les mêmes arguments, elle retourne le résultat en cache sans recalculer.</p>
         <CodeBlock language="javascript">{codeChallenge}</CodeBlock>
       </Challenge>

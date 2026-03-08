@@ -445,7 +445,7 @@ const stats = commandes.reduce((acc, c) => ({
         raisonnable ({'<'} 100 000 éléments), le chaînage est largement préférable pour sa lisibilité.
       </InfoBox>
 
-      <Challenge title="Pipeline de données">
+      <Challenge title="Défi personnel à réaliser : Pipeline de données">
         Tu as un tableau de produits. Écris un pipeline qui retourne le nom des 3
         produits les plus chers avec un stock {'>'} 0, triés du plus cher au moins cher.
         <CodeBlock language="javascript">{`const produits = [

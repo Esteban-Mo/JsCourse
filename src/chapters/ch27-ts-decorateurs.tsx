@@ -30,38 +30,6 @@ class ApiService {
   }
 }`;
 
-const codeChallengeContainer = `// Conteneur d'injection de dépendances simple
-class Container {
-  private bindings = new Map<string, () => any>();
-  private singletons = new Map<string, any>();
-
-  bind<T>(token: string, factory: () => T): void {
-    this.bindings.set(token, factory);
-  }
-
-  singleton<T>(token: string, factory: () => T): void {
-    this.bindings.set(token, () => {
-      if (!this.singletons.has(token)) {
-        this.singletons.set(token, factory());
-      }
-      return this.singletons.get(token);
-    });
-  }
-
-  resolve<T>(token: string): T {
-    const factory = this.bindings.get(token);
-    if (!factory) throw new Error(\`Token non enregistré: \${token}\`);
-    return factory();
-  }
-}
-
-// Usage
-const container = new Container();
-container.singleton("db", () => new DatabaseConnection());
-container.bind("userRepo", () => new UserRepository(container.resolve("db")));
-container.bind("userService", () => new UserService(container.resolve("userRepo")));
-
-const service = container.resolve<UserService>("userService");`;
 
 const codeClasseDecorateurs = `// Un décorateur simple : ajoute un timestamp de création
 function Horodatable(constructeur: Function) {
@@ -199,7 +167,7 @@ function Ch19TsDecorateurs() {
         <div className="chapter-meta">
           <div className="difficulty-stars">★★★★★</div>
           <h3>Décorateurs, Singleton, Repository, Factory, DI</h3>
-          <p>Durée estimée : 50 min · 2 quizz inclus</p>
+          <p>Durée estimée : 50 min · 3 quizz inclus</p>
         </div>
       </div>
 
@@ -212,6 +180,11 @@ function Ch19TsDecorateurs() {
       <h2>Décorateur de classe</h2>
 
       <p>Un décorateur de classe est une <strong>fonction qui reçoit le constructeur</strong> de la classe et peut le modifier ou l'enrober. Il s'applique avec la syntaxe <code>@NomDuDecorateur</code> juste avant la classe.</p>
+
+      <InfoBox type="tip">
+        <strong>L'Analogie du papier cadeau 🎁</strong><br />
+        Un décorateur, c'est comme emballer un objet dans du papier cadeau. L'objet lui-même (la classe ou la méthode) ne change pas intrinsèquement à l'intérieur de sa boîte. Mais vu de l'extérieur, l'emballage (le décorateur) ajoute une nouvelle propriété (la couleur, le motif, ou un ruban). Le décorateur "intercepte" l'objet au moment de sa création et lui ajoute des super-pouvoirs avant de le rendre disponible au reste de l'application.
+      </InfoBox>
 
       <CodeBlock language="typescript">{codeClasseDecorateurs}</CodeBlock>
 
@@ -246,18 +219,14 @@ function Ch19TsDecorateurs() {
       <CodeBlock language="typescript">{codeRepository}</CodeBlock>
 
       <InfoBox type="tip">
-        Le pattern Repository est la base de l'<strong>architecture hexagonale</strong> (Ports &amp; Adapters). Ton code métier (le cœur) ne sait jamais si les données viennent d'une PostgreSQL, MongoDB ou d'un simple tableau en mémoire — il parle uniquement à l'interface.
+        Le pattern Repository est la base de l'<strong>architecture hexagonale</strong> (Ports &amp; Adapters). Ton code métier (le cœur) ne sait jamais si les données viennent d'une base PostgreSQL, d'une API externe ou d'un simple tableau en mémoire — il parle uniquement à l'interface <code>IUserRepository</code>. Cette séparation radicale des responsabilités est ce qu'on appelle l'<strong>Injection de Dépendances</strong> (Dependency Injection).
       </InfoBox>
 
-      <Challenge title="Défi : Décorateur @Retry pour les appels réseau">
+      <Challenge title="Défi personnel à réaliser : Décorateur @Retry pour les appels réseau">
         <p>Crée un décorateur <code>@Retry(tentatives, delai)</code> qui réessaie automatiquement une méthode async en cas d'erreur, avec un délai configurable entre chaque tentative. Après le nombre maximum de tentatives, l'erreur est propagée.</p>
         <CodeBlock language="typescript">{codeChallengeRetry}</CodeBlock>
       </Challenge>
 
-      <Challenge title="Défi : Conteneur d'injection de dépendances">
-        <p>Implémente un <code>Container</code> IoC (Inversion of Control) simple qui gère des <em>bindings</em> nommés et des <em>singletons</em>. La méthode <code>resolve()</code> doit retourner une instance typée en résolvant les dépendances à la volée.</p>
-        <CodeBlock language="typescript">{codeChallengeContainer}</CodeBlock>
-      </Challenge>
     </>
   );
 }

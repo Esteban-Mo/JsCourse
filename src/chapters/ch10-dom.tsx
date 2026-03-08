@@ -162,8 +162,14 @@ function Ch07Dom() {
 
       <p>Le DOM (<em>Document Object Model</em>) est la représentation en mémoire de ta page HTML sous forme d'arbre d'objets JavaScript. C'est l'interface entre ton code JS et le navigateur — tout ce que l'utilisateur voit et interagit avec passe par le DOM.</p>
 
+      <InfoBox type="tip">
+        <strong>L'arbre du DOM : Nodes vs Elements</strong><br />
+        Conceptuellement, le navigateur transforme chaque balise HTML en un objet JS appelé <code>Element</code>. Mais l'arbre contient aussi des objets <code>Node</code> plus génériques. Par exemple, le texte à l'intérieur d'une balise est un <code>TextNode</code>, et les commentaires HTML sont des <code>CommentNode</code>. Dans 99% des cas, vous manipulerez des <code>Elements</code> (les balises elles-mêmes).
+      </InfoBox>
+
       <h2>Sélectionner des éléments</h2>
-      <p>Les deux méthodes modernes à connaître : <code>querySelector</code> retourne le premier élément correspondant au sélecteur CSS, <code>querySelectorAll</code> retourne une NodeList de tous les éléments correspondants.</p>
+      <p>Pour interagir avec un élément de la page (un bouton, un champ texte), il faut d'abord dire au navigateur de le "trouver" dans l'arbre du DOM. Les méthodes modernes utilisent la même syntaxe que les sélecteurs CSS (comme <code>.classe</code> ou <code>#id</code>).</p>
+      <p><code>querySelector</code> retourne le <strong>premier</strong> élément correspondant, tandis que <code>querySelectorAll</code> retourne une liste (NodeList) de <strong>tous</strong> les éléments correspondants.</p>
 
       <CodeBlock language="javascript">{codeSelect}</CodeBlock>
 
@@ -172,6 +178,7 @@ function Ch07Dom() {
       </InfoBox>
 
       <h2>Lire et modifier le DOM</h2>
+      <p>Une fois l'élément sélectionné, vous tenez entre vos mains un objet JavaScript doté de dizaines de propriétés. Modifier ces propriétés (texte, classes, attributs) met instantanément à jour l'affichage sur la page.</p>
 
       <CodeBlock language="javascript">{codeModif}</CodeBlock>
 
@@ -182,17 +189,19 @@ function Ch07Dom() {
       </InfoBox>
 
       <h2>Événements</h2>
-      <p>Un événement est un signal émis par le navigateur (clic, frappe, scroll…). <code>addEventListener</code> permet d'y réagir proprement.</p>
+      <p>Un événement est un signal émis par le navigateur (clic de souris, frappe au clavier, redimensionnement de la fenêtre). JavaScript peut "écouter" ces signaux et exécuter une fonction en réponse grâce à <code>addEventListener</code>.</p>
 
       <CodeBlock language="javascript">{codeEvents1}</CodeBlock>
 
       <CodeBlock language="javascript">{codeEvents2}</CodeBlock>
 
       <InfoBox type="tip">
-        La <strong>délégation d'événements</strong> est plus performante que d'attacher un listener à chaque élément. Elle est surtout indispensable pour les éléments créés dynamiquement, car les listeners attachés avant leur création ne fonctionnent pas rétroactivement.
+        <strong>Le bouillonnement (Event Bubbling) et la Délégation</strong><br />
+        Quand on clique sur un enfant, l'événement "remonte" (buld) vers tous ses parents. La <strong>délégation d'événements</strong> exploite cela : au lieu d'attacher un écouteur sur 1000 boutons d'une liste, on attache un seul écouteur sur le conteneur parent (<code>&lt;ul&gt;</code>). On vérifie ensuite d'où vient le clic via <code>event.target</code>. C'est beaucoup plus performant et ça fonctionne pour les éléments ajoutés dynamiquement !
       </InfoBox>
 
       <h2>Formulaires</h2>
+      <p>Les formulaires sont le principal moyen de récolter des données utilisateur. En JS, le but est souvent d'intercepter la validation naturelle du formulaire (pour éviter le rechargement de la page) et de vérifier/récupérer les données soi-même.</p>
 
       <CodeBlock language="javascript">{codeForms}</CodeBlock>
 
@@ -201,7 +210,7 @@ function Ch07Dom() {
 
       <CodeBlock language="javascript">{codeStorage}</CodeBlock>
 
-      <Challenge title="Défi : Mini gestionnaire de tâches">
+      <Challenge title="Défi personnel à réaliser : Mini gestionnaire de tâches">
         <p>Liste dynamique avec ajout, suppression et persistance localStorage.</p>
         <CodeBlock language="javascript">{codeChallenge}</CodeBlock>
       </Challenge>

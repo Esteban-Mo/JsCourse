@@ -220,7 +220,7 @@ function Ch01Variables() {
       </p>
       <CodeBlock language="javascript">{CODE_TEMPLATE}</CodeBlock>
 
-      <Challenge>
+      <Challenge title="Défi personnel à réaliser">
         <p style={{ color: '#a0a0c0', fontSize: '14px' }}>
           Déclare une variable <code>nom</code> avec ton prénom, une variable <code>annee</code> avec ton année de naissance (2024 - ton âge), et affiche dans la console : <strong>"Bonjour [nom], tu es né en [annee] et tu as [age] ans."</strong> en utilisant un template literal et en calculant l'âge dynamiquement.
         </p>

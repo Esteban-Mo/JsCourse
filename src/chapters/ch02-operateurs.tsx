@@ -198,7 +198,7 @@ function Ch02Operateurs() {
         Un compilateur JavaScript et un lecteur humain peuvent interpréter la même expression différemment si la précédence n'est pas explicite. Les parenthèses sont gratuites — ajoute-les chaque fois que tu mélanges <code>&amp;&amp;</code> et <code>||</code>, ou des opérations arithmétiques dans une condition. La clarté vaut plus que la concision.
       </InfoBox>
 
-      <Challenge>
+      <Challenge title="Défi personnel à réaliser">
         <p style={{ color: '#a0a0c0', fontSize: '14px' }}>
           Sans exécuter le code, prédis le résultat de chaque expression. Ensuite vérifie dans la console :
         </p>

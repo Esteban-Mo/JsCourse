@@ -23,34 +23,6 @@ const config: DeepReadonly<Config> = {
 // config.database.credentials.password = "x"; ❌ récursivement readonly
 // config.features.push("new");             ❌ ReadonlyArray`;
 
-const codeChallengeRoutes = `// Système de routes type-safe avec Template Literal Types
-type HttpMethod = "GET" | "POST" | "PUT" | "DELETE" | "PATCH";
-type ApiVersion = "v1" | "v2";
-
-// Génère les types d'endpoints
-type Endpoint<M extends HttpMethod, P extends string> =
-  \`\${M} /api/\${ApiVersion}/\${P}\`;
-
-// Types inférés automatiquement
-type UserEndpoints =
-  | Endpoint<"GET",    "users">
-  | Endpoint<"POST",   "users">
-  | Endpoint<"GET",    "users/:id">
-  | Endpoint<"PUT",    "users/:id">
-  | Endpoint<"DELETE", "users/:id">;
-
-// Extraire la méthode HTTP d'un endpoint
-type ExtractMethod<T extends string> =
-  T extends \`\${infer M} /api/\${string}\` ? M : never;
-
-type Methode = ExtractMethod<UserEndpoints>;
-// "GET" | "POST" | "PUT" | "DELETE"
-
-// Router type-safe
-type RouteHandlers = {
-  [K in UserEndpoints]: (ctx: { params: Record<string, string> }) => Promise<unknown>
-};`;
-
 const codeUtilityTypes = `interface User {
   id: number;
   nom: string;
@@ -192,7 +164,7 @@ function Ch17TsAvance() {
         <div className="chapter-meta">
           <div className="difficulty-stars">★★★★★</div>
           <h3>Utility Types, Mapped Types, Conditional Types, infer</h3>
-          <p>Durée estimée : 50 min · 2 quizz inclus</p>
+          <p>Durée estimée : 50 min · 3 quizz inclus</p>
         </div>
       </div>
 
@@ -255,15 +227,11 @@ function Ch17TsAvance() {
         Les types conditionnels et <code>infer</code> permettent de créer des types qui raisonnent sur d'autres types — c'est de la <strong>métaprogrammation de types</strong>. C'est ce que font des libs comme <code>zod</code>, <code>trpc</code>, et <code>prisma</code> en interne. Maîtriser ces concepts te permettra non seulement d'utiliser ces bibliothèques plus efficacement, mais aussi de créer tes propres abstractions type-safe.
       </InfoBox>
 
-      <Challenge title="Défi : Type DeepReadonly récursif">
+      <Challenge title="Défi personnel à réaliser : Type DeepReadonly récursif">
         <p>Crée un type utilitaire <code>DeepReadonly&lt;T&gt;</code> qui rend toutes les propriétés d'un objet <em>récursivement</em> <code>readonly</code>, y compris les tableaux imbriqués et les objets profonds. Utilise les types conditionnels et <code>infer</code>.</p>
         <CodeBlock language="typescript">{codeChallengeDeepReadonly}</CodeBlock>
       </Challenge>
 
-      <Challenge title="Défi : Système de routes API type-safe">
-        <p>Crée un système de types qui génère automatiquement les endpoints d'une API REST (method + path) en combinant Template Literal Types et Mapped Types. Ajoute un type utilitaire pour extraire la méthode HTTP depuis un endpoint avec <code>infer</code>.</p>
-        <CodeBlock language="typescript">{codeChallengeRoutes}</CodeBlock>
-      </Challenge>
     </>
   );
 }

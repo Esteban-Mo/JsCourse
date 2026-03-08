@@ -212,7 +212,7 @@ function Ch08Regex() {
         Pour tester et visualiser tes regex en temps réel, utilise <strong>regex101.com</strong> — il affiche les groupes capturés, explique chaque partie du pattern, et propose des alternatives. Indispensable pour les regex complexes.
       </InfoBox>
 
-      <Challenge title="Défi : Prédire les résultats">
+      <Challenge title="Défi personnel à réaliser : Prédire les résultats">
         <p>Sans exécuter, prédis le résultat de chaque expression :</p>
         <CodeBlock language="javascript">{codeChallenge}</CodeBlock>
       </Challenge>

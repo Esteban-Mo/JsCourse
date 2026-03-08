@@ -126,34 +126,6 @@ const formes: Forme[] = [new Cercle(5), new Rectangle(4, 6), new Triangle(3, 4, 
 formes.sort((a, b) => b.aire() - a.aire());
 formes.forEach(f => console.log(f.decrire()));`;
 
-const codeChallengeNotif = `// Discriminated Union : système de notifications
-type Notification =
-  | { type: "email";   destinataire: string; sujet: string;  corps: string }
-  | { type: "sms";     telephone: string;    message: string }
-  | { type: "push";    deviceId: string;     titre: string;   payload?: object }
-  | { type: "webhook"; url: string;          data: object;    secret: string };
-
-function envoyer(notif: Notification): Promise<void> {
-  switch (notif.type) {
-    case "email":
-      return sendEmail(notif.destinataire, notif.sujet, notif.corps);
-    case "sms":
-      return sendSMS(notif.telephone, notif.message);
-    case "push":
-      return sendPush(notif.deviceId, notif.titre, notif.payload);
-    case "webhook":
-      return fetch(notif.url, {
-        method: "POST",
-        headers: { "X-Secret": notif.secret },
-        body: JSON.stringify(notif.data)
-      }).then(() => {});
-  }
-}
-
-// TypeScript vérifie l'exhaustivité — si on ajoute un type sans case, erreur !
-function assertNever(x: never): never {
-  throw new Error("Type non géré: " + JSON.stringify(x));
-}`;
 
 const codeDiscriminated = `// Exemple : gestion d'états d'une requête API
 type EtatRequete =
@@ -188,7 +160,7 @@ function Ch18TsPoo() {
         <div className="chapter-meta">
           <div className="difficulty-stars">★★★★☆</div>
           <h3>Classes abstraites, modificateurs, type guards, discriminated unions</h3>
-          <p>Durée estimée : 45 min · 2 quizz inclus</p>
+          <p>Durée estimée : 45 min · 3 quizz inclus</p>
         </div>
       </div>
 
@@ -214,10 +186,15 @@ function Ch18TsPoo() {
 
       <p>Une classe abstraite est un <strong>modèle incomplet</strong> — elle définit la structure et le comportement commun, mais délègue certaines implémentations aux classes enfants. On ne peut pas instancier une classe abstraite directement.</p>
 
+      <InfoBox type="tip">
+        <strong>L'analogie de la maison à moitié construite 🏠</strong><br />
+        Une <em>interface</em> est comme un plan d'architecte : elle dit "il faut une porte et deux fenêtres", mais elle ne construit rien. Une <em>classe abstraite</em> est comme une maison à moitié construite : les murs mitoyens et le toit sont déjà là (les méthodes concrètes partagées), mais on vous oblige à choisir vous-même la couleur de la porte et le type de fenêtres avant d'y habiter (les méthodes abstraites).
+      </InfoBox>
+
       <CodeBlock language="typescript">{codeAbstract}</CodeBlock>
 
       <InfoBox type="warning">
-        Une classe abstraite n'est pas une interface. Elle peut contenir du <strong>code concret partagé</strong> (comme <code>decrire()</code>). Préfère les interfaces quand tu veux définir uniquement un contrat ; utilise une classe abstraite quand tu veux partager de la logique entre les implémentations.
+        Une classe abstraite n'est pas une interface. Elle peut contenir du <strong>code concret partagé</strong> (comme <code>decrire()</code>). Préfère les interfaces quand tu veux définir uniquement un contrat pur ; utilise une classe abstraite quand tu veux partager de la véritable logique métier entre les implémentations.
       </InfoBox>
 
       <h2>Type Guards — rétrécir le type</h2>
@@ -232,27 +209,28 @@ function Ch18TsPoo() {
 
       <h2>Discriminated Unions</h2>
 
-      <p>Donner à chaque variante d'un union type une propriété <strong>discriminante</strong> (souvent <code>type</code> ou <code>kind</code>) avec une valeur littérale unique. TypeScript peut alors inférer le type exact dans chaque branche d'un switch.</p>
+      <p>Donner à chaque variante d'un union type une propriété <strong>discriminante</strong> (souvent <code>type</code> ou <code>kind</code> ou <code>etat</code>) avec une valeur littérale unique. TypeScript peut alors inférer le type exact dans chaque branche d'un switch.</p>
+
+      <InfoBox type="tip">
+        <strong>L'analogie du code-barres sur un colis 📦</strong><br />
+        Imaginez un centre de tri postal qui reçoit trois types de colis : des lettres, des petits cartons, et des palettes. Comment la machine sait-elle ce qu'il y a à l'intérieur sans l'ouvrir ? Grâce à une étiquette bien visible (le discriminant). Si l'étiquette dit <code>type: "lettre"</code>, la machine (TypeScript) a la garantie absolue que le colis possède une propriété <code>timbre</code>. Pas besoin de vérifier manuellement à chaque fois !
+      </InfoBox>
 
       <CodeBlock language="typescript">{codeDiscriminated}</CodeBlock>
 
       <InfoBox type="success">
-        Les <strong>discriminated unions</strong> sont le pattern TypeScript le plus utilisé dans les bases de code React et Redux. Ils remplacent avantageusement les hiérarchies de classes complexes par des types simples et exhaustifs.
+        Les <strong>discriminated unions</strong> (ou tags) sont le pattern TypeScript le plus puissant pour modéliser des états d'application, très utilisé dans React (pour les reducers) et Redux. Ils remplacent avantageusement les hiérarchies de classes complexes par des types simples, plats, et sécurisés à 100%.
       </InfoBox>
 
       <InfoBox type="danger">
         N'utilise <strong>jamais</strong> <code>as MonType</code> (type assertion) pour contourner les vérifications TypeScript. Cela dit au compilateur "fais-moi confiance" — et si tu as tort, le bug n'apparaîtra qu'à l'exécution. Écris plutôt un vrai type guard ou une discriminated union pour laisser TypeScript inférer en toute sécurité.
       </InfoBox>
 
-      <Challenge title="Défi : Hiérarchie de formes géométriques">
+      <Challenge title="Défi personnel à réaliser : Hiérarchie de formes géométriques">
         <p>Crée trois classes concrètes (<code>Cercle</code>, <code>Rectangle</code>, <code>Triangle</code>) qui étendent une classe abstraite <code>Forme</code>. Ajoute une propriété abstraite <code>couleur</code>, une méthode <code>decrire()</code> commune et une méthode <code>estPlusGrandeQue()</code>. Trie un tableau de formes par aire décroissante.</p>
         <CodeBlock language="typescript">{codeChallengeFormes}</CodeBlock>
       </Challenge>
 
-      <Challenge title="Défi : Système de notifications multi-canaux">
-        <p>Modélise un système de notifications avec un discriminated union à 4 variantes (email, SMS, push, webhook). Implémente une fonction <code>envoyer()</code> avec un switch exhaustif — TypeScript doit détecter tout type oublié.</p>
-        <CodeBlock language="typescript">{codeChallengeNotif}</CodeBlock>
-      </Challenge>
     </>
   );
 }

@@ -30,32 +30,6 @@ stack.push(1).push(2).push(3);
 stack.pop();  // 3 — TypeScript sait que c'est un number
 // stack.push("hello"); ❌ Argument of type 'string' not assignable to 'number'`;
 
-const codeChallengeApi = `// Typer un client API avec des génériques
-interface ApiResponse<T> {
-  data: T;
-  status: number;
-  message: string;
-  timestamp: string;
-}
-
-interface User { id: number; nom: string; email: string; }
-interface Post { id: number; titre: string; contenu: string; auteurId: number; }
-
-// Client API générique — retourne le bon type selon l'endpoint
-async function apiGet<T>(endpoint: string): Promise<ApiResponse<T>> {
-  const res = await fetch(endpoint);
-  if (!res.ok) throw new Error(\`HTTP \${res.status}\`);
-  return res.json();
-}
-
-// TypeScript infère automatiquement le type de retour
-const { data: user } = await apiGet<User>("/api/users/1");
-user.nom;   // ✅ TypeScript sait que c'est un User
-user.titre; // ❌ Error: 'titre' does not exist on type 'User'
-
-// Utilitaire : extraire le type d'une réponse
-type DataOf<T extends ApiResponse<any>> = T extends ApiResponse<infer D> ? D : never;`;
-
 const codeTypes = `// Annotations de type
 let prenom: string = "Alice";
 let age: number = 25;
@@ -206,7 +180,7 @@ function Ch16TsBases() {
         <div className="chapter-meta">
           <div className="difficulty-stars">★★★☆☆</div>
           <h3>Types, interfaces, unions, génériques</h3>
-          <p>Durée estimée : 40 min · 2 quizz inclus</p>
+          <p>Durée estimée : 40 min · 3 quizz inclus</p>
         </div>
       </div>
 
@@ -267,15 +241,11 @@ function Ch16TsBases() {
         L'inférence des génériques rend le code concis : <code>identity(42)</code> infère automatiquement <code>T = number</code>, tu n'as pas besoin d'écrire <code>identity&lt;number&gt;(42)</code>. La contrainte <code>K extends keyof T</code> va plus loin : elle dit que <code>K</code> doit être une des clés de <code>T</code> — TypeScript vérifie que tu n'accèdes qu'à des propriétés qui existent. C'est la base de l'utilitaire <code>Pick</code> que tu verras au prochain chapitre.
       </InfoBox>
 
-      <Challenge title="Défi : Stack générique type-safe">
+      <Challenge title="Défi personnel à réaliser : Stack générique type-safe">
         <p>Implémente une classe <code>Stack&lt;T&gt;</code> générique avec les méthodes <code>push</code>, <code>pop</code>, <code>peek</code>, <code>isEmpty</code> et <code>size</code>. Utilise le chaînage fluide pour <code>push</code>. TypeScript doit refuser d'empiler le mauvais type.</p>
         <CodeBlock language="typescript">{codeChallengeStack}</CodeBlock>
       </Challenge>
 
-      <Challenge title="Défi : Client API générique avec types inférés">
-        <p>Crée un client API générique <code>apiGet&lt;T&gt;</code> qui retourne une réponse typée <code>ApiResponse&lt;T&gt;</code>. TypeScript doit inférer automatiquement le type des données selon le paramètre générique passé — toute erreur de propriété doit être détectée à la compilation.</p>
-        <CodeBlock language="typescript">{codeChallengeApi}</CodeBlock>
-      </Challenge>
     </>
   );
 }

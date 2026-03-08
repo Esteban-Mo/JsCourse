@@ -227,7 +227,7 @@ function Ch10Erreurs() {
         Ne jamais laisser une Promise rejetée sans gestionnaire. Dans Node.js, une <code>UnhandledPromiseRejection</code> peut crasher le processus. Toujours chaîner un <code>.catch()</code> ou utiliser <code>try/catch</code> autour des <code>await</code>.
       </InfoBox>
 
-      <Challenge title="Défi : parseJSON sûr et NotFoundError">
+      <Challenge title="Défi personnel à réaliser : parseJSON sûr et NotFoundError">
         <p>Implémentez une fonction <code>parseJSON(str)</code> qui retourne l'objet parsé en cas de succès, ou <code>null</code> si le JSON est invalide — sans jamais laisser l'erreur remonter. Puis créez une classe <code>NotFoundError</code> qui étend <code>Error</code> avec une propriété <code>resource</code>.</p>
         <CodeBlock language="javascript">{codeChallenge}</CodeBlock>
       </Challenge>
