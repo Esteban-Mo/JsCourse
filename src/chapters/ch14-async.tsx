@@ -273,7 +273,7 @@ function Ch11Async() {
 }
 
 export const chapter: Chapter = {
-  id: 11,
+  id: 14,
   title: 'Async & Promises',
   icon: '🔮',
   level: 'Avancé',

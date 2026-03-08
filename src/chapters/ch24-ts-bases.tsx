@@ -281,7 +281,7 @@ function Ch16TsBases() {
 }
 
 export const chapter: Chapter = {
-  id: 16,
+  id: 24,
   title: 'TypeScript — Bases',
   icon: '🔷',
   level: 'Bonus TS',

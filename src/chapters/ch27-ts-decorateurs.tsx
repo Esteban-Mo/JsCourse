@@ -263,7 +263,7 @@ function Ch19TsDecorateurs() {
 }
 
 export const chapter: Chapter = {
-  id: 19,
+  id: 27,
   title: 'TypeScript — Décorateurs',
   icon: '🎨',
   level: 'Bonus TS',

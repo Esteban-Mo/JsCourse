@@ -331,7 +331,7 @@ export { isEmail, isPhone, formatName, formatCurrency };`}</CodeBlock>
 }
 
 export const chapter: Chapter = {
-  id: 24,
+  id: 15,
   title: 'Modules ES',
   icon: '📤',
   level: 'Avancé',

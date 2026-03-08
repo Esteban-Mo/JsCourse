@@ -16,17 +16,23 @@ export default function QuizSection({ questions, chapterId }: QuizSectionProps) 
   const key = String(chapterId);
   const selection = selectedQuestions[key];
 
-  // Initialise la sélection aléatoire si elle n'existe pas encore
+  // Initialise la sélection aléatoire si elle n'existe pas encore ou est invalide
   useEffect(() => {
     if (questions.length === 0) return;
-    if (!selection || selection.length !== Math.min(PICK, questions.length)) {
+    const isValidSelection = selection &&
+      selection.length === Math.min(PICK, questions.length) &&
+      selection.every(i => i >= 0 && i < questions.length);
+
+    if (!isValidSelection) {
       initQuestionSelection(chapterId, questions.length, PICK);
     }
   }, [chapterId, selection, questions.length, initQuestionSelection]);
 
   if (questions.length === 0 || !selection || selection.length === 0) return null;
 
-  const picked = selection.map(i => ({ q: questions[i], actualIdx: i }));
+  const picked = selection
+    .map(i => ({ q: questions[i], actualIdx: i }))
+    .filter(item => item.q !== undefined);
 
   const answeredCount = picked.filter(({ actualIdx }) => `${chapterId}-${actualIdx}` in answeredQuizzes).length;
   const xpEarned = picked.reduce((acc, { q, actualIdx }) => {

@@ -268,7 +268,7 @@ function Ch20TsConfig() {
 }
 
 export const chapter: Chapter = {
-  id: 20,
+  id: 28,
   title: 'TypeScript — Config & Éco',
   icon: '⚙️',
   level: 'Bonus TS',

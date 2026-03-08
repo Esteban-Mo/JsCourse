@@ -269,7 +269,7 @@ function Ch17TsAvance() {
 }
 
 export const chapter: Chapter = {
-  id: 17,
+  id: 25,
   title: 'TypeScript — Avancé',
   icon: '💎',
   level: 'Bonus TS',

@@ -343,7 +343,7 @@ function Ch09Es6() {
 }
 
 export const chapter: Chapter = {
-  id: 9,
+  id: 12,
   title: 'ES6+ Moderne',
   icon: '⚡',
   level: 'Avancé',

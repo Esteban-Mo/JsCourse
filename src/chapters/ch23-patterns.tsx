@@ -348,7 +348,7 @@ function Ch15Patterns() {
 }
 
 export const chapter: Chapter = {
-  id: 15,
+  id: 23,
   title: 'Patterns Fonctionnels',
   icon: '🧠',
   level: 'Maître',

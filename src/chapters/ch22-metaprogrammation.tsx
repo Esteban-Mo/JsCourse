@@ -336,7 +336,7 @@ function Ch14Metaprogrammation() {
 }
 
 export const chapter: Chapter = {
-  id: 14,
+  id: 22,
   title: 'Métaprogrammation',
   icon: '🔬',
   level: 'Maître',

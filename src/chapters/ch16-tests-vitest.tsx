@@ -598,7 +598,7 @@ module.exports = { validerEmail, validerUtilisateur };
 }
 
 export const chapter: Chapter = {
-  id: 25,
+  id: 16,
   title: 'Tests avec Jest',
   icon: '🧪',
   level: 'Avancé',

@@ -469,7 +469,7 @@ const résultat = produits
 }
 
 export const chapter: Chapter = {
-  id: 21,
+  id: 7,
   title: 'Méthodes de tableaux',
   icon: '🧰',
   level: 'Intermédiaire',

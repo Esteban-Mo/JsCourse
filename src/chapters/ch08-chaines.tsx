@@ -514,7 +514,7 @@ toSlug('React & TypeScript');    // 'react-typescript'`}</CodeBlock>
 }
 
 export const chapter: Chapter = {
-  id: 22,
+  id: 8,
   title: 'Manipulation de chaînes',
   icon: '🔤',
   level: 'Intermédiaire',

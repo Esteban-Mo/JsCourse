@@ -368,7 +368,7 @@ function* traitementLong(données) {
 }
 
 export const chapter: Chapter = {
-  id: 27,
+  id: 19,
   title: 'Générateurs & Itérateurs',
   icon: '🌀',
   level: 'Expert',

@@ -487,7 +487,7 @@ sontAnagrammes('Écoute', 'écoute'); // true (insensible à la casse)
 }
 
 export const chapter: Chapter = {
-  id: 28,
+  id: 21,
   title: 'Algorithmes fondamentaux',
   icon: '🧮',
   level: 'Expert+',

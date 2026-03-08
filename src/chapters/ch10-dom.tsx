@@ -210,7 +210,7 @@ function Ch07Dom() {
 }
 
 export const chapter: Chapter = {
-  id: 7,
+  id: 10,
   title: 'DOM & Events',
   icon: '🌐',
   level: 'Intermédiaire',

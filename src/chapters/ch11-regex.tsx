@@ -221,7 +221,7 @@ function Ch08Regex() {
 }
 
 export const chapter: Chapter = {
-  id: 8,
+  id: 11,
   title: 'Expressions Régulières',
   icon: '🔍',
   level: 'Intermédiaire',

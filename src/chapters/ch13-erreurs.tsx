@@ -236,7 +236,7 @@ function Ch10Erreurs() {
 }
 
 export const chapter: Chapter = {
-  id: 10,
+  id: 13,
   title: 'Gestion des Erreurs',
   icon: '🚨',
   level: 'Avancé',

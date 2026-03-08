@@ -390,7 +390,7 @@ initLazyLoad();`}</CodeBlock>
 }
 
 export const chapter: Chapter = {
-  id: 26,
+  id: 17,
   title: 'Web APIs modernes',
   icon: '🌍',
   level: 'Avancé',

@@ -347,7 +347,7 @@ function Ch12Poo() {
 }
 
 export const chapter: Chapter = {
-  id: 12,
+  id: 18,
   title: 'POO & Patterns',
   icon: '🏗️',
   level: 'Expert',

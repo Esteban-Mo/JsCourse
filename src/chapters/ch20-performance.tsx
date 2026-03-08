@@ -353,7 +353,7 @@ function Ch13Performance() {
 }
 
 export const chapter: Chapter = {
-  id: 13,
+  id: 20,
   title: 'Performance & V8',
   icon: '🚀',
   level: 'Expert',

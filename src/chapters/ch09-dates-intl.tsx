@@ -369,7 +369,7 @@ formatDurée(500);      // '0s'`}</CodeBlock>
 }
 
 export const chapter: Chapter = {
-  id: 23,
+  id: 9,
   title: 'Dates & Intl',
   icon: '📅',
   level: 'Intermédiaire',

@@ -258,7 +258,7 @@ function Ch18TsPoo() {
 }
 
 export const chapter: Chapter = {
-  id: 18,
+  id: 26,
   title: 'TypeScript — POO Avancée',
   icon: '🏛️',
   level: 'Bonus TS',
